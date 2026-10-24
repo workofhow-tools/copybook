@@ -13,35 +13,26 @@
         body {
             margin: 0; padding: 0;
             font-family: 'Microsoft JhengHei', sans-serif;
-            background: transparent;
+            background: transparent; /* 保持透明，方便疊加電子書 */
             height: 100vh;
             overflow: hidden;
         }
 
-        /* 全螢幕透明底層：不影響電子書，只用來接收收合訊號 */
-        #overlay {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: transparent; z-index: 998;
-            display: none;
-        }
-
-        /* 右上角懸浮鈕：提高 z-index 確保永遠在最上層可被點擊 */
+        /* 觸控優化懸浮鈕：z-index 設到最高，確保在大白板最容易被點到 */
         #toggle-btn {
-            position: fixed; top: 20px; right: 20px; z-index: 10000;
+            position: fixed; top: 20px; right: 20px; z-index: 99999;
             background: linear-gradient(135deg, #ff9800, #ff5722);
             color: white; border: none; padding: 14px 24px; border-radius: 50px;
             cursor: pointer; box-shadow: 0 6px 15px rgba(0,0,0,0.3);
             font-size: 16px; font-weight: bold;
-            pointer-events: auto; /* 強制啟動觸控/點擊 */
         }
 
-        /* 側邊抽屜面板：確保 z-index 最高，內部物件皆可點擊 */
+        /* 側邊抽屜面板：z-index 設到最高，完全阻擋下方電子書的干擾 */
         #side-panel {
             position: fixed; top: 0; right: -360px; width: 340px; height: 100vh;
-            background: white; box-shadow: -5px 0 25px rgba(0,0,0,0.3); z-index: 10001;
-            transition: right 0.25s cubic-bezier(0.1, 0.9, 0.2, 1);
+            background: white; box-shadow: -5px 0 25px rgba(0,0,0,0.3); z-index: 100000;
+            transition: right 0.2s ease-out;
             display: flex; flex-direction: column; padding: 25px 20px; box-sizing: border-box;
-            pointer-events: auto;
         }
         #side-panel.open { right: 0; }
 
@@ -94,7 +85,7 @@
         
         #celebrate {
             position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            font-size: 120px; pointer-events: none; display: none; z-index: 10002;
+            font-size: 120px; pointer-events: none; display: none; z-index: 100001;
             animation: pop 0.6s ease-out forwards;
         }
         @keyframes pop {
@@ -106,13 +97,14 @@
 </head>
 <body>
 
-    <div id="overlay" onclick="togglePanel()"></div>
-    <button id="toggle-btn" onclick="togglePanel()">⭐ 班級紀錄</button>
+    <!-- 橘色星星懸浮鈕 -->
+    <button id="toggle-btn" onclick="openPanel()">⭐ 班級紀錄</button>
 
+    <!-- 側邊抽屜面板 -->
     <div id="side-panel">
         <div class="panel-header">
             <h3>🏫 課堂互動計分板</h3>
-            <span class="close-panel" onclick="togglePanel()">✕</span>
+            <span class="close-panel" onclick="closePanel()">✕</span>
         </div>
         <div class="grid-container" id="list-container"></div>
         <div class="config-area">
@@ -137,12 +129,12 @@
 
         let previousState = null;
 
-        function togglePanel() {
-            const panel = document.getElementById('side-panel');
-            const overlay = document.getElementById('overlay');
-            panel.classList.toggle('open');
-            if(panel.classList.contains('open')) { overlay.style.display = 'block'; } 
-            else { overlay.style.display = 'none'; }
+        // 簡化開關邏輯，徹底移除點空白處收合，防止穿透衝突
+        function openPanel() {
+            document.getElementById('side-panel').classList.add('open');
+        }
+        function closePanel() {
+            document.getElementById('side-panel').classList.remove('open');
         }
 
         function renderList() {
@@ -154,8 +146,8 @@
                 card.innerHTML = `
                     <div class="team-info"><span class="team-name">${team.name}</span><span class="team-score" id="score-${index}">${team.score} 分</span></div>
                     <div class="action-btns">
-                        <button class="btn-minus" onclick="changeScore(event, ${index}, -1)">-</button>
-                        <button class="btn-plus" onclick="changeScore(event, ${index}, 1)">+</button>
+                        <button class="btn-minus" onclick="changeScore(${index}, -1)">-</button>
+                        <button class="btn-plus" onclick="changeScore(${index}, 1)">+</button>
                     </div>
                 `;
                 container.appendChild(card);
@@ -178,10 +170,8 @@
             }
         }
 
-        function changeScore(event, index, value) {
-            if(event) event.stopPropagation(); // 阻擋點擊訊號穿透，確保按鈕絕對有效
+        function changeScore(index, value) {
             saveCurrentState();
-
             teams[index].score += value;
             if(teams[index].score < 0) teams[index].score = 0;
             document.getElementById(`score-${index}`).innerText = `${teams[index].score} 分`;
@@ -200,7 +190,6 @@
             if (newNames.length === 0) return alert('請輸入名字！');
             
             saveCurrentState();
-
             const scoreMap = {};
             teams.forEach(t => { scoreMap[t.name] = t.score; });
             
@@ -231,3 +220,7 @@
             }
         }
 
+        renderList();
+    </script>
+</body>
+</html>
