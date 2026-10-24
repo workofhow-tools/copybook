@@ -1,10 +1,10 @@
 <!DOCTYPE html>
+
 <html lang="zh-TW">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>繁體中文字帖產生器</title>
-
 <style>
 /* 內嵌隨峰體字型：不需另外安裝字型即可使用 */
 @font-face {
@@ -150,11 +150,11 @@ button:hover {
 
 .grid-container {
     display: grid;
-    grid-template-columns: repeat(var(--grid-cols, 7), var(--box-width));
-    grid-template-rows: repeat(var(--grid-rows, 10), var(--box-height));
+    grid-template-columns: repeat(var(--grid-cols, 7), var(--slot-width, var(--box-width)));
+    grid-template-rows: repeat(var(--grid-rows, 10), var(--slot-height, var(--box-height)));
     gap: 0;
-    width: calc(var(--grid-cols, 7) * var(--box-width));
-    height: calc(var(--grid-rows, 10) * var(--box-height));
+    width: calc(var(--grid-cols, 7) * var(--slot-width, var(--box-width)));
+    height: calc(var(--grid-rows, 10) * var(--slot-height, var(--box-height)));
 }
 
 .char-box {
@@ -168,7 +168,7 @@ button:hover {
     justify-content: center;
     align-items: center;
     background: white;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .grid-jiu::before,
@@ -282,147 +282,158 @@ button:hover {
     }
 }
 </style>
-</head>
-
+<style>
+/* Collapsible, categorized settings */
+.settings-group {
+  border: 1px solid #d8dee8;
+  border-radius: 10px;
+  margin: 12px 0;
+  background: #fff;
+  overflow: hidden;
+}
+.settings-group > summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 12px 14px;
+  font-weight: 700;
+  background: #f1f5f9;
+  color: #243447;
+  user-select: none;
+}
+.settings-group > summary::-webkit-details-marker { display: none; }
+.settings-group > summary::after { content: "＋"; float: right; color: #526579; }
+.settings-group[open] > summary::after { content: "－"; }
+.settings-group > :not(summary) { margin-left: 12px; margin-right: 12px; }
+.settings-group > label:first-of-type { margin-top: 12px; }
+.settings-group > p:last-child { margin-bottom: 12px; }
+.settings-group select, .settings-group input:not([type="checkbox"]):not([type="range"]), .settings-group textarea { max-width: 100%; }
+</style></head>
 <body>
-
 <div class="layout">
-
-    <section class="panel no-print">
-        <h2>✍️ 字帖參數設定</h2>
-
-        <label for="textInput">請輸入練習文字</label>
-        <textarea id="textInput" rows="8"
-        placeholder="請輸入課文，空格與換行都會保留。">　　國小　年　班　號姓名　　　
-床前明月光，疑是地上霜。
-舉頭望明月，低頭思故鄉。</textarea>
-
-        <p class="hint">
-            第一行已預放學籍欄：前留 2 格（學校名稱）、國小、1 格（年）、年、1 格（班）、班、1 格（座號）、號姓名、最後留 3 格（姓名）。空格會占用字格但不顯示文字，可自行修改。
+<section class="panel no-print">
+<h2>✍️ 字帖參數設定</h2>
+<div class="title-input-top" style="margin: 0 0 16px; padding: 12px; border: 1px solid #d5dde5; border-radius: 10px; background: #f8fafc;"><label for="copybookTitle">字帖標頭（選填，列印時置中顯示）</label><input id="copybookTitle" value="國語複習字帖" placeholder="例如：國語生字練習／第 3 課生字" style="width:100%;box-sizing:border-box" type="text"/><p class="hint">輸入的標頭會置中顯示在每張紙的上方，留白即可不顯示。</p></div>
+<details class="settings-group"><summary>📝 文字內容</summary><label for="textInput">請輸入練習文字</label><textarea id="textInput" placeholder="請輸入課文，空格與換行都會保留。" rows="8"></textarea><p class="hint">
+            文字內容預設為空白，請直接輸入要練習的文字。若需要空格，半形空格與全形空格都會各占一格但不顯示文字。
             半形空格、全形空格可保留一格，不顯示文字；換行會另起一列或一欄。
-        </p>
+        </p><label class="checkbox-row" for="removeSpaces">
+<input id="removeSpaces" type="checkbox"/>
+<span>去除空白（保留換行）</span>
+</label><label class="checkbox-row" for="removePunctuation">
+<input id="removePunctuation" type="checkbox"/>
+<span>去除標點符號</span>
+</label></details>
 
-        <label class="checkbox-row" for="removeSpaces">
-            <input id="removeSpaces" type="checkbox">
-            <span>去除空白（保留換行）</span>
-        </label>
 
-        <label class="checkbox-row" for="removePunctuation">
-            <input id="removePunctuation" type="checkbox">
-            <span>去除標點符號</span>
-        </label>
 
-        <label for="practiceMode">習字帖模式</label>
-        <select id="practiceMode">
-            <option value="normal" selected>一般字帖（依原設定）</option>
-            <option value="practice1">習字帖 1：原始字＋筆順描寫＋1 排空白</option>
-            <option value="practice2">習字帖 2：原始字＋筆順描寫＋2 排空白</option>
-        </select>
-        <p class="hint">習字帖模式會自動安排：第 1 排原始字、第 2 排筆順數字描寫、第 3 排起空白習寫。使用習字帖模式時，請同時勾選「顯示筆順數字」；原本的空白練習列設定會暫時由模式接管。</p>
-        <label class="checkbox-row" for="skipFirstLinePractice">
-            <input id="skipFirstLinePractice" type="checkbox">
-            <span>每頁第 1 行只顯示學籍欄，不增加筆順行、筆順號碼和空白練習行</span>
-        </label>
-        <p class="hint">適合第一行放學校、年班、座號與姓名；勾選後，文字輸入區的第一行會自動出現在每一頁最前面，且每頁第 1 行不增加筆順行、不顯示筆順號碼，也不增加空白練習行。</p>
 
-        <label class="checkbox-row" for="addBlankPracticeRow">
-            <input id="addBlankPracticeRow" type="checkbox">
-            <span>每行文字後自動加空白練習格</span>
-        </label>
-        <label for="blankPracticeCount">空白練習排數</label>
-        <select id="blankPracticeCount" disabled>
-            <option value="1" selected>1 排</option>
-            <option value="2">2 排</option>
-            <option value="3">3 排</option>
-        </select>
-        <p class="hint">勾選後，可選擇每行文字後增加 1、2 或 3 排空白格，方便學生反覆練習。</p>
 
-        <label for="fontInput">字體選擇</label>
-        <select id="fontInput">
-            <option value="ThePeakFont" selected>隨峰體（已內嵌，免安裝）</option>
-            <option value="標楷體">標楷體（需電腦已安裝）</option>
-            <option value="Iansui">芫荽 Iansui（需電腦已安裝）</option>
-            <option value="書法家中楷體">書法家中楷體（需電腦已安裝）</option>
-            <option value="新細明體">新細明體（需電腦已安裝）</option>
-            <option value="微軟正黑體">微軟正黑體（需電腦已安裝）</option>
-            <option value="serif">系統襯線字體</option>
-            <option value="sans-serif">系統黑體</option>
-        </select>
-        <p class="hint">隨峰體已內嵌，可直接使用；其他字體需先安裝在電腦中。</p>
 
-        <label for="boxSizeMode">格子大小</label>
-        <select id="boxSizeMode">
-            <option value="auto" selected>自動（盡量填滿 A4）</option>
-            <option value="18">固定 1.8 × 1.8 公分</option>
-            <option value="22">固定 2.2 × 2.2 公分</option>
-        </select>
-        <p class="hint">格子保持正方形。若選定大小無法容納目前行列數，會自動縮小至可放入 A4 的尺寸；字體也會隨格子大小調整。</p>
 
-        <label>頁面邊界（公分）</label>
-        <div class="opacity-row">
-            <div style="flex:1"><label for="marginTop" style="margin-top:0;font-weight:normal">上</label><input id="marginTop" type="number" min="0" max="5" step="0.1" value="1.5"></div>
-            <div style="flex:1"><label for="marginBottom" style="margin-top:0;font-weight:normal">下</label><input id="marginBottom" type="number" min="0" max="5" step="0.1" value="1.5"></div>
-        </div>
-        <div class="opacity-row">
-            <div style="flex:1"><label for="marginLeft" style="margin-top:0;font-weight:normal">左</label><input id="marginLeft" type="number" min="0" max="5" step="0.1" value="1.5"></div>
-            <div style="flex:1"><label for="marginRight" style="margin-top:0;font-weight:normal">右</label><input id="marginRight" type="number" min="0" max="5" step="0.1" value="1.5"></div>
-        </div>
-        <div class="opacity-row">
-            <div style="flex:1"><label for="horizontalAlign" style="margin-top:0;font-weight:normal">水平位置</label><select id="horizontalAlign"><option value="left">靠左</option><option value="center" selected>置中</option><option value="right">靠右</option></select></div>
-            <div style="flex:1"><label for="verticalAlign" style="margin-top:0;font-weight:normal">垂直位置</label><select id="verticalAlign"><option value="top">靠上</option><option value="center" selected>置中</option><option value="bottom">靠下</option></select></div>
-        </div>
-        <p class="hint">邊界會限制字帖可使用的範圍；水平與垂直位置可分別設定。列印時請在列印視窗選擇 A4、縮放 100%，並關閉瀏覽器額外頁首頁尾。</p>
 
-        <label for="gridStyle">格子款式</label>
-        <select id="gridStyle">
-            <option value="grid-jiu">九宮格（井字虛線）</option>
-            <option value="none">無虛線（僅外框）</option>
-        </select>
 
-        <label>每頁格子數量</label>
-        <div class="opacity-row">
-            <div style="flex:1">
-                <label for="rowCount" style="margin-top:0;font-weight:normal">行數（橫排的行／直排的字數高度）</label>
-                <input id="rowCount" type="number" min="1" max="40" value="15">
-            </div>
-            <div style="flex:1">
-                <label for="colCount" style="margin-top:0;font-weight:normal">列數（橫排的字數寬度／直排的欄）</label>
-                <input id="colCount" type="number" min="1" max="40" value="10">
-            </div>
-        </div>
-        <p class="hint">可自行輸入行數與列數；字格會依 A4 可用範圍自動調整，字體也會跟著縮放。</p>
 
-        <label for="writeMode">排版方向</label>
-        <select id="writeMode">
-            <option value="vertical">直排（由右至左、由上至下）</option>
-            <option value="horizontal">橫排（由左至右、由上至下）</option>
-        </select>
 
-        <label for="opacityInput">描紅範字透明度</label>
-        <div class="opacity-row">
-            <input id="opacityInput" type="range"
-            min="10" max="100" value="100">
-            <span id="opacityVal">100%</span>
-        </div>
 
-        <label class="checkbox-row" for="showStrokeNumbers">
-            <input id="showStrokeNumbers" type="checkbox">
-            <span>顯示筆順數字（每一筆標示順序）</span>
-        </label>
-        <p class="hint">筆順數字需連上網路載入漢字筆畫資料；數字會依筆畫中線位置估算，字體與筆畫資料可能略有差異，建議先核對後再作正式教材。</p>
-        <p id="strokeNumberStatus" class="stroke-number-status" aria-live="polite"></p>
 
-        <button id="printButton" type="button">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<details class="settings-group"><summary>🖍️ 描紅、注音與筆順</summary><label for="opacityInput">描紅範字透明度</label><div class="opacity-row">
+<input id="opacityInput" max="100" min="10" type="range" value="30"/>
+<span id="opacityVal">30%</span>
+</div><label class="checkbox-row" for="addZhuyinGrid">
+<input id="addZhuyinGrid" type="checkbox" checked/>
+<span>加注音格子</span>
+</label><p class="hint">勾選後會在每個字格旁增加注音小格；直式在右側，橫式在上方，格子大小會自動調整。</p><label class="checkbox-row" for="showStrokeNumbers">
+<input id="showStrokeNumbers" type="checkbox"/>
+<span>顯示筆順數字（每一筆標示順序）</span>
+</label><p class="hint">筆順數字需連上網路載入漢字筆畫資料；數字會依筆畫中線位置估算，字體與筆畫資料可能略有差異，建議先核對後再作正式教材。</p><p aria-live="polite" class="stroke-number-status" id="strokeNumberStatus"></p></details><button id="printButton" type="button">
             🖨️ 列印／另存 PDF
         </button>
-    </section>
-
-    <main id="preview"></main>
-
+<details class="settings-group"><summary>📄 版面與排列</summary><label>頁面邊界（公分）</label><div class="opacity-row">
+<div style="flex:1"><label for="marginTop" style="margin-top:0;font-weight:normal">上</label><input id="marginTop" max="5" min="0" step="0.1" type="number" value="1.5"/></div>
+<div style="flex:1"><label for="marginBottom" style="margin-top:0;font-weight:normal">下</label><input id="marginBottom" max="5" min="0" step="0.1" type="number" value="1.5"/></div>
+</div><div class="opacity-row">
+<div style="flex:1"><label for="marginLeft" style="margin-top:0;font-weight:normal">左</label><input id="marginLeft" max="5" min="0" step="0.1" type="number" value="1.5"/></div>
+<div style="flex:1"><label for="marginRight" style="margin-top:0;font-weight:normal">右</label><input id="marginRight" max="5" min="0" step="0.1" type="number" value="1.5"/></div>
+</div><div class="opacity-row">
+<div style="flex:1"><label for="horizontalAlign" style="margin-top:0;font-weight:normal">水平位置</label><select id="horizontalAlign"><option value="left">靠左</option><option selected="" value="center">置中</option><option value="right">靠右</option></select></div>
+<div style="flex:1"><label for="verticalAlign" style="margin-top:0;font-weight:normal">垂直位置</label><select id="verticalAlign"><option value="top">靠上</option><option selected="" value="center">置中</option><option value="bottom">靠下</option></select></div>
+</div><p class="hint">邊界會限制字帖可使用的範圍；水平與垂直位置可分別設定。列印時請在列印視窗選擇 A4、縮放 100%，並關閉瀏覽器額外頁首頁尾。</p><label for="gridStyle">格子款式</label><select id="gridStyle">
+<option value="grid-jiu">九宮格（井字虛線）</option>
+<option value="none">無虛線（僅外框）</option>
+</select><label>每頁格子數量</label><div class="opacity-row">
+<div style="flex:1">
+<label for="rowCount" style="margin-top:0;font-weight:normal">行數（橫排的行／直排的字數高度）</label>
+<input id="rowCount" max="40" min="1" type="number" value="12"/>
 </div>
-
+<div style="flex:1">
+<label for="colCount" style="margin-top:0;font-weight:normal">列數（橫排的字數寬度／直排的欄）</label>
+<input id="colCount" max="40" min="1" type="number" value="6"/>
+</div>
+</div><p class="hint">可自行輸入行數與列數；字格會依 A4 可用範圍自動調整，字體也會跟著縮放。</p><label for="writeMode">排版方向</label><select id="writeMode">
+<option value="vertical">直排（由右至左、由上至下）</option>
+<option value="horizontal">橫排（由左至右、由上至下）</option>
+</select></details><details class="settings-group"><summary>🔤 字體與格子</summary><label for="fontInput">字體選擇</label><select id="fontInput">
+<option selected="" value="ThePeakFont">隨峰體（已內嵌，免安裝）</option>
+<option value="標楷體">標楷體（需電腦已安裝）</option>
+<option value="Iansui">芫荽 Iansui（需電腦已安裝）</option>
+<option value="書法家中楷體">書法家中楷體（需電腦已安裝）</option>
+<option value="新細明體">新細明體（需電腦已安裝）</option>
+<option value="微軟正黑體">微軟正黑體（需電腦已安裝）</option>
+<option value="serif">系統襯線字體</option>
+<option value="sans-serif">系統黑體</option>
+</select><p class="hint">隨峰體已內嵌，可直接使用；其他字體需先安裝在電腦中。</p><label for="boxSizeMode">格子大小</label><select id="boxSizeMode">
+<option selected="" value="auto">自動（盡量填滿 A4）</option>
+<option value="18">固定 1.8 × 1.8 公分</option>
+<option value="22">固定 2.2 × 2.2 公分</option>
+</select><p class="hint">格子保持正方形。若選定大小無法容納目前行列數，會自動縮小至可放入 A4 的尺寸；字體也會隨格子大小調整。</p></details><details class="settings-group"><summary>✏️ 練習方式</summary><label for="practiceMode">習字帖模式</label><select id="practiceMode">
+<option selected="" value="normal">一般字帖（依原設定）</option>
+<option value="practice1">習字帖 1：原始字＋筆順描寫＋1 排空白</option>
+<option value="practice2">習字帖 2：原始字＋筆順描寫＋2 排空白</option>
+</select><p class="hint">習字帖模式會自動安排：第 1 排原始字、第 2 排筆順數字描寫、第 3 排起空白習寫。使用習字帖模式時，請同時勾選「顯示筆順數字」；原本的空白練習列設定會暫時由模式接管。</p><label class="checkbox-row" for="skipFirstLinePractice">
+<input id="skipFirstLinePractice" type="checkbox"/>
+<span>每頁第 1 行只顯示學籍欄，不增加筆順行、筆順號碼和空白練習行</span>
+</label><p class="hint">適合第一行放學校、年班、座號與姓名；勾選後，文字輸入區的第一行會自動出現在每一頁最前面，且每頁第 1 行不增加筆順行、不顯示筆順號碼，也不增加空白練習行。</p><label class="checkbox-row" for="addBlankPracticeRow">
+<input id="addBlankPracticeRow" type="checkbox" checked/>
+<span>每行文字後自動加空白練習格</span>
+</label><label for="blankPracticeCount">空白練習排數</label><select disabled="" id="blankPracticeCount">
+<option selected="" value="1">1 排</option>
+<option value="2">2 排</option>
+<option value="3">3 排</option>
+</select><p class="hint">勾選後，可選擇每行文字後增加 1、2 或 3 排空白格，方便學生反覆練習。</p></details></section>
+<main id="preview"></main>
+</div>
 <script>
 const textInput = document.getElementById("textInput");
+const copybookTitleInput = document.getElementById("copybookTitle");
 const fontInput = document.getElementById("fontInput");
 const gridStyle = document.getElementById("gridStyle");
 const writeMode = document.getElementById("writeMode");
@@ -445,6 +456,7 @@ const rowCountInput = document.getElementById("rowCount");
 const colCountInput = document.getElementById("colCount");
 const preview = document.getElementById("preview");
 const showStrokeNumbersInput = document.getElementById("showStrokeNumbers");
+const addZhuyinGridInput = document.getElementById("addZhuyinGrid");
 const strokeNumberStatus = document.getElementById("strokeNumberStatus");
 const strokeDataCache = new Map();
 
@@ -531,7 +543,7 @@ function paginate(units, mode, rows, cols, headerUnits = []) {
 /*
  * 建立單一字帖頁面。
  */
-function createPage(pageUnits, mode, font, grid, opacity, rows, cols, boxSizeMode, margins, horizontalAlign, verticalAlign, showStrokeNumbers, pageIndex, totalPages) {
+function createPage(pageUnits, mode, font, grid, opacity, rows, cols, boxSizeMode, margins, horizontalAlign, verticalAlign, showStrokeNumbers, addZhuyinGrid, pageIndex, totalPages) {
     const pageEl = document.createElement("section");
     pageEl.className = "a4-page";
     pageEl.style.position = "relative";
@@ -541,7 +553,10 @@ function createPage(pageUnits, mode, font, grid, opacity, rows, cols, boxSizeMod
     // 邊界以公分輸入，轉成 mm 計算 A4 可用空間。
     const availableWidth = Math.max(10, 210 - margins.left - margins.right);
     const availableHeight = Math.max(10, 297 - margins.top - margins.bottom - 12);
-    const maxBoxSize = Math.min(availableWidth / cols, availableHeight / rows);
+    const zhuyinRatio = addZhuyinGrid ? 1.35 : 1;
+    const maxBoxSize = mode === "vertical"
+        ? Math.min(availableWidth / (cols * zhuyinRatio), availableHeight / rows)
+        : Math.min(availableWidth / cols, availableHeight / (rows * zhuyinRatio));
     // 格子大小以 mm 計算；固定尺寸若無法容納於 A4，就縮小至可用上限。
     const requestedBoxSize = boxSizeMode === "auto" ? maxBoxSize : Number(boxSizeMode);
     const boxSize = Math.min(requestedBoxSize, maxBoxSize);
@@ -549,10 +564,12 @@ function createPage(pageUnits, mode, font, grid, opacity, rows, cols, boxSizeMod
     const fontSize = boxSize * 0.82;
     gridContainer.style.setProperty("--box-width", boxSize + "mm");
     gridContainer.style.setProperty("--box-height", boxSize + "mm");
+    gridContainer.style.setProperty("--slot-width", (boxSize * (addZhuyinGrid && mode === "vertical" ? zhuyinRatio : 1)) + "mm");
+    gridContainer.style.setProperty("--slot-height", (boxSize * (addZhuyinGrid && mode === "horizontal" ? zhuyinRatio : 1)) + "mm");
     gridContainer.style.setProperty("--grid-rows", rows);
     gridContainer.style.setProperty("--grid-cols", cols);
-    gridContainer.style.width = (cols * boxSize) + "mm";
-    gridContainer.style.height = (rows * boxSize) + "mm";
+    gridContainer.style.width = (cols * boxSize * (addZhuyinGrid && mode === "vertical" ? zhuyinRatio : 1)) + "mm";
+    gridContainer.style.height = (rows * boxSize * (addZhuyinGrid && mode === "horizontal" ? zhuyinRatio : 1)) + "mm";
     pageEl.style.boxSizing = "border-box";
     pageEl.style.paddingTop = margins.top + "mm";
     pageEl.style.paddingBottom = margins.bottom + "mm";
@@ -573,6 +590,7 @@ function createPage(pageUnits, mode, font, grid, opacity, rows, cols, boxSizeMod
     for (let i = 0; i < pageSize; i++) {
         const box = document.createElement("div");
         box.className = "char-box";
+        if (addZhuyinGrid && mode === "horizontal") box.style.alignSelf = "end";
 
         if (grid === "grid-jiu") {
             box.classList.add("grid-jiu");
@@ -635,10 +653,75 @@ function createPage(pageUnits, mode, font, grid, opacity, rows, cols, boxSizeMod
             }
         }
 
+        if (addZhuyinGrid) {
+            const zhuyinBox = document.createElement("div");
+            zhuyinBox.className = "zhuyin-box";
+            zhuyinBox.style.position = "absolute";
+            zhuyinBox.style.boxSizing = "border-box";
+            zhuyinBox.style.border = "0.3mm solid #64748b";
+            zhuyinBox.style.background = "white";
+            zhuyinBox.style.pointerEvents = "none";
+            if (mode === "vertical") {
+                zhuyinBox.style.left = boxSize + "mm";
+                zhuyinBox.style.top = "0";
+                zhuyinBox.style.width = (boxSize * 0.35) + "mm";
+                zhuyinBox.style.height = boxSize + "mm";
+            } else {
+                zhuyinBox.style.left = "0";
+                zhuyinBox.style.top = (-boxSize * 0.35) + "mm";
+                zhuyinBox.style.width = boxSize + "mm";
+                zhuyinBox.style.height = (boxSize * 0.35) + "mm";
+            }
+            box.appendChild(zhuyinBox);
+        }
         gridContainer.appendChild(box);
     }
 
     pageEl.appendChild(gridContainer);
+
+    // 學校、班級、座號、姓名欄：固定在每張 A4 紙張框外右上角，直式與橫式皆顯示。
+    const studentInfo = document.createElement("div");
+    studentInfo.className = "student-info";
+    studentInfo.textContent = "學校：　　　　　班級：　　　座號：　　　姓名：　　　　　";
+    studentInfo.style.position = "absolute";
+    studentInfo.style.top = "11mm";
+    studentInfo.style.left = "15mm";
+    studentInfo.style.right = "15mm";
+    studentInfo.style.textAlign = "center";
+    studentInfo.style.fontSize = "11pt";
+    studentInfo.style.lineHeight = "1.2";
+    studentInfo.style.whiteSpace = "nowrap";
+    studentInfo.style.color = "#222";
+    studentInfo.style.fontFamily = '"標楷體", "DFKai-SB", serif';
+    studentInfo.style.pointerEvents = "none";
+    pageEl.appendChild(studentInfo);
+    // 先保留預設位置；等整張 A4 頁面真正加入預覽區、完成 flex 排版後，
+    // 再由 generateCopybook() 依實際外框位置計算學籍欄，避免尚未排版時量到 0。
+    studentInfo.style.top = "11mm";
+
+    // 使用者自訂標頭：置中顯示在學籍欄上方。
+    const copybookTitle = document.createElement("div");
+    copybookTitle.className = "copybook-title";
+    copybookTitle.textContent = copybookTitleInput ? copybookTitleInput.value.trim() : "";
+    copybookTitle.style.position = "absolute";
+    copybookTitle.style.top = "4mm";
+    copybookTitle.style.left = "15mm";
+    copybookTitle.style.right = "15mm";
+    copybookTitle.style.textAlign = "center";
+    copybookTitle.style.fontSize = "14pt";
+    copybookTitle.style.fontWeight = "bold";
+    copybookTitle.style.lineHeight = "1.2";
+    copybookTitle.style.whiteSpace = "nowrap";
+    copybookTitle.style.overflow = "hidden";
+    copybookTitle.style.color = "#222";
+    const titleFont = font.trim().toLowerCase();
+    if (titleFont === "thepeakfont" || titleFont === "thepeakfontbeta_v0_102" || titleFont === "thepeakfontembedded") {
+        copybookTitle.style.fontFamily = '"ThePeakFontEmbedded", serif';
+    } else {
+        copybookTitle.style.fontFamily = '"' + font.replace(/["\\]/g, "") + '", "標楷體", "DFKai-SB", serif';
+    }
+    copybookTitle.style.pointerEvents = "none";
+    if (copybookTitle.textContent) pageEl.appendChild(copybookTitle);
 
     // 頁碼固定在每張 A4 紙張下方中央，格式例如 1/3、2/3、3/3。
     const pageNumber = document.createElement("div");
@@ -762,19 +845,51 @@ function generateCopybook() {
             horizontalAlignInput.value,
             verticalAlignInput.value,
             showStrokeNumbersInput.checked,
+            addZhuyinGridInput.checked,
             index + 1,
             pages.length
         );
 
         preview.appendChild(page);
     });
+    // 頁面加入 DOM 後再定位：學籍欄底部與字帖外框頂線相距 0.1 mm。
+    requestAnimationFrame(() => {
+        preview.querySelectorAll(".a4-page").forEach(pageEl => {
+            const studentInfo = pageEl.querySelector(".student-info");
+            const gridContainer = pageEl.querySelector(".grid-container");
+            if (!studentInfo || !gridContainer) return;
+            const pageRect = pageEl.getBoundingClientRect();
+            const gridRect = gridContainer.getBoundingClientRect();
+            const infoHeightMm = studentInfo.getBoundingClientRect().height * 25.4 / 96;
+            const gridTopOnPageMm = (gridRect.top - pageRect.top) * 25.4 / 96;
+            studentInfo.style.top = `${gridTopOnPageMm - infoHeightMm - 0.1}mm`;
+        });
+    });
     if (showStrokeNumbersInput.checked) addStrokeNumbers();
     else strokeNumberStatus.textContent = '';
 }
 
 textInput.addEventListener("input", generateCopybook);
+copybookTitleInput.addEventListener("input", function () {
+    generateCopybook();
+    updateDocumentTitle();
+});
+
+// 瀏覽器「列印／另存為 PDF」通常會以文件標題作為預設檔名。
+// 將自訂字帖標頭同步為文件標題；若標頭空白則使用通用名稱。
+function updateDocumentTitle() {
+    const name = (copybookTitleInput.value || "").trim();
+    const rows = document.getElementById("rowCount")?.value || "12";
+    const cols = document.getElementById("colCount")?.value || "6";
+    const safeName = (name || "繁體中文字帖").replace(/[\\/:*?"<>|]/g, "_");
+    document.title = `${safeName}_${rows}x${cols}`.slice(0, 100);
+}
+document.getElementById("rowCount")?.addEventListener("input", updateDocumentTitle);
+document.getElementById("colCount")?.addEventListener("input", updateDocumentTitle);
+
 removeSpaces.addEventListener("change", generateCopybook);
 removePunctuation.addEventListener("change", generateCopybook);
+addZhuyinGridInput.addEventListener("change", generateCopybook);
 function syncBlankPracticeControls() {
     blankPracticeCount.disabled = !addBlankPracticeRow.checked;
     blankPracticeCount.style.opacity = addBlankPracticeRow.checked ? "1" : "0.55";
@@ -804,12 +919,17 @@ opacityInput.addEventListener("input", function () {
 });
 
 document.getElementById("printButton").addEventListener("click", function () {
+    updateDocumentTitle();
     window.print();
 });
 
 syncBlankPracticeControls();
+updateDocumentTitle();
 generateCopybook();
 </script>
-
 </body>
 </html>
+<script>
+// 載入時套用預設標頭檔名（含最後設定的行列數）。
+window.addEventListener("DOMContentLoaded", function(){ if (typeof updateDocumentTitle === "function") updateDocumentTitle(); });
+</script>
