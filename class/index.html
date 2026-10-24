@@ -18,25 +18,30 @@
             overflow: hidden;
         }
 
+        /* 全螢幕透明底層：不影響電子書，只用來接收收合訊號 */
         #overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0,0,0,0.3); z-index: 998;
+            background: transparent; z-index: 998;
             display: none;
         }
 
+        /* 右上角懸浮鈕：提高 z-index 確保永遠在最上層可被點擊 */
         #toggle-btn {
-            position: fixed; top: 20px; right: 20px; z-index: 1000;
+            position: fixed; top: 20px; right: 20px; z-index: 10000;
             background: linear-gradient(135deg, #ff9800, #ff5722);
             color: white; border: none; padding: 14px 24px; border-radius: 50px;
             cursor: pointer; box-shadow: 0 6px 15px rgba(0,0,0,0.3);
             font-size: 16px; font-weight: bold;
+            pointer-events: auto; /* 強制啟動觸控/點擊 */
         }
 
+        /* 側邊抽屜面板：確保 z-index 最高，內部物件皆可點擊 */
         #side-panel {
             position: fixed; top: 0; right: -360px; width: 340px; height: 100vh;
-            background: white; box-shadow: -5px 0 25px rgba(0,0,0,0.2); z-index: 999;
-            transition: right 0.3s cubic-bezier(0.1, 0.9, 0.2, 1);
+            background: white; box-shadow: -5px 0 25px rgba(0,0,0,0.3); z-index: 10001;
+            transition: right 0.25s cubic-bezier(0.1, 0.9, 0.2, 1);
             display: flex; flex-direction: column; padding: 25px 20px; box-sizing: border-box;
+            pointer-events: auto;
         }
         #side-panel.open { right: 0; }
 
@@ -72,13 +77,8 @@
             border: 1px solid #ccc; border-radius: 8px; padding: 8px; font-size: 13px; resize: none;
         }
         
-        /* 三按鈕佈局優化 */
-        .btn-group {
-            display: flex; flex-direction: column; gap: 8px;
-        }
-        .btn-row {
-            display: flex; gap: 8px;
-        }
+        .btn-group { display: flex; flex-direction: column; gap: 8px; }
+        .btn-row { display: flex; gap: 8px; }
         .btn-update {
             flex: 1; padding: 11px; background-color: #2196F3; color: white;
             border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: bold;
@@ -90,13 +90,11 @@
         .btn-reset {
             width: 100%; padding: 9px; background-color: var(--danger-color); color: white;
             border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: bold;
-            opacity: 0.85;
         }
-        .btn-reset:hover { opacity: 1; }
         
         #celebrate {
             position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            font-size: 120px; pointer-events: none; display: none; z-index: 1001;
+            font-size: 120px; pointer-events: none; display: none; z-index: 10002;
             animation: pop 0.6s ease-out forwards;
         }
         @keyframes pop {
@@ -137,7 +135,6 @@
             { name: "第三組", score: 0 }, { name: "第四組", score: 0 }
         ];
 
-        // 用來儲存上一步狀態的歷史紀錄變數
         let previousState = null;
 
         function togglePanel() {
@@ -157,8 +154,8 @@
                 card.innerHTML = `
                     <div class="team-info"><span class="team-name">${team.name}</span><span class="team-score" id="score-${index}">${team.score} 分</span></div>
                     <div class="action-btns">
-                        <button class="btn-minus" onclick="changeScore(${index}, -1)">-</button>
-                        <button class="btn-plus" onclick="changeScore(${index}, 1)">+</button>
+                        <button class="btn-minus" onclick="changeScore(event, ${index}, -1)">-</button>
+                        <button class="btn-plus" onclick="changeScore(event, ${index}, 1)">+</button>
                     </div>
                 `;
                 container.appendChild(card);
@@ -167,28 +164,23 @@
             updateUndoButtonState();
         }
 
-        // 保存目前狀態到歷史紀錄中
         function saveCurrentState() {
             previousState = JSON.stringify(teams);
             updateUndoButtonState();
         }
 
-        // 更新復原按鈕的亮燈狀態
         function updateUndoButtonState() {
             const undoBtn = document.getElementById('undo-btn');
             if (previousState) {
-                undoBtn.style.opacity = "1";
-                undoBtn.style.cursor = "pointer";
-                undoBtn.disabled = false;
+                undoBtn.style.opacity = "1"; undoBtn.style.cursor = "pointer"; undoBtn.disabled = false;
             } else {
-                undoBtn.style.opacity = "0.5";
-                undoBtn.style.cursor = "not-allowed";
-                undoBtn.disabled = true;
+                undoBtn.style.opacity = "0.5"; undoBtn.style.cursor = "not-allowed"; undoBtn.disabled = true;
             }
         }
 
-        function changeScore(index, value) {
-            saveCurrentState(); // 變更前先存檔
+        function changeScore(event, index, value) {
+            if(event) event.stopPropagation(); // 阻擋點擊訊號穿透，確保按鈕絕對有效
+            saveCurrentState();
 
             teams[index].score += value;
             if(teams[index].score < 0) teams[index].score = 0;
@@ -207,16 +199,13 @@
             const newNames = input.split(/[\n,，]+/).map(n => n.trim()).filter(n => n !== '');
             if (newNames.length === 0) return alert('請輸入名字！');
             
-            saveCurrentState(); // 變更前先存檔
+            saveCurrentState();
 
             const scoreMap = {};
             teams.forEach(t => { scoreMap[t.name] = t.score; });
             
             teams = newNames.map(name => {
-                return {
-                    name: name,
-                    score: scoreMap[name] !== undefined ? scoreMap[name] : 0
-                };
+                return { name: name, score: scoreMap[name] !== undefined ? scoreMap[name] : 0 };
             });
             
             localStorage.setItem('tab_class_teams', JSON.stringify(teams));
@@ -226,17 +215,19 @@
         function resetAllScores() {
             const isConfirm = confirm("⚠️ 確定要將全班所有小組的分數全部歸零重來嗎？");
             if (isConfirm) {
-                saveCurrentState(); // 歸零前先存檔
-
+                saveCurrentState();
                 teams.forEach(team => { team.score = 0; });
                 localStorage.setItem('tab_class_teams', JSON.stringify(teams));
                 renderList();
             }
         }
 
-        // 執行復原上一步
         function undoAction() {
             if (previousState) {
                 teams = JSON.parse(previousState);
-                previousState = null; // 只能復原一次
+                previousState = null;
                 localStorage.setItem('tab_class_teams', JSON.stringify(teams));
+                renderList();
+            }
+        }
+
