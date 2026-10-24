@@ -13,82 +13,45 @@
         body {
             margin: 0; padding: 0;
             font-family: 'Microsoft JhengHei', sans-serif;
-            background: transparent; /* 背景透明 */
+            background: transparent;
             height: 100vh;
             overflow: hidden;
         }
 
-        /* 滿版覆蓋層：平常透明不擋點擊，展開時才啟用 */
         #overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(0,0,0,0.3); z-index: 998;
             display: none;
         }
 
-        /* 觸控優化懸浮鈕 */
         #toggle-btn {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
+            position: fixed; top: 20px; right: 20px; z-index: 1000;
             background: linear-gradient(135deg, #ff9800, #ff5722);
-            color: white;
-            border: none;
-            padding: 14px 24px;
-            border-radius: 50px;
-            cursor: pointer;
-            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
-            font-size: 16px;
-            font-weight: bold;
+            color: white; border: none; padding: 14px 24px; border-radius: 50px;
+            cursor: pointer; box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+            font-size: 16px; font-weight: bold;
         }
 
-        /* 側邊抽屜面板 */
         #side-panel {
-            position: fixed;
-            top: 0;
-            right: -360px; 
-            width: 340px;
-            height: 100vh;
-            background: white;
-            box-shadow: -5px 0 25px rgba(0,0,0,0.2);
-            z-index: 999;
+            position: fixed; top: 0; right: -360px; width: 340px; height: 100vh;
+            background: white; box-shadow: -5px 0 25px rgba(0,0,0,0.2); z-index: 999;
             transition: right 0.3s cubic-bezier(0.1, 0.9, 0.2, 1);
-            display: flex;
-            flex-direction: column;
-            padding: 25px 20px;
-            box-sizing: border-box;
+            display: flex; flex-direction: column; padding: 25px 20px; box-sizing: border-box;
         }
-        #side-panel.open {
-            right: 0; 
-        }
+        #side-panel.open { right: 0; }
 
         .panel-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid #eee;
-            padding-bottom: 15px;
-            margin-bottom: 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 2px solid #eee; padding-bottom: 15px; margin-bottom: 20px;
         }
         .panel-header h3 { margin: 0; color: #333; font-size: 20px; }
         .close-panel { cursor: pointer; font-size: 24px; color: #aaa; padding: 5px; }
 
-        /* 列表區 */
-        .grid-container {
-            overflow-y: auto;
-            flex-grow: 1;
-            padding-right: 5px;
-        }
+        .grid-container { overflow-y: auto; flex-grow: 1; padding-right: 5px; }
         .team-card {
-            background: var(--bg-color);
-            border: 1px solid #eef0f5;
-            border-radius: 12px;
-            padding: 12px 15px;
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-left: 6px solid #2196F3;
+            background: var(--bg-color); border: 1px solid #eef0f5; border-radius: 12px;
+            padding: 12px 15px; margin-bottom: 12px; display: flex;
+            justify-content: space-between; align-items: center; border-left: 6px solid #2196F3;
             box-shadow: 0 4px 6px rgba(0,0,0,0.02);
         }
         .team-info { display: flex; flex-direction: column; }
@@ -97,42 +60,40 @@
         
         .action-btns { display: flex; align-items: center; }
         .action-btns button {
-            width: 40px; height: 40px;
-            border-radius: 50%;
-            border: none;
-            font-size: 20px;
-            font-weight: bold;
-            color: white;
-            cursor: pointer;
-            margin-left: 8px;
+            width: 40px; height: 40px; border-radius: 50%; border: none;
+            font-size: 20px; font-weight: bold; color: white; cursor: pointer; margin-left: 8px;
         }
         .btn-plus { background-color: var(--primary-color); }
         .btn-minus { background-color: var(--danger-color); }
 
-        /* 設定區域 */
-        .config-area {
-            border-top: 1px solid #eee;
-            padding-top: 15px;
-            margin-top: 10px;
-        }
+        .config-area { border-top: 1px solid #eee; padding-top: 15px; margin-top: 10px; }
         .config-area textarea {
-            width: 100%; height: 60px;
-            box-sizing: border-box;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            padding: 8px;
-            font-size: 13px;
-            resize: none;
-        }
-        .config-area button {
-            width: 100%; padding: 10px;
-            background-color: #2196F3; color: white;
-            border: none; border-radius: 8px; cursor: pointer;
-            font-size: 15px; font-weight: bold;
+            width: 100%; height: 60px; box-sizing: border-box; margin-bottom: 10px;
+            border: 1px solid #ccc; border-radius: 8px; padding: 8px; font-size: 13px; resize: none;
         }
         
-        /* 慶祝特效 */
+        /* 三按鈕佈局優化 */
+        .btn-group {
+            display: flex; flex-direction: column; gap: 8px;
+        }
+        .btn-row {
+            display: flex; gap: 8px;
+        }
+        .btn-update {
+            flex: 1; padding: 11px; background-color: #2196F3; color: white;
+            border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: bold;
+        }
+        .btn-undo {
+            flex: 1; padding: 11px; background-color: #78909C; color: white;
+            border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: bold;
+        }
+        .btn-reset {
+            width: 100%; padding: 9px; background-color: var(--danger-color); color: white;
+            border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: bold;
+            opacity: 0.85;
+        }
+        .btn-reset:hover { opacity: 1; }
+        
         #celebrate {
             position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
             font-size: 120px; pointer-events: none; display: none; z-index: 1001;
@@ -147,13 +108,9 @@
 </head>
 <body>
 
-    <!-- 遮罩 -->
     <div id="overlay" onclick="togglePanel()"></div>
-
-    <!-- 右上角懸浮鈕（全螢幕時才會用到） -->
     <button id="toggle-btn" onclick="togglePanel()">⭐ 班級紀錄</button>
 
-    <!-- 側邊抽屜 -->
     <div id="side-panel">
         <div class="panel-header">
             <h3>🏫 課堂互動計分板</h3>
@@ -162,7 +119,13 @@
         <div class="grid-container" id="list-container"></div>
         <div class="config-area">
             <textarea id="names-input" placeholder="輸入組名或名字，用逗號或換行隔開"></textarea>
-            <button onclick="updateTeams()">更新名單</button>
+            <div class="btn-group">
+                <div class="btn-row">
+                    <button class="btn-update" onclick="updateTeams()">更新名單</button>
+                    <button class="btn-undo" id="undo-btn" onclick="undoAction()" style="opacity: 0.5; cursor: not-allowed;" disabled>↩️ 復原</button>
+                </div>
+                <button class="btn-reset" onclick="resetAllScores()">⚠️ 全班分數歸零</button>
+            </div>
         </div>
     </div>
 
@@ -174,15 +137,15 @@
             { name: "第三組", score: 0 }, { name: "第四組", score: 0 }
         ];
 
+        // 用來儲存上一步狀態的歷史紀錄變數
+        let previousState = null;
+
         function togglePanel() {
             const panel = document.getElementById('side-panel');
             const overlay = document.getElementById('overlay');
             panel.classList.toggle('open');
-            if(panel.classList.contains('open')) {
-                overlay.style.display = 'block';
-            } else {
-                overlay.style.display = 'none';
-            }
+            if(panel.classList.contains('open')) { overlay.style.display = 'block'; } 
+            else { overlay.style.display = 'none'; }
         }
 
         function renderList() {
@@ -201,9 +164,32 @@
                 container.appendChild(card);
             });
             document.getElementById('names-input').value = teams.map(t => t.name).join(', ');
+            updateUndoButtonState();
+        }
+
+        // 保存目前狀態到歷史紀錄中
+        function saveCurrentState() {
+            previousState = JSON.stringify(teams);
+            updateUndoButtonState();
+        }
+
+        // 更新復原按鈕的亮燈狀態
+        function updateUndoButtonState() {
+            const undoBtn = document.getElementById('undo-btn');
+            if (previousState) {
+                undoBtn.style.opacity = "1";
+                undoBtn.style.cursor = "pointer";
+                undoBtn.disabled = false;
+            } else {
+                undoBtn.style.opacity = "0.5";
+                undoBtn.style.cursor = "not-allowed";
+                undoBtn.disabled = true;
+            }
         }
 
         function changeScore(index, value) {
+            saveCurrentState(); // 變更前先存檔
+
             teams[index].score += value;
             if(teams[index].score < 0) teams[index].score = 0;
             document.getElementById(`score-${index}`).innerText = `${teams[index].score} 分`;
@@ -213,26 +199,44 @@
                 cb.style.display = 'block';
                 setTimeout(() => { cb.style.display = 'none'; }, 600);
             }
+            updateUndoButtonState();
         }
 
         function updateTeams() {
             const input = document.getElementById('names-input').value;
-            const names = input.split(/[\n,，]+/).map(n => n.trim()).filter(n => n !== '');
-            if (names.length === 0) return alert('請輸入名字！');
-            teams = names.map(name => ({ name: name, score: 0 }));
+            const newNames = input.split(/[\n,，]+/).map(n => n.trim()).filter(n => n !== '');
+            if (newNames.length === 0) return alert('請輸入名字！');
+            
+            saveCurrentState(); // 變更前先存檔
+
+            const scoreMap = {};
+            teams.forEach(t => { scoreMap[t.name] = t.score; });
+            
+            teams = newNames.map(name => {
+                return {
+                    name: name,
+                    score: scoreMap[name] !== undefined ? scoreMap[name] : 0
+                };
+            });
+            
             localStorage.setItem('tab_class_teams', JSON.stringify(teams));
             renderList();
         }
 
-        // 監聽鍵盤空白鍵，按下空白鍵直接開關選單
-        window.addEventListener('keydown', function(e) {
-            if(e.code === 'Space' && document.activeElement.tagName !== 'TEXTAREA') {
-                e.preventDefault();
-                togglePanel();
-            }
-        });
+        function resetAllScores() {
+            const isConfirm = confirm("⚠️ 確定要將全班所有小組的分數全部歸零重來嗎？");
+            if (isConfirm) {
+                saveCurrentState(); // 歸零前先存檔
 
-        renderList();
-    </script>
-</body>
-</html>
+                teams.forEach(team => { team.score = 0; });
+                localStorage.setItem('tab_class_teams', JSON.stringify(teams));
+                renderList();
+            }
+        }
+
+        // 執行復原上一步
+        function undoAction() {
+            if (previousState) {
+                teams = JSON.parse(previousState);
+                previousState = null; // 只能復原一次
+                localStorage.setItem('tab_class_teams', JSON.stringify(teams));
