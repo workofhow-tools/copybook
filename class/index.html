@@ -13,9 +13,16 @@
         body {
             margin: 0; padding: 0;
             font-family: 'Microsoft JhengHei', sans-serif;
-            background: transparent; /* 背景透明，方便疊加 */
+            background: transparent; /* 背景透明 */
             height: 100vh;
             overflow: hidden;
+        }
+
+        /* 滿版覆蓋層：平常透明不擋點擊，展開時才啟用 */
+        #overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.3); z-index: 998;
+            display: none;
         }
 
         /* 觸控優化懸浮鈕 */
@@ -33,9 +40,7 @@
             box-shadow: 0 6px 15px rgba(0,0,0,0.3);
             font-size: 16px;
             font-weight: bold;
-            transition: transform 0.2s;
         }
-        #toggle-btn:hover { transform: scale(1.05); }
 
         /* 側邊抽屜面板 */
         #side-panel {
@@ -90,7 +95,6 @@
         .team-name { font-weight: bold; font-size: 16px; color: #333; }
         .team-score { font-size: 22px; color: #ff5722; font-weight: bold; margin-top: 3px; }
         
-        /* 加大按鈕方便觸控 */
         .action-btns { display: flex; align-items: center; }
         .action-btns button {
             width: 40px; height: 40px;
@@ -143,7 +147,10 @@
 </head>
 <body>
 
-    <!-- 右上角懸浮鈕 -->
+    <!-- 遮罩 -->
+    <div id="overlay" onclick="togglePanel()"></div>
+
+    <!-- 右上角懸浮鈕（全螢幕時才會用到） -->
     <button id="toggle-btn" onclick="togglePanel()">⭐ 班級紀錄</button>
 
     <!-- 側邊抽屜 -->
@@ -152,11 +159,7 @@
             <h3>🏫 課堂互動計分板</h3>
             <span class="close-panel" onclick="togglePanel()">✕</span>
         </div>
-
-        <!-- 計分列表 -->
         <div class="grid-container" id="list-container"></div>
-
-        <!-- 設定名單 -->
         <div class="config-area">
             <textarea id="names-input" placeholder="輸入組名或名字，用逗號或換行隔開"></textarea>
             <button onclick="updateTeams()">更新名單</button>
@@ -166,30 +169,30 @@
     <div id="celebrate">🎉</div>
 
     <script>
-        // 記憶體防呆機制，優先讀取本地儲存
         let teams = JSON.parse(localStorage.getItem('tab_class_teams')) || [
-            { name: "第一組", score: 0 },
-            { name: "第二組", score: 0 },
-            { name: "第三組", score: 0 },
-            { name: "第四組", score: 0 }
+            { name: "第一組", score: 0 }, { name: "第二組", score: 0 },
+            { name: "第三組", score: 0 }, { name: "第四組", score: 0 }
         ];
 
         function togglePanel() {
-            document.getElementById('side-panel').classList.toggle('open');
+            const panel = document.getElementById('side-panel');
+            const overlay = document.getElementById('overlay');
+            panel.classList.toggle('open');
+            if(panel.classList.contains('open')) {
+                overlay.style.display = 'block';
+            } else {
+                overlay.style.display = 'none';
+            }
         }
 
         function renderList() {
             const container = document.getElementById('list-container');
             container.innerHTML = '';
-            
             teams.forEach((team, index) => {
                 const card = document.createElement('div');
                 card.className = 'team-card';
                 card.innerHTML = `
-                    <div class="team-info">
-                        <span class="team-name">${team.name}</span>
-                        <span class="team-score" id="score-${index}">${team.score} 分</span>
-                    </div>
+                    <div class="team-info"><span class="team-name">${team.name}</span><span class="team-score" id="score-${index}">${team.score} 分</span></div>
                     <div class="action-btns">
                         <button class="btn-minus" onclick="changeScore(${index}, -1)">-</button>
                         <button class="btn-plus" onclick="changeScore(${index}, 1)">+</button>
@@ -203,10 +206,8 @@
         function changeScore(index, value) {
             teams[index].score += value;
             if(teams[index].score < 0) teams[index].score = 0;
-            
             document.getElementById(`score-${index}`).innerText = `${teams[index].score} 分`;
             localStorage.setItem('tab_class_teams', JSON.stringify(teams));
-
             if (value > 0) {
                 const cb = document.getElementById('celebrate');
                 cb.style.display = 'block';
@@ -218,11 +219,18 @@
             const input = document.getElementById('names-input').value;
             const names = input.split(/[\n,，]+/).map(n => n.trim()).filter(n => n !== '');
             if (names.length === 0) return alert('請輸入名字！');
-            
             teams = names.map(name => ({ name: name, score: 0 }));
             localStorage.setItem('tab_class_teams', JSON.stringify(teams));
             renderList();
         }
+
+        // 監聽鍵盤空白鍵，按下空白鍵直接開關選單
+        window.addEventListener('keydown', function(e) {
+            if(e.code === 'Space' && document.activeElement.tagName !== 'TEXTAREA') {
+                e.preventDefault();
+                togglePanel();
+            }
+        });
 
         renderList();
     </script>
