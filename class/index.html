@@ -606,6 +606,9 @@
             ...Array.from({ length: 12 }, (_, i) => ({ name: String(i + 21), score: 0, gender: '女生' }))
         ];
         const savedStudents = JSON.parse(localStorage.getItem('tab_class_teams_29') || 'null');
+        // 獎牌另存一份獨立備援，避免名單／分數更新時遺漏獎牌欄位。
+        let savedMedalState = null;
+        try { savedMedalState = JSON.parse(localStorage.getItem('tab_class_medals_backup_v1') || 'null'); } catch (e) { savedMedalState = null; }
         const savedScoreByNumber = {};
         if (Array.isArray(savedStudents)) {
             savedStudents.forEach(student => {
@@ -629,6 +632,23 @@
             : defaultStudents.map(student => ({
                 ...student, score: savedScoreByNumber[student.name] ?? 0
             }));
+        // 如果獨立獎牌備援存在，以固定識別碼優先、姓名為後備方式還原獎牌數量。
+        if (savedMedalState && Array.isArray(savedMedalState.students)) {
+            const medalById = new Map();
+            const medalByName = new Map();
+            savedMedalState.students.forEach(item => {
+                if (item.id) medalById.set(String(item.id), item);
+                if (item.name != null) medalByName.set(String(item.name), item);
+            });
+            teams.forEach(team => {
+                const saved = (team.id && medalById.get(String(team.id))) || medalByName.get(String(team.name));
+                if (saved) {
+                    team.silver = Math.max(0, Number(saved.silver) || 0);
+                    team.gold = Math.max(0, Number(saved.gold) || 0);
+                    team.blackCard = Math.max(0, Number(saved.blackCard) || 0);
+                }
+            });
+        }
         // 每位學生使用固定內部識別碼；舊資料首次載入時自動補上並保存。
         let nextStudentId = Math.max(1, Number(localStorage.getItem('tab_class_student_id_counter')) || 1);
         function makeStudentId() {
@@ -646,7 +666,14 @@
             if (Number.isFinite(numeric)) nextStudentId = Math.max(nextStudentId, numeric + 1);
         });
         localStorage.setItem('tab_class_student_id_counter', String(nextStudentId));
-        localStorage.setItem('tab_class_teams_29', JSON.stringify(teams));
+        function saveTeamsAndMedals() {
+            localStorage.setItem('tab_class_teams_29', JSON.stringify(teams));
+            localStorage.setItem('tab_class_medals_backup_v1', JSON.stringify({
+                savedAt: new Date().toISOString(),
+                students: teams.map(team => ({ id: String(team.id || ''), name: String(team.name ?? ''), silver: Number(team.silver) || 0, gold: Number(team.gold) || 0, blackCard: Number(team.blackCard) || 0 }))
+            }));
+        }
+        saveTeamsAndMedals();
         let previousState = null;
 
         // 匯出檔名：使用計分板上方標題 + YYYYMMDD_HHMM。
@@ -774,7 +801,7 @@
             localStorage.removeItem('tab_class_group_undo_snapshot');
             updateGroupUndoButton();
             confirmedGroups = [];
-            localStorage.setItem('tab_class_teams_29', JSON.stringify(teams));
+            saveTeamsAndMedals();
             localStorage.setItem('tab_class_student_groups', JSON.stringify(studentGroups));
             localStorage.setItem('tab_class_group_scores', '{}');
             localStorage.setItem('tab_class_group_contributions', '{}');
@@ -808,7 +835,7 @@
             if (!confirm('確定要將舊班所有學生的「個人分數」歸零嗎？學生名單、固定識別碼、分組、組長／副組長及分組分數都會保留。')) return;
             saveCurrentState();
             teams.forEach(team => { team.score = 0; });
-            localStorage.setItem('tab_class_teams_29', JSON.stringify(teams));
+            saveTeamsAndMedals();
             renderList(); renderStatsBoard();
             document.getElementById('wheel-reset-menu').hidden = true;
             document.getElementById('old-class-reset-options').hidden = true;
@@ -1296,7 +1323,7 @@
                 if (oldPoints !== undefined) groupContributions[newTeam.id] = Number(oldPoints) || 0;
                 if (oldTeam.name !== newTeam.name) delete groupContributions[oldTeam.name];
             });
-            localStorage.setItem('tab_class_teams_29', JSON.stringify(teams));
+            saveTeamsAndMedals();
             persistGroupData();
             renderList();
             if (!document.getElementById('group-editor').hidden) renderGroupEditor();
@@ -1677,7 +1704,7 @@
             const personalScoreElement = document.getElementById(`score-${index}`);
             if (personalScoreElement) personalScoreElement.innerText = `${teams[index].score} 分`;
             updatePersonalMedalBadges(index);
-            localStorage.setItem('tab_class_teams_29', JSON.stringify(teams));
+            saveTeamsAndMedals();
             persistGroupData();
             if (currentBoardView === 'stats') renderStatsBoard();
             if (currentBoardView === 'seats') renderSeatBoard();
@@ -1717,7 +1744,7 @@
                 };
             });
             
-            localStorage.setItem('tab_class_teams_29', JSON.stringify(teams));
+            saveTeamsAndMedals();
             renderList();
             if (!document.getElementById('group-editor').hidden) renderGroupEditor();
             if (currentBoardView === 'groups') renderGroupScoreBoard();
@@ -1730,7 +1757,7 @@
             if (isConfirm) {
                 saveCurrentState();
                 teams.forEach(team => { team.score = 0; });
-                localStorage.setItem('tab_class_teams_29', JSON.stringify(teams));
+                saveTeamsAndMedals();
                 renderList();
                 if (currentBoardView === 'seats') renderSeatBoard();
             }
@@ -1740,7 +1767,7 @@
             if (previousState) {
                 teams = JSON.parse(previousState);
                 previousState = null;
-                localStorage.setItem('tab_class_teams_29', JSON.stringify(teams));
+                saveTeamsAndMedals();
                 renderList();
                 if (currentBoardView === 'seats') renderSeatBoard();
             }
@@ -1846,7 +1873,7 @@
                 if (student.name in groupContributionTotals) delete groupContributionTotals[student.name];
                 processStudentMedals(student);
             });
-            localStorage.setItem('tab_class_teams_29', JSON.stringify(teams));
+            saveTeamsAndMedals();
             persistGroupData();
             const score = document.getElementById(`group-score-${index}`);
             if (score) score.textContent = `${groupScores[key]} 分`;
@@ -2100,7 +2127,7 @@
             localStorage.setItem(MEDAL_SETTINGS_KEY, JSON.stringify(settings));
             // 設定調整後，依新比例處理目前已累積的分數與卡片。
             teams.forEach(team => processStudentMedals(team));
-            localStorage.setItem('tab_class_teams_29', JSON.stringify(teams));
+            saveTeamsAndMedals();
             persistGroupData();
             renderStatsBoard();
         }
@@ -2171,7 +2198,7 @@
             groupScores = {};
             groupContributions = {};
             groupContributionTotals = {};
-            localStorage.setItem('tab_class_teams_29', JSON.stringify(teams));
+            saveTeamsAndMedals();
             persistGroupData();
             renderList();
             renderGroupScoreBoard();
@@ -2195,7 +2222,7 @@
             groupScores = snapshot.groupScores || {};
             groupContributions = snapshot.groupContributions || {};
             groupContributionTotals = snapshot.groupContributionTotals || {};
-            localStorage.setItem('tab_class_teams_29', JSON.stringify(teams));
+            saveTeamsAndMedals();
             persistGroupData();
             renderList();
             renderGroupScoreBoard();
@@ -2226,7 +2253,7 @@
                 const medalSnapshot = { students: teams.map(team => ({ id: team.id, name: team.name, silver: Number(team.silver) || 0, gold: Number(team.gold) || 0, blackCard: Number(team.blackCard) || 0 })) };
                 localStorage.setItem(MEDAL_UNDO_STORAGE_KEY, JSON.stringify(medalSnapshot));
                 teams.forEach(team => { team.silver = 0; team.gold = 0; team.blackCard = 0; });
-                localStorage.setItem('tab_class_teams_29', JSON.stringify(teams));
+                saveTeamsAndMedals();
                 persistGroupData();
                 renderStatsBoard();
             });
@@ -2244,7 +2271,7 @@
                     const saved = byKey.get(String(team.id || team.name));
                     if (saved) { team.silver = Number(saved.silver) || 0; team.gold = Number(saved.gold) || 0; team.blackCard = Number(saved.blackCard) || 0; }
                 });
-                localStorage.setItem('tab_class_teams_29', JSON.stringify(teams));
+                saveTeamsAndMedals();
                 persistGroupData();
                 renderStatsBoard();
                 alert('已還原上次獎牌。');
@@ -2304,7 +2331,7 @@
                                     if (i === 6) team.silver = newCount;
                                     else if (i === 7) team.gold = newCount;
                                     else team.blackCard = newCount;
-                                    localStorage.setItem('tab_class_teams_29', JSON.stringify(teams));
+                                    saveTeamsAndMedals();
                                     persistGroupData();
                                 });
                                 td.appendChild(input);
@@ -2325,7 +2352,7 @@
                                 else if (i === 2) team.personalAccumulated = newValue;
                                 else if (i === 3) groupContributions[studentKey] = newValue;
                                 else if (i === 4) groupContributionTotals[studentKey] = newValue;
-                                localStorage.setItem('tab_class_teams_29', JSON.stringify(teams));
+                                saveTeamsAndMedals();
                                 persistGroupData();
                                 renderStatsBoard();
                                 if (currentBoardView === 'personal') renderList();
@@ -2363,7 +2390,7 @@
             manualEditCheckbox.addEventListener('change', () => { medalManualEditEnabled = manualEditCheckbox.checked; renderStatsBoard(); });
             manualEditOption.append(manualEditCheckbox, document.createTextNode('卡片修改（勾選後可個別修改銀牌、金牌、黑卡）'));
             root.appendChild(manualEditOption);
-            localStorage.setItem('tab_class_teams_29', JSON.stringify(teams));
+            saveTeamsAndMedals();
             persistGroupData();
         }
 
@@ -2381,7 +2408,7 @@
         function flushClassroomData() {
             try {
                 if (typeof teams !== 'undefined' && Array.isArray(teams)) {
-                    localStorage.setItem('tab_class_teams_29', JSON.stringify(teams));
+                    saveTeamsAndMedals();
                 }
                 if (typeof groupScores !== 'undefined') localStorage.setItem('tab_class_group_scores', JSON.stringify(groupScores));
                 if (typeof groupContributions !== 'undefined') localStorage.setItem('tab_class_group_contributions', JSON.stringify(groupContributions));
