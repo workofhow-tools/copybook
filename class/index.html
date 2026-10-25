@@ -1125,6 +1125,7 @@
             document.getElementById('wheel-result').textContent = '轉盤旋轉中……';
             canvas.style.transition = 'transform 4.5s cubic-bezier(0.12, 0.75, 0.12, 1)';
             canvas.style.transform = `rotate(${wheelRotation}deg)`;
+            startWheelSound(4600);
             window.setTimeout(() => {
                 document.getElementById('wheel-result').textContent = `🎉 抽中：${teams[winnerIndex].name}`;
                 button.disabled = false; button.textContent = '再抽一次'; wheelSpinning = false;
@@ -1244,12 +1245,191 @@
             }
         }
 
+
+        // 使用 Web Audio API 合成音效，不需要額外音檔；首次點擊按鈕時啟動音訊。
+        let classroomAudioContext = null;
+        let wheelSoundTimer = null;
+        let wheelSoundStopAt = 0;
+        function getClassroomAudioContext() {
+            const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+            if (!AudioContextClass) return null;
+            if (!classroomAudioContext) classroomAudioContext = new AudioContextClass();
+            if (classroomAudioContext.state === 'suspended') classroomAudioContext.resume();
+            return classroomAudioContext;
+        }
+        function playTone(ctx, frequency, startTime, duration, type='sine', volume=0.12, endFrequency=null) {
+            const oscillator = ctx.createOscillator();
+            const gain = ctx.createGain();
+            oscillator.type = type;
+            oscillator.frequency.setValueAtTime(frequency, startTime);
+            if (endFrequency) oscillator.frequency.exponentialRampToValueAtTime(Math.max(1, endFrequency), startTime + duration);
+            gain.gain.setValueAtTime(0.0001, startTime);
+            gain.gain.exponentialRampToValueAtTime(volume, startTime + 0.025);
+            gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+            oscillator.connect(gain); gain.connect(ctx.destination);
+            oscillator.start(startTime); oscillator.stop(startTime + duration + 0.03);
+        }
+        function playCheerNoise(ctx, startTime, duration=0.95) {
+            // 用短促、柔和的濾波雜訊合成「人群歡呼」的氛圍，不依賴外部音檔。
+            const sampleRate = ctx.sampleRate;
+            const buffer = ctx.createBuffer(1, Math.ceil(sampleRate * duration), sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < data.length; i++) {
+                const fadeIn = Math.min(1, i / (sampleRate * 0.12));
+                const fadeOut = Math.min(1, (data.length - i) / (sampleRate * 0.24));
+                data[i] = (Math.random() * 2 - 1) * fadeIn * fadeOut;
+            }
+            const source = ctx.createBufferSource();
+            const filter = ctx.createBiquadFilter();
+            const gain = ctx.createGain();
+            source.buffer = buffer;
+            filter.type = 'bandpass';
+            filter.frequency.setValueAtTime(1150, startTime);
+            filter.Q.setValueAtTime(0.65, startTime);
+            gain.gain.setValueAtTime(0.0001, startTime);
+            gain.gain.linearRampToValueAtTime(0.055, startTime + 0.22);
+            gain.gain.setValueAtTime(0.045, startTime + duration * 0.58);
+            gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+            source.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+            source.start(startTime); source.stop(startTime + duration + 0.02);
+        }
+        function playApplause(ctx, startTime, duration=2) {
+            // 約 2 秒的連續拍手聲：由多個短促雜訊脈衝合成，不含語音或背景音樂。
+            const sampleRate = ctx.sampleRate;
+            const length = Math.ceil(sampleRate * duration);
+            const buffer = ctx.createBuffer(1, length, sampleRate);
+            const data = buffer.getChannelData(0);
+            const claps = [];
+            let t = 0.015;
+            while (t < duration - 0.06) {
+                claps.push({
+                    center: t + Math.random() * 0.018,
+                    width: 0.008 + Math.random() * 0.018,
+                    strength: 0.35 + Math.random() * 0.65
+                });
+                t += 0.035 + Math.random() * 0.055;
+            }
+            for (let i = 0; i < length; i++) {
+                const time = i / sampleRate;
+                let envelope = 0;
+                for (const clap of claps) {
+                    const distance = Math.abs(time - clap.center);
+                    if (distance < clap.width * 3) {
+                        envelope += clap.strength * Math.exp(-distance / (clap.width * 0.55));
+                    }
+                }
+                const fadeIn = Math.min(1, time / 0.06);
+                const fadeOut = Math.min(1, (duration - time) / 0.18);
+                data[i] = (Math.random() * 2 - 1) * Math.min(1, envelope) * fadeIn * fadeOut;
+            }
+            const source = ctx.createBufferSource();
+            const highPass = ctx.createBiquadFilter();
+            const body = ctx.createBiquadFilter();
+            const gain = ctx.createGain();
+            source.buffer = buffer;
+            highPass.type = 'highpass';
+            highPass.frequency.setValueAtTime(450, startTime);
+            body.type = 'bandpass';
+            body.frequency.setValueAtTime(1450, startTime);
+            body.Q.setValueAtTime(0.75, startTime);
+            gain.gain.setValueAtTime(0.0001, startTime);
+            gain.gain.linearRampToValueAtTime(0.62, startTime + 0.06);
+            gain.gain.setValueAtTime(0.58, startTime + duration * 0.72);
+            gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+            source.connect(highPass);
+            highPass.connect(body);
+            body.connect(gain);
+            gain.connect(ctx.destination);
+            source.start(startTime);
+            source.stop(startTime + duration + 0.02);
+        }
+        // 使用外部授權的多人拍手音效，避免自行合成雜訊造成刺耳感。
+        // 音效來源：SFXMint「Small Group Crowd Applause 54」，CC0。
+        const classroomApplauseAudio = new Audio('https://sfxmint.com/dl/crowd-applause-54.mp3');
+        classroomApplauseAudio.preload = 'auto';
+        classroomApplauseAudio.volume = 0.62;
+        // 加入多人歡呼聲，讓加分更熱鬧；兩種音效同時播放。
+        const classroomCheerAudio = new Audio('https://sfxmint.com/dl/crowd-cheer-43.mp3');
+        classroomCheerAudio.preload = 'auto';
+        classroomCheerAudio.volume = 0.72;
+        let applauseStopTimer = null;
+
+        function playScoreSound(delta) {
+            const ctx = getClassroomAudioContext();
+            if (delta > 0) {
+                // 加分：多人拍手＋歡呼同時播放，總長約 2 秒。
+                if (applauseStopTimer) clearTimeout(applauseStopTimer);
+                [classroomApplauseAudio, classroomCheerAudio].forEach(audio => {
+                    audio.pause();
+                    try { audio.currentTime = 0; } catch (e) {}
+                    const playback = audio.play();
+                    if (playback && typeof playback.catch === 'function') playback.catch(() => {});
+                });
+                applauseStopTimer = setTimeout(() => {
+                    [classroomApplauseAudio, classroomCheerAudio].forEach(audio => {
+                        audio.pause();
+                        try { audio.currentTime = 0; } catch (e) {}
+                    });
+                    applauseStopTimer = null;
+                }, 2000);
+                return;
+            }
+            if (!ctx) return;
+            const now = ctx.currentTime;
+            // 扣分：約 1.5 秒，低沉、下滑的兩段提示音。
+            playTone(ctx,440,now,0.52,'triangle',0.10,349.23);
+            playTone(ctx,349.23,now+0.48,0.88,'triangle',0.09,246.94);
+        }
+        function startWheelSound(durationMs=4600) {
+            const ctx = getClassroomAudioContext();
+            if (!ctx) return;
+            stopWheelSound(false);
+            const start = performance.now();
+            wheelSoundStopAt = start + durationMs;
+            let lastTick = 0;
+            const tick = () => {
+                const elapsed = performance.now() - start;
+                if (elapsed >= durationMs) {
+                    stopWheelSound(false);
+                    const now = ctx.currentTime;
+                    playTone(ctx,659.25,now,0.22,'sine',0.10);
+                    playTone(ctx,783.99,now+0.16,0.28,'sine',0.10);
+                    playTone(ctx,1046.5,now+0.36,0.62,'sine',0.12);
+                    return;
+                }
+                const progress = elapsed / durationMs;
+                // 轉盤前段轉得快、後段逐漸放慢；音效節奏同步減速。
+                const interval = 48 + Math.pow(progress, 1.8) * 210;
+                if (elapsed - lastTick >= interval) {
+                    lastTick = elapsed;
+                    const pitch = 680 - progress * 300;
+                    playTone(ctx,pitch,ctx.currentTime,0.055,'square',0.035);
+                }
+                wheelSoundTimer = window.setTimeout(tick, 18);
+            };
+            tick();
+        }
+        function stopWheelSound(playEnding=false) {
+            if (wheelSoundTimer !== null) window.clearTimeout(wheelSoundTimer);
+            wheelSoundTimer = null;
+            if (playEnding && classroomAudioContext) {
+                const now = classroomAudioContext.currentTime;
+                playTone(classroomAudioContext,659.25,now,0.22,'sine',0.10);
+                playTone(classroomAudioContext,783.99,now+0.16,0.28,'sine',0.10);
+                playTone(classroomAudioContext,1046.5,now+0.36,0.62,'sine',0.12);
+            }
+        }
+
         function changeScore(index, value) {
+            const oldScore = Number(teams[index].score) || 0;
+            const nextScore = Math.max(0, oldScore + value);
+            const actualDelta = nextScore - oldScore;
+            if (!actualDelta) return;
             saveCurrentState();
-            teams[index].score += value;
-            if(teams[index].score < 0) teams[index].score = 0;
+            teams[index].score = nextScore;
             document.getElementById(`score-${index}`).innerText = `${teams[index].score} 分`;
             localStorage.setItem('tab_class_teams_29', JSON.stringify(teams));
+            playScoreSound(actualDelta);
             if (value > 0) {
                 const cb = document.getElementById('celebrate');
                 cb.style.display = 'block';
@@ -1381,6 +1561,7 @@
             const nextScore = Math.max(0, oldScore + delta);
             const actualDelta = nextScore - oldScore;
             if (!actualDelta) return;
+            playScoreSound(actualDelta);
             groupScores[key] = nextScore;
             // 每次組分增減，同步記錄當下該組每位組員的團體加分，留作個人統計。
             const members = (studentGroups.groups[index] || []).filter(name => teams.some(t => t.name === name));
