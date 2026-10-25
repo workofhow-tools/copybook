@@ -91,14 +91,40 @@
         }
         #new-class-btn { border:0; border-radius:7px; padding:7px 11px; background:#ef6c00; color:#fff; font-family:inherit; font-size:15px; font-weight:bold; cursor:pointer; white-space:nowrap; }
         #board-title-display { margin: 0; color: #333; font-size: 22px; line-height: 1.25; overflow-wrap: anywhere; }
-        .board-view-switch { display: flex; gap: 6px; margin-top: 7px; }
-        .board-view-switch button { flex: 1; min-width: 0; border: 0; border-radius: 8px; padding: 9px 6px; font-family: inherit; font-size: 15px; font-weight: bold; cursor: pointer; background: #e0f7fa; color: #006064; }
+        .board-view-switch { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 7px; }
+        .board-view-switch button { flex: 1 1 18%; min-width: 0; border: 0; border-radius: 8px; padding: 9px 6px; font-family: inherit; font-size: 15px; font-weight: bold; cursor: pointer; background: #e0f7fa; color: #006064; }
         .board-view-switch button.active { background: #008b9a; color: white; box-shadow: 0 2px 5px rgba(0,0,0,.15); }
         #group-score-container { flex: 1 1 auto; min-height: 0; overflow-y: auto; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-content: start; gap: 10px; padding: 4px 2px; }
         #stats-board-container { flex: 1 1 auto; min-height: 0; overflow: auto; padding: 4px 2px; }
         #stats-board-container[hidden] { display: none !important; }
         #seat-board-container { flex: 1 1 auto; min-height: 0; overflow: auto; padding: 5px 2px; -webkit-overflow-scrolling: touch; }
         #seat-board-container[hidden] { display: none !important; }
+        #wheel-records-board-container { flex: 1 1 auto; min-width: 0; min-height: 0; overflow: auto; padding: 5px 2px; -webkit-overflow-scrolling: touch; container-type: inline-size; }
+        #wheel-records-board-container[hidden] { display: none !important; }
+        .wheel-records-toolbar { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 8px; }
+        .wheel-records-toolbar button { flex:1 1 130px; border:0; border-radius:7px; padding:9px; font:inherit; font-weight:bold; color:#fff; background:#008b9a; }
+        .wheel-records-toolbar button.danger { background:#c62828; }
+        .wheel-records-grid { display:grid; direction:ltr; grid-auto-flow:row; grid-template-columns:repeat(8,minmax(0,1fr)); gap:5px; align-items:stretch; }
+        .wheel-record-card { min-width:0; border:1px solid #cfdfe2; border-radius:7px; padding:5px 6px; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.04); overflow-wrap:anywhere; }
+        .wheel-record-card-head { display:flex; justify-content:space-between; gap:3px; align-items:center; padding-bottom:3px; margin-bottom:3px; border-bottom:1px solid #e2eeee; color:#546e7a; font-size:10px; }
+        .wheel-record-card-head-left { display:flex; align-items:center; gap:3px; min-width:0; flex-wrap:wrap; }
+        .wheel-record-delete { flex:0 0 18px; width:18px; height:18px; min-width:18px; padding:0; display:inline-flex; align-items:center; justify-content:center; border:1px solid #ef9a9a; border-radius:4px; background:#fff5f5; color:#c62828; font-size:14px; line-height:1; font-weight:800; cursor:pointer; }
+        .wheel-record-delete:hover { background:#ffebee; border-color:#c62828; }
+        .wheel-record-card-order { flex:0 0 auto; border-radius:999px; background:#e0f7fa; color:#006064; padding:1px 4px; font-weight:700; }
+        .wheel-record-card-topic { color:#006064; font-size:12px; font-weight:700; line-height:1.25; margin:2px 0 3px; }
+        .wheel-record-card-name { color:#263238; font-size:14px; font-weight:800; line-height:1.25; }
+        .wheel-record-card-empty { grid-column:1/-1; text-align:center; color:#888; padding:18px; border:1px dashed #cfd8dc; border-radius:9px; }
+        .wheel-records-latest { margin:0 0 8px; padding:7px 10px; border:2px solid #00a0a8; border-radius:10px; background:#e0f7fa; color:#004d40; font-size:15px; font-weight:700; line-height:1.4; }
+        .wheel-records-latest strong { color:#bf360c; font-size:19px; }
+        @media (max-width:1400px) { .wheel-records-grid { grid-template-columns:repeat(6,minmax(0,1fr)); } }
+        @media (max-width:1100px) { .wheel-records-grid { grid-template-columns:repeat(4,minmax(0,1fr)); } }
+        @media (max-width:760px) { .wheel-records-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px; } .wheel-record-card { padding:7px; } .wheel-record-card-topic { font-size:13px; } .wheel-record-card-name { font-size:16px; } .wheel-record-card-head { font-size:11px; } }
+        @media (max-width:340px) { .wheel-records-grid { grid-template-columns:1fr; } }
+        /* 依照紀錄區本身的寬度調整欄數，不只看整個瀏覽器視窗 */
+        @container (max-width: 900px) { .wheel-records-grid { grid-template-columns:repeat(4,minmax(0,1fr)); } }
+        @container (max-width: 620px) { .wheel-records-grid { grid-template-columns:repeat(3,minmax(0,1fr)); gap:5px; } }
+        @container (max-width: 460px) { .wheel-records-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px; } .wheel-record-card { padding:7px; } .wheel-record-card-topic { font-size:13px; } .wheel-record-card-name { font-size:16px; } .wheel-record-card-head { font-size:11px; } }
+        @container (max-width: 280px) { .wheel-records-grid { grid-template-columns:1fr; } }
         .seat-board-note { margin: 0 0 6px; font-size: 12px; color: #546e7a; }
         .seat-board-grid { display: grid; grid-template-columns: repeat(var(--seat-cols, 7), minmax(0, 1fr)); gap: 5px; align-content: start; }
         .seat-layout-settings { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin:12px 0 4px; padding:10px; border:1px solid #cfd8dc; border-radius:8px; background:#f8fbfc; font-size:13px; }
@@ -154,7 +180,7 @@
         .group-score-actions { display: flex; gap: 10px; }
         .group-score-actions button { width: 42px; height: 42px; border: 0; border-radius: 50%; color: white; font-size: 25px; font-weight: bold; cursor: pointer; }
         .group-score-actions .minus { background: #f44336; } .group-score-actions .plus { background: #4caf50; }
-        @media (max-width: 520px) { .board-view-switch { gap: 4px; } .board-view-switch button { font-size: 12px; padding: 8px 2px; } #group-score-container { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; } .group-score-card { padding: 8px 4px; gap: 6px; } .group-score-title { font-size: 18px; } .group-score-number { font-size: 26px; } .stats-columns { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 3px; } .stats-half-title { font-size: 10px; padding: 3px 1px; } .stats-note { font-size: 10px; margin-bottom: 4px; } .stats-table { font-size: 10px; } .stats-table th, .stats-table td { padding: 3px 1px; overflow-wrap: anywhere; } .stats-table th:first-child, .stats-table td:first-child { width: 25%; } }
+        @media (max-width: 520px) { .board-view-switch { gap: 4px; } .board-view-switch button { font-size: 12px; padding: 8px 2px; flex-basis: 28%; } #group-score-container { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; } .group-score-card { padding: 8px 4px; gap: 6px; } .group-score-title { font-size: 18px; } .group-score-number { font-size: 26px; } .stats-columns { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 3px; } .stats-half-title { font-size: 10px; padding: 3px 1px; } .stats-note { font-size: 10px; margin-bottom: 4px; } .stats-table { font-size: 10px; } .stats-table th, .stats-table td { padding: 3px 1px; overflow-wrap: anywhere; } .stats-table th:first-child, .stats-table td:first-child { width: 25%; } }
         @media (max-width: 360px) {
             #side-panel { padding: 5px; }
             #stats-board-container { padding: 2px 0; }
@@ -297,11 +323,11 @@
         .wheel-overlay { position: fixed; inset: 0; z-index: 200000; display: none; align-items: center; justify-content: center; padding: 16px 16px calc(16px + env(safe-area-inset-bottom, 0px)); box-sizing: border-box; background: rgba(0,0,0,.58); overflow-y: auto; -webkit-overflow-scrolling: touch; }
         .wheel-overlay.open { display: flex; }
         .wheel-dialog {
-            width: min(760px, 100%); max-height: calc(100dvh - 32px); overflow: auto;
+            width: min(1120px, 100%); max-height: calc(100dvh - 32px); overflow: auto;
             box-sizing: border-box; padding: 18px; border-radius: 16px; background: white;
             text-align: center; box-shadow: 0 12px 40px rgba(0,0,0,.3);
             display: grid; grid-template-columns: minmax(0, 1fr) minmax(150px, .42fr);
-            grid-template-areas: "header header" "wheel controls";
+            grid-template-areas: "header header" "wheel controls" "history history";
             align-items: center; gap: 10px 18px;
             -webkit-overflow-scrolling: touch;
         }
@@ -309,17 +335,21 @@
         .wheel-controls { grid-area: controls; display:flex; flex-direction:column; align-items:stretch; justify-content:center; gap:12px; min-width:0; }
         .wheel-top h2 { margin: 0; font-size: 22px; }
         .wheel-close { border: 0; background: transparent; font-size: 28px; cursor: pointer; }
-        .wheel-stage { grid-area: wheel; position: relative; width: min(100%, 420px); aspect-ratio: 1; margin: 8px auto; }
+        .wheel-stage { grid-area: wheel; position: relative; width: min(100%, 560px); aspect-ratio: 1; margin: 8px auto; }
         #wheel-canvas { width: 100%; height: 100%; display: block; transform: rotate(0deg); }
         .wheel-pointer { position: absolute; z-index: 2; left: 50%; top: -5px; transform: translateX(-50%); width: 0; height: 0; border-left: 17px solid transparent; border-right: 17px solid transparent; border-top: 0; border-bottom: 32px solid #f44336; filter: drop-shadow(0 2px 2px #777); }
         #spin-btn { width:100%; border: 0; border-radius: 9px; padding: 12px 14px; background: #7e57c2; color: white; font-family: inherit; font-size: 19px; font-weight: bold; cursor: pointer; }
         #spin-btn:disabled { opacity: .6; cursor: wait; }
         #wheel-result { min-height: 32px; margin-top: 0; font-size: 23px; font-weight: bold; color: #d84315; overflow-wrap: anywhere; }
         #wheel-hint { margin: 0; color: #666; font-size: 13px; }
-        @media (max-width: 560px) {
-            .wheel-dialog { width: min(440px, 100%); grid-template-columns: minmax(0, 1fr); grid-template-areas: "header" "wheel" "controls"; gap: 8px; padding: 14px; }
-            .wheel-stage { width: min(72vw, 320px); grid-row: 2; }
+        #wheel-winner-history-panel { grid-area: history; max-height: 220px !important; }
+        #wheel-winner-history { display:grid; grid-template-columns:repeat(10,minmax(0,1fr)); gap:6px 10px; padding-left:0 !important; list-style:none; }
+        #wheel-winner-history li { min-width:0; overflow-wrap:anywhere; border-radius:6px; background:#f3f7fa; padding:5px 3px; text-align:center; font-size:14px; }
+        @media (max-width: 760px) {
+            .wheel-dialog { width: min(620px, 100%); grid-template-columns: minmax(0, 1fr); grid-template-areas: "header" "wheel" "controls" "history"; gap: 8px; padding: 14px; }
+            .wheel-stage { width: min(86vw, 420px); grid-row: 2; }
             .wheel-controls { grid-row: 3; }
+            #wheel-winner-history { grid-template-columns:repeat(5,minmax(0,1fr)); }
         }
         .config-area textarea {
             width: 100%; height: 50px; box-sizing: border-box; margin-bottom: 8px;
@@ -371,7 +401,8 @@
         }
         #side-panel #group-score-container,
         #side-panel #stats-board-container,
-        #side-panel #seat-board-container {
+        #side-panel #seat-board-container,
+        #side-panel #wheel-records-board-container {
             flex: 0 0 auto;
             min-height: auto;
             overflow: visible;
@@ -485,7 +516,7 @@
                         <button type="button" class="top-data-btn excel" onclick="exportExcelGrades()">匯出 EXCEL</button>
                         <button type="button" class="top-data-btn import" onclick="document.getElementById('json-import-file').click()">匯入</button>
                     </div>
-                    <div class="wheel-reset-area top-wheel-reset-area" data-html2canvas-ignore="true"><button id="wheel-reset-btn" type="button" onclick="toggleWheelResetMenu()">🔄 重設</button><div id="wheel-reset-menu" hidden><button type="button" onclick="showOldClassResetOptions()">舊班：重新計分</button><div id="old-class-reset-options" hidden><button type="button" onclick="resetPersonalScores()">Ａ 個人分數歸零</button><button type="button" onclick="resetGroupScores()">Ｂ 分組歸零</button></div><button class="danger" type="button" onclick="resetToNewClass()">新班：清空所有記錄</button></div></div>
+                    <div class="wheel-reset-area top-wheel-reset-area" data-html2canvas-ignore="true"><button id="wheel-reset-btn" type="button" onclick="toggleWheelResetMenu()">🔄 重設</button><div id="wheel-reset-menu" hidden><button type="button" onclick="resetWheelToInitial()">🎡 轉盤重設：全部回到初始</button><button type="button" onclick="showOldClassResetOptions()">舊班：重新計分</button><div id="old-class-reset-options" hidden><button type="button" onclick="resetPersonalScores()">Ａ 個人分數歸零</button><button type="button" onclick="resetGroupScores()">Ｂ 分組歸零</button></div><button class="danger" type="button" onclick="resetToNewClass()">新班：清空所有記錄</button></div></div>
                 </div>
                 <h3 id="board-title-display">四１課堂計分板</h3>
                 <div class="board-view-switch" role="group" aria-label="切換計分板">
@@ -493,6 +524,7 @@
                     <button type="button" id="show-group-board" onclick="switchBoardView('groups')">👥 分組計分板</button>
                     <button type="button" id="show-stats-board" onclick="switchBoardView('stats')">📊 個人統計板</button>
                     <button type="button" id="show-seat-board" onclick="switchBoardView('seats')">🪑 座位表計分</button>
+                    <button type="button" id="show-wheel-records-board" onclick="switchBoardView('wheelRecords')">🎡 抽籤紀錄</button>
                 </div>
             </div>
             <span class="close-panel" onclick="closePanel()">✕</span>
@@ -501,6 +533,7 @@
         <div id="group-score-container" hidden></div>
         <div id="stats-board-container" hidden></div>
         <div id="seat-board-container" hidden></div>
+        <div id="wheel-records-board-container" hidden></div>
         <div class="config-actions">
             <button id="edit-roster-btn" type="button" onclick="toggleRosterEditor()">✏️ 修改名單</button>
             <button id="settings-btn" type="button" onclick="toggleSettings()">⚙️ 設定</button>
@@ -591,8 +624,27 @@
             <div class="wheel-stage"><div class="wheel-pointer"></div><canvas id="wheel-canvas" width="600" height="600"></canvas></div>
             <div class="wheel-controls">
                 <button id="spin-btn" onclick="spinWheel()">開始抽籤</button>
+                <label for="wheel-draw-mode" style="font-weight:bold;text-align:left;">抽籤方式</label>
+                <select id="wheel-draw-mode" onchange="changeWheelDrawMode()" style="width:100%;box-sizing:border-box;padding:9px;border:1px solid #bbb;border-radius:8px;font:inherit;">
+                    <option value="remove">抽中後移除（本輪不重複）</option>
+                    <option value="keep">抽中後保留（可重複抽）</option>
+                </select>
                 <div id="wheel-result" aria-live="polite">準備好了嗎？</div>
-                <p id="wheel-hint">轉盤使用目前計分板的學生名單；修改名單後會自動更新。</p>
+                <p id="wheel-hint">抽中後移除：本輪抽過的學生不再出現；全部抽完會自動開始新一輪。</p>
+                <section id="wheel-winner-history-panel" style="text-align:left;border:1px solid #e0e0e0;border-radius:9px;padding:9px;max-height:200px;overflow:auto;width:100%;box-sizing:border-box;">
+                    <strong>📋 本次抽中順序</strong>
+                    <div style="display:flex;gap:6px;margin-top:7px;">
+                      <button type="button" onclick="copyWheelWinnerHistory()" style="flex:1;background:#e0f2f1;color:#004d40;border:0;border-radius:7px;padding:8px;font-weight:bold;">📋 複製名單</button>
+                      <button type="button" onclick="clearWheelWinnerHistory()" style="flex:1;background:#eceff1;color:#37474f;border:0;border-radius:7px;padding:8px;font-weight:bold;">清除本次</button>
+                    </div>
+                    <ol id="wheel-winner-history" style="margin:6px 0 0;padding-left:26px;"><li style="color:#888;">尚未抽籤</li></ol>
+                </section>
+                <section id="wheel-topic-section" style="text-align:left;border:1px solid #c5dadd;border-radius:9px;padding:9px;width:100%;box-sizing:border-box;">
+                    <strong>📝 本次抽籤主題</strong>
+                    <label for="wheel-topic" style="display:block;margin-top:7px;font-size:13px;">主題名稱</label>
+                    <input id="wheel-topic" type="text" placeholder="例如：課文朗讀、今日小幫手" style="width:100%;box-sizing:border-box;padding:8px;border:1px solid #bbb;border-radius:7px;font:inherit;margin-top:4px;">
+                    <p style="font-size:12px;color:#666;margin:5px 0 0;">抽中結果會自動記錄；完整紀錄請到「🎡 抽籤紀錄」查看。</p>
+                </section>
             </div>
         </div>
     </div>
@@ -757,6 +809,8 @@
             data.tab_class_group_contributions = JSON.stringify(groupContributions);
             data.tab_class_group_contribution_totals = JSON.stringify(groupContributionTotals);
             data.tab_class_board_title = document.getElementById('board-title-display')?.textContent || '四１課堂計分板';
+            // 抽籤紀錄也明確寫入 JSON 完整備份，確保新功能的紀錄能隨備份還原。
+            try { data.tab_class_wheel_topic_records_v1 = JSON.stringify(Array.isArray(wheelTopicRecords) ? wheelTopicRecords : JSON.parse(localStorage.getItem('tab_class_wheel_topic_records_v1') || '[]')); } catch (e) { data.tab_class_wheel_topic_records_v1 = localStorage.getItem('tab_class_wheel_topic_records_v1') || '[]'; }
             // 復原快照也必須與本次匯出的目前狀態一致，避免匯入後「還原」跳回另一個視窗的舊資料。
             data.tab_class_score_undo_snapshot_v1 = JSON.stringify({
                 students: exportTeams.map(team => ({ id: team.id, name: team.name, score: Number(team.score) || 0, personalAccumulated: Number(team.personalAccumulated) || 0 })),
@@ -793,6 +847,21 @@
                     let source = payload && (payload.localStorage || payload.storage || payload.data);
                     if (!source || typeof source !== 'object' || Array.isArray(source)) source = payload;
                     const data = { ...source };
+
+                    // 抽籤紀錄匯入同步：舊版備份若沒有這個欄位，明確視為空紀錄，避免沿用本機舊紀錄；若有欄位則驗證並正規化。
+                    const wheelRecordsKey = 'tab_class_wheel_topic_records_v1';
+                    let importedWheelRecords = data[wheelRecordsKey];
+                    if (importedWheelRecords == null) importedWheelRecords = '[]';
+                    if (typeof importedWheelRecords === 'string') importedWheelRecords = JSON.parse(importedWheelRecords);
+                    if (!Array.isArray(importedWheelRecords)) throw new Error('抽籤紀錄格式不正確，備份未匯入。');
+                    importedWheelRecords = importedWheelRecords.filter(r => r && typeof r === 'object').map(r => ({
+                        topic: String(r.topic ?? ''),
+                        order: r.order == null || r.order === '' ? null : Number(r.order),
+                        name: String(r.name ?? ''),
+                        at: r.at ? String(r.at) : ''
+                    }));
+                    if (importedWheelRecords.some(r => r.order !== null && !Number.isFinite(r.order))) throw new Error('抽籤紀錄的順序欄位有誤，備份未匯入。');
+                    data[wheelRecordsKey] = JSON.stringify(importedWheelRecords);
 
                     // 支援完整備份（localStorage）、舊版 teams/students，以及單純學生陣列。
                     let studentValue = data.tab_class_teams_29 ?? data.teams ?? data.students ?? payload.teams ?? payload.students;
@@ -939,7 +1008,19 @@
                 }));
             }
             const seatSheetRows = [[`座位表（${seatLayout.rows}排 × ${seatLayout.cols}列）`], ...seatRows];
-            const workbook = `<?xml version="1.0"?><Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet" xmlns:html="http://www.w3.org/TR/REC-html40">${excelSheet('學生總成績',studentRows)}${excelSheet('分組成績',groupRows)}${excelSheet('識別碼參照表',refRows)}${excelSheet('座位表',seatSheetRows)}</Workbook>`;
+            // 新增獨立的抽籤紀錄工作表，保留時間、主題、抽中順序及學生姓名。
+            const wheelRows = [['日期／時間','主題','抽中順序','學生姓名']];
+            const exportWheelRecords = Array.isArray(wheelTopicRecords) ? wheelTopicRecords : [];
+            if (exportWheelRecords.length) {
+                exportWheelRecords.forEach(r => {
+                    let dateText = '';
+                    if (r.at) { const d = new Date(r.at); if (!Number.isNaN(d.getTime())) dateText = d.toLocaleDateString('zh-TW',{month:'2-digit',day:'2-digit'}); }
+                    wheelRows.push([dateText, r.topic || '', [Number(r.order) || 0, 'Number'], r.name || '']);
+                });
+            } else {
+                wheelRows.push(['','目前沒有抽籤紀錄','','']);
+            }
+            const workbook = `<?xml version="1.0"?><Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet" xmlns:html="http://www.w3.org/TR/REC-html40">${excelSheet('學生總成績',studentRows)}${excelSheet('分組成績',groupRows)}${excelSheet('識別碼參照表',refRows)}${excelSheet('座位表',seatSheetRows)}${excelSheet('抽籤紀錄',wheelRows)}</Workbook>`;
             // Excel 可直接開啟的多工作表 SpreadsheetML 活頁簿（.xls）。
             downloadBlob(new Blob(['\ufeff', workbook], {type:'application/vnd.ms-excel;charset=utf-8'}), exportBaseName() + '.xls');
         }
@@ -1395,6 +1476,7 @@
             if (currentBoardView === 'groups') renderGroupScoreBoard();
             if (currentBoardView === 'stats') renderStatsBoard();
             if (currentBoardView === 'seats') renderSeatBoard();
+            if (currentBoardView === 'wheelRecords') renderWheelRecordsBoard();
             alert('分組名單已儲存！');
         }
 
@@ -1495,9 +1577,123 @@
 
         let wheelRotation = 0;
         let wheelSpinning = false;
+        let wheelDrawMode = localStorage.getItem('tab_class_wheel_draw_mode_v1') === 'keep' ? 'keep' : 'remove';
+        let wheelDrawnIds = new Set();
+        let wheelWinnerHistory = [];
+        let wheelTopicRecords = [];
+        try { wheelTopicRecords = JSON.parse(localStorage.getItem('tab_class_wheel_topic_records_v1') || '[]'); if (!Array.isArray(wheelTopicRecords)) wheelTopicRecords = []; } catch (e) { wheelTopicRecords = []; }
+        function renderWheelWinnerHistory() {
+            const list = document.getElementById('wheel-winner-history');
+            if (!list) return;
+            list.innerHTML = '';
+            if (!wheelWinnerHistory.length) { const li = document.createElement('li'); li.textContent = '尚未抽籤'; li.style.color = '#888'; list.appendChild(li); return; }
+            wheelWinnerHistory.forEach((name, index) => { const li = document.createElement('li'); li.textContent = name; list.appendChild(li); });
+        }
+        function renderWheelTopicRecords() {
+            const body = document.getElementById('wheel-topic-records-body');
+            if (!body) return;
+            body.replaceChildren();
+            if (!wheelTopicRecords.length) { const tr=document.createElement('tr'); const td=document.createElement('td'); td.colSpan=3; td.textContent='尚無記錄'; td.style.cssText='padding:7px;color:#888;text-align:center;'; tr.appendChild(td); body.appendChild(tr); return; }
+            wheelTopicRecords.forEach(r => { const tr=document.createElement('tr'); [r.topic, String(r.order), r.name].forEach(v=>{const td=document.createElement('td');td.textContent=v;td.style.cssText='padding:5px;border-bottom:1px solid #eee;';tr.appendChild(td);}); body.appendChild(tr); });
+        }
+        function renderWheelRecordsBoard() {
+            const root = document.getElementById('wheel-records-board-container');
+            if (!root) return;
+            root.replaceChildren();
+            const latest = document.createElement('div');
+            latest.className = 'wheel-records-latest';
+            const latestRecord = wheelTopicRecords.length ? wheelTopicRecords[wheelTopicRecords.length - 1] : null;
+            if (latestRecord) {
+                latest.append('🎉 最近抽中：');
+                const winner = document.createElement('strong'); winner.textContent = latestRecord.name || '（未填姓名）'; latest.appendChild(winner);
+                latest.append(document.createTextNode(`　｜主題：${latestRecord.topic || '（未填主題）'}　｜第 ${latestRecord.order ?? '—'} 位`));
+            } else {
+                latest.textContent = '🎡 最近抽中結果會顯示在這裡；先在轉盤填寫主題再抽籤，就會同步新增到下方紀錄表。';
+            }
+            root.appendChild(latest);
+            const note = document.createElement('p');
+            note.className = 'stats-note';
+            note.textContent = '填寫主題後，每次抽中都會自動記錄，不論使用「抽中後移除」或「抽中後保留」模式。資料保存在目前瀏覽器中；建議定期複製或匯出備份。';
+            root.appendChild(note);
+            const toolbar = document.createElement('div');
+            toolbar.className = 'wheel-records-toolbar';
+            const copy = document.createElement('button');
+            copy.type = 'button'; copy.textContent = '📋 複製全部紀錄'; copy.onclick = copyWheelTopicRecords;
+            const clear = document.createElement('button');
+            clear.type = 'button'; clear.className = 'danger'; clear.textContent = '🗑️ 清空全部紀錄'; clear.onclick = clearWheelTopicRecords;
+            toolbar.append(copy, clear); root.appendChild(toolbar);
+            const grid = document.createElement('div'); grid.className = 'wheel-records-grid';
+            if (!wheelTopicRecords.length) {
+                const empty = document.createElement('div'); empty.className = 'wheel-record-card-empty'; empty.textContent = '尚無抽籤紀錄'; grid.appendChild(empty);
+            } else {
+                wheelTopicRecords.forEach((r, recordIndex) => {
+                    let dateText = '—';
+                    if (r.at) { const d = new Date(r.at); if (!Number.isNaN(d.getTime())) dateText = d.toLocaleDateString('zh-TW', {month:'2-digit',day:'2-digit'}); }
+                    const card = document.createElement('article'); card.className = 'wheel-record-card';
+                    const head = document.createElement('div'); head.className = 'wheel-record-card-head';
+                    const left = document.createElement('div'); left.className = 'wheel-record-card-head-left';
+                    const date = document.createElement('span'); date.textContent = dateText;
+                    const order = document.createElement('span'); order.className = 'wheel-record-card-order'; order.textContent = `第 ${r.order ?? '—'} 位`;
+                    left.append(date, order);
+                    const del = document.createElement('button'); del.type = 'button'; del.className = 'wheel-record-delete'; del.textContent = '×'; del.title = '刪除此筆紀錄'; del.setAttribute('aria-label', `刪除 ${r.name || '未填姓名'} 的抽籤紀錄`); del.onclick = () => deleteWheelTopicRecord(recordIndex);
+                    head.append(left, del);
+                    const topic = document.createElement('div'); topic.className = 'wheel-record-card-topic'; topic.textContent = r.topic || '（未填主題）';
+                    const name = document.createElement('div'); name.className = 'wheel-record-card-name'; name.textContent = r.name || '（未填姓名）';
+                    card.append(head, topic, name); grid.appendChild(card);
+                });
+            }
+            root.appendChild(grid);
+        }
+        function saveWheelTopicRecords() { try { localStorage.setItem('tab_class_wheel_topic_records_v1', JSON.stringify(wheelTopicRecords)); } catch(e) {} renderWheelTopicRecords(); renderWheelRecordsBoard(); }
+        async function copyTextToClipboard(text) {
+            try { if (navigator.clipboard && window.isSecureContext) await navigator.clipboard.writeText(text); else { const ta=document.createElement('textarea'); ta.value=text; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); const ok=document.execCommand('copy'); ta.remove(); if(!ok) throw new Error('copy failed'); } alert('已複製，可以貼到其他地方了！'); }
+            catch(e) { prompt('請複製以下內容：', text); }
+        }
+        function copyWheelWinnerHistory() { if (!wheelWinnerHistory.length) return alert('目前還沒有抽中名單。'); copyTextToClipboard(wheelWinnerHistory.map((n,i)=>`${i+1}. ${n}`).join('\n')); }
+        function clearWheelWinnerHistory() { if (!confirm('確定清除本次抽中順序嗎？主題記錄表不會受影響。')) return; wheelWinnerHistory=[]; renderWheelWinnerHistory(); }
+        function copyWheelTopicRecords() { if (!wheelTopicRecords.length) return alert('記錄表目前是空的。'); copyTextToClipboard(['日期／時間\t主題\t抽中順序\t學生', ...wheelTopicRecords.map(r=>{ let dt=''; if(r.at){const d=new Date(r.at);if(!Number.isNaN(d.getTime()))dt=d.toLocaleDateString('zh-TW',{month:'2-digit',day:'2-digit'});} return `${dt}\t${r.topic||''}\t${r.order??''}\t${r.name||''}`; })].join('\n')); }
+        function deleteWheelTopicRecord(index) { if (!Number.isInteger(index) || index < 0 || index >= wheelTopicRecords.length) return; const r = wheelTopicRecords[index]; if (!confirm(`確定刪除這筆抽籤紀錄嗎？\n${r.topic || '（未填主題）'}｜第 ${r.order ?? '—'} 位｜${r.name || '（未填姓名）'}\n此操作無法復原。`)) return; wheelTopicRecords.splice(index, 1); saveWheelTopicRecords(); }
+        function clearWheelTopicRecords() { if (!confirm('確定清空所有主題記錄表？此操作無法復原。')) return; wheelTopicRecords=[]; saveWheelTopicRecords(); }
+
+        function resetWheelToInitial() {
+            if (wheelSpinning) { alert('轉盤正在旋轉，請等抽籤結束後再重設。'); return; }
+            if (!confirm('確定要將轉盤全部回到初始狀態嗎？這會清除本次抽中順序及本輪已抽名單，並恢復預設的「抽中後移除」模式；不會清除學生名單或分數。')) return;
+            wheelDrawMode = 'remove';
+            try { localStorage.setItem('tab_class_wheel_draw_mode_v1', 'remove'); } catch (e) {}
+            const modeSelect = document.getElementById('wheel-draw-mode');
+            if (modeSelect) modeSelect.value = 'remove';
+            wheelDrawnIds.clear(); wheelWinnerHistory = []; wheelRotation = 0;
+            const canvas = document.getElementById('wheel-canvas');
+            canvas.style.transition = 'none'; canvas.style.transform = 'rotate(0deg)';
+            document.getElementById('wheel-hint').textContent = '抽中後移除：本輪抽過的學生不再出現；全部抽完會自動開始新一輪。';
+            document.getElementById('wheel-result').textContent = '準備好了嗎？';
+            document.getElementById('spin-btn').textContent = '開始抽籤';
+            document.getElementById('wheel-reset-menu').hidden = true;
+            document.getElementById('old-class-reset-options').hidden = true;
+            renderWheelWinnerHistory(); drawWheel();
+        }
+        renderWheelTopicRecords();
+        renderWheelRecordsBoard();
+        function getWheelEntries() {
+            return wheelDrawMode === 'keep' ? [...teams] : teams.filter(t => !wheelDrawnIds.has(String(t.id || t.name)));
+        }
+        function changeWheelDrawMode() {
+            wheelDrawMode = document.getElementById('wheel-draw-mode').value === 'keep' ? 'keep' : 'remove';
+            try { localStorage.setItem('tab_class_wheel_draw_mode_v1', wheelDrawMode); } catch (e) {}
+            wheelDrawnIds.clear();
+            document.getElementById('wheel-hint').textContent = wheelDrawMode === 'remove'
+                ? '抽中後移除：本輪抽過的學生不再出現；全部抽完會自動開始新一輪。'
+                : '抽中後保留：每次抽籤名單不變，同一位學生可以再次抽中。';
+            wheelRotation = 0;
+            const canvas = document.getElementById('wheel-canvas');
+            canvas.style.transition = 'none'; canvas.style.transform = 'rotate(0deg)';
+            drawWheel();
+        }
         const wheelColors = ['#f8bbd0','#bbdefb','#c8e6c9','#ffe0b2','#d1c4e9','#b2dfdb','#fff9c4','#ffccbc','#c5cae9','#dcedc8'];
         function openWheel() {
             document.getElementById('wheel-overlay').classList.add('open');
+            const modeSelect = document.getElementById('wheel-draw-mode');
+            if (modeSelect) modeSelect.value = wheelDrawMode;
             drawWheel();
             document.getElementById('wheel-result').textContent = '準備好了嗎？';
         }
@@ -1508,11 +1704,12 @@
         function drawWheel() {
             const canvas = document.getElementById('wheel-canvas');
             const ctx = canvas.getContext('2d');
-            const names = teams.map(t => t.name);
+            const names = getWheelEntries().map(t => t.name);
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             if (!names.length) {
                 ctx.fillStyle = '#eeeeee'; ctx.beginPath(); ctx.arc(300,300,285,0,Math.PI*2); ctx.fill();
-                ctx.fillStyle = '#333'; ctx.font = 'bold 28px Microsoft JhengHei, sans-serif'; ctx.textAlign = 'center'; ctx.fillText('請先加入學生名單',300,310); return;
+                ctx.fillStyle = '#333'; ctx.font = 'bold 28px Microsoft JhengHei, sans-serif'; ctx.textAlign = 'center';
+                ctx.fillText(teams.length ? '本輪已全部抽完！' : '請先加入學生名單',300,310); return;
             }
             const slice = Math.PI * 2 / names.length;
             names.forEach((name, i) => {
@@ -1532,9 +1729,19 @@
             ctx.beginPath(); ctx.arc(300,300,38,0,Math.PI*2); ctx.fillStyle='#ffffff'; ctx.fill(); ctx.strokeStyle='#777'; ctx.lineWidth=3; ctx.stroke();
         }
         function spinWheel() {
-            if (wheelSpinning || !teams.length) return;
-            const winnerIndex = Math.floor(Math.random() * teams.length);
-            const sliceDeg = 360 / teams.length;
+            const entries = getWheelEntries();
+            if (wheelSpinning || !entries.length) {
+                if (!wheelSpinning && wheelDrawMode === 'remove' && teams.length && !entries.length) {
+                    wheelDrawnIds.clear(); wheelRotation = 0;
+                    const canvas = document.getElementById('wheel-canvas');
+                    canvas.style.transition = 'none'; canvas.style.transform = 'rotate(0deg)';
+                    drawWheel();
+                    document.getElementById('wheel-result').textContent = '🎉 上一輪已抽完，已自動開始新一輪！請再抽一次。';
+                }
+                return;
+            }
+            const winnerIndex = Math.floor(Math.random() * entries.length);
+            const sliceDeg = 360 / entries.length;
             const desired = 360 - (winnerIndex + 0.5) * sliceDeg;
             const current = ((wheelRotation % 360) + 360) % 360;
             const delta = ((desired - current) + 360) % 360;
@@ -1548,9 +1755,18 @@
             canvas.style.transform = `rotate(${wheelRotation}deg)`;
             startWheelSound(4600);
             window.setTimeout(() => {
-                const winnerName = String(teams[winnerIndex].name || '').trim();
+                const winner = entries[winnerIndex];
+                const winnerName = String(winner.name || '').trim();
                 document.getElementById('wheel-result').textContent = `🎉 抽中：${winnerName}`;
+                wheelWinnerHistory.push(winnerName); renderWheelWinnerHistory();
+                { const topic = document.getElementById('wheel-topic').value.trim(); if (topic) { wheelTopicRecords.push({topic, order: wheelTopicRecords.filter(r => r.topic === topic).length + 1, name: winnerName, at: new Date().toISOString()}); saveWheelTopicRecords(); } }
                 button.disabled = false; button.textContent = '再抽一次'; wheelSpinning = false;
+                if (wheelDrawMode === 'remove') {
+                    wheelDrawnIds.add(String(winner.id || winner.name));
+                    wheelRotation = 0;
+                    canvas.style.transition = 'none'; canvas.style.transform = 'rotate(0deg)';
+                    drawWheel();
+                }
                 announceWheelWinner(winnerName);
             }, 4600);
         }
@@ -1921,6 +2137,7 @@
             persistGroupData();
             if (currentBoardView === 'stats') renderStatsBoard();
             if (currentBoardView === 'seats') renderSeatBoard();
+            if (currentBoardView === 'wheelRecords') renderWheelRecordsBoard();
             playScoreSound(actualDelta);
             if (value > 0) {
                 const cb = document.getElementById('celebrate');
@@ -1939,6 +2156,7 @@
             // 先依完全相同姓名配對；若是同位置改名，沿用原識別碼及分數。
             const oldTeams = [...teams];
             const usedOldIndexes = new Set();
+            wheelDrawnIds.clear();
             teams = newNames.map((name, index) => {
                 let oldIndex = oldTeams.findIndex((t, i) => !usedOldIndexes.has(i) && t.name === name);
                 if (oldIndex < 0 && oldTeams[index] && !usedOldIndexes.has(index)) oldIndex = index;
@@ -1963,6 +2181,7 @@
             if (currentBoardView === 'groups') renderGroupScoreBoard();
             if (currentBoardView === 'stats') renderStatsBoard();
             if (currentBoardView === 'seats') renderSeatBoard();
+            if (currentBoardView === 'wheelRecords') renderWheelRecordsBoard();
         }
 
         function resetAllScores() {
@@ -1973,6 +2192,7 @@
                 saveTeamsAndMedals();
                 renderList();
                 if (currentBoardView === 'seats') renderSeatBoard();
+            if (currentBoardView === 'wheelRecords') renderWheelRecordsBoard();
             }
         }
 
@@ -1983,6 +2203,7 @@
                 saveTeamsAndMedals();
                 renderList();
                 if (currentBoardView === 'seats') renderSeatBoard();
+            if (currentBoardView === 'wheelRecords') renderWheelRecordsBoard();
             }
         }
 
@@ -2002,7 +2223,7 @@
         }
 
         function switchBoardView(view) {
-            currentBoardView = ['groups', 'stats', 'seats'].includes(view) ? view : 'personal';
+            currentBoardView = ['groups', 'stats', 'seats', 'wheelRecords'].includes(view) ? view : 'personal';
             const personal = currentBoardView === 'personal';
             const groups = currentBoardView === 'groups';
             const editingGroups = document.getElementById('side-panel').classList.contains('group-edit-mode');
@@ -2010,15 +2231,18 @@
             document.getElementById('group-score-container').hidden = editingGroups || !groups;
             document.getElementById('stats-board-container').hidden = editingGroups || currentBoardView !== 'stats';
             document.getElementById('seat-board-container').hidden = editingGroups || currentBoardView !== 'seats';
+            document.getElementById('wheel-records-board-container').hidden = editingGroups || currentBoardView !== 'wheelRecords';
             // 功能面板在三種計分板都可使用；編輯分組時優先把空間留給分組名單。
             document.getElementById('config-area').hidden = false;
             document.getElementById('show-personal-board').classList.toggle('active', personal);
             document.getElementById('show-group-board').classList.toggle('active', groups);
             document.getElementById('show-stats-board').classList.toggle('active', currentBoardView === 'stats');
             document.getElementById('show-seat-board').classList.toggle('active', currentBoardView === 'seats');
+            document.getElementById('show-wheel-records-board').classList.toggle('active', currentBoardView === 'wheelRecords');
             if (groups) renderGroupScoreBoard();
             if (currentBoardView === 'stats') renderStatsBoard();
             if (currentBoardView === 'seats') renderSeatBoard();
+            if (currentBoardView === 'wheelRecords') renderWheelRecordsBoard();
         }
 
         function renderGroupScoreBoard() {
@@ -2570,6 +2794,7 @@
                                 renderStatsBoard();
                                 if (currentBoardView === 'personal') renderList();
                                 if (currentBoardView === 'seats') renderSeatBoard();
+            if (currentBoardView === 'wheelRecords') renderWheelRecordsBoard();
                             });
                             td.appendChild(input);
                         } else {
