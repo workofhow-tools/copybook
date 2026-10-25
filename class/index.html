@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>課堂互動計分板</title>
+    <title>四１課堂計分板（組長副組長版）</title>
     <style>
         :root {
             --primary-color: #4CAF50;
@@ -18,69 +18,215 @@
             overflow: hidden;
         }
 
-        /* 觸控優化懸浮鈕：z-index 設到最高，確保在大白板最容易被點到 */
+        /* 觸控優化懸浮鈕 */
         #toggle-btn {
-            position: fixed; top: 20px; right: 20px; z-index: 99999;
-            background: linear-gradient(135deg, #ff9800, #ff5722);
-            color: white; border: none; padding: 14px 24px; border-radius: 50px;
+            position: fixed; top: 50%; right: 12px; transform: translateY(-50%); z-index: 99999;
+            writing-mode: vertical-rl; text-orientation: mixed;
+            background: linear-gradient(180deg, #00bcd4, #009688);
+            color: white; border: none; padding: 22px 12px; border-radius: 18px;
             cursor: pointer; box-shadow: 0 6px 15px rgba(0,0,0,0.3);
-            font-size: 16px; font-weight: bold;
+            font-size: 19px; font-weight: bold; letter-spacing: 2px;
         }
+        #toggle-btn:hover { filter: brightness(1.06); }
+        #toggle-btn:active { transform: translateY(-50%) scale(.97); }
 
-        /* 側邊抽屜面板：z-index 設到最高，完全阻擋下方電子書的干擾 */
+        /* 側邊抽屜面板 */
         #side-panel {
-            position: fixed; top: 0; right: -360px; width: 340px; height: 100vh;
+            position: fixed; top: 0; right: -1100px; width: min(1100px, 100vw); max-width: 100vw; height: 100vh;
             background: white; box-shadow: -5px 0 25px rgba(0,0,0,0.3); z-index: 100000;
             transition: right 0.2s ease-out;
-            display: flex; flex-direction: column; padding: 25px 20px; box-sizing: border-box;
+            display: flex; flex-direction: column; padding: 12px 14px; box-sizing: border-box;
         }
         #side-panel.open { right: 0; }
+        @media (max-height: 850px) {
+            #side-panel { padding-top: 8px; padding-bottom: 8px; }
+            .panel-header { padding-bottom: 4px; margin-bottom: 4px; }
+            .grid-container { gap: 3px; }
+            .student-section { gap: 2px; }
+            .student-grid { gap: 3px; }
+            .team-card { height: 68px; padding: 3px 2px; flex-direction: column; justify-content: space-between; gap: 3px; }
+            .config-area { padding-top: 4px; margin-top: 4px; }
+            .config-area textarea { height: 32px; margin-bottom: 4px; }
+            .btn-group { gap: 3px; }
+            .btn-update, .btn-undo { padding: 6px; }
+            .btn-reset { padding: 5px; }
+        }
+        @media (max-width: 420px) {
+            #side-panel { padding: 8px; }
+            .team-card { padding: 3px 2px; height: 68px; }
+            .team-name { font-size: 14px; } .team-score { font-size: 13px; }
+            .action-btns button { width: 28px; height: 28px; min-width: 28px; }
+        }
 
         .panel-header {
             display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 2px solid #eee; padding-bottom: 15px; margin-bottom: 20px;
+            border-bottom: 2px solid #eee; padding-bottom: 7px; margin-bottom: 7px; flex-shrink: 0; gap: 10px;
         }
-        .panel-header h3 { margin: 0; color: #333; font-size: 20px; }
-        .close-panel { cursor: pointer; font-size: 24px; color: #aaa; padding: 5px; }
+        .header-main { display: flex; flex-direction: column; gap: 4px; min-width: 0; flex: 1; }
+        .date-time-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        #date-time { color: #007c91; font-size: 18px; font-weight: bold; line-height: 1.2; }
+        #screenshot-btn { border: 0; border-radius: 7px; padding: 7px 11px; background: #4caf50; color: white; font-family: inherit; font-size: 15px; font-weight: bold; cursor: pointer; white-space: nowrap; }
+        #screenshot-btn:disabled { opacity: .65; cursor: wait; }
+        #new-class-btn { border:0; border-radius:7px; padding:7px 11px; background:#ef6c00; color:#fff; font-family:inherit; font-size:15px; font-weight:bold; cursor:pointer; white-space:nowrap; }
+        #board-title-display { margin: 0; color: #333; font-size: 22px; line-height: 1.25; overflow-wrap: anywhere; }
+        .board-view-switch { display: flex; gap: 6px; margin-top: 7px; }
+        .board-view-switch button { flex: 1; min-width: 0; border: 0; border-radius: 8px; padding: 9px 6px; font-family: inherit; font-size: 15px; font-weight: bold; cursor: pointer; background: #e0f7fa; color: #006064; }
+        .board-view-switch button.active { background: #008b9a; color: white; box-shadow: 0 2px 5px rgba(0,0,0,.15); }
+        #group-score-container { flex: 1 1 auto; min-height: 0; overflow-y: auto; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-content: start; gap: 10px; padding: 4px 2px; }
+        #stats-board-container { flex: 1 1 auto; min-height: 0; overflow: auto; padding: 4px 2px; }
+        #stats-board-container[hidden] { display: none !important; }
+        .stats-columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px; align-items: start; }
+        .stats-half { min-width: 0; }
+        .stats-half-title { margin: 0 0 4px; padding: 4px; border-radius: 5px; background: #e8f8fa; color: #006064; font-size: 14px; text-align: center; }
+        .stats-table { table-layout: fixed; width: 100%; border-collapse: collapse; font-size: 13px; background: #fff; }
+        .stats-table th, .stats-table td { border: 1px solid #dce3e6; padding: 5px 3px; text-align: center; overflow-wrap: anywhere; }
+        .stats-table th { position: sticky; top: 0; background: #e0f7fa; color: #006064; z-index: 1; }
+        .stats-table th:first-child, .stats-table td:first-child { width: 27%; text-align: left; }
+        .stats-table .total { font-weight: bold; color: #d84315; }
+        /* .grid-container 本身設定 display:flex，需明確遵守 hidden，避免切換頁面時個人板留在背景 */
+        #list-container[hidden] { display: none !important; }
+        .stats-note { margin: 0 0 8px; color: #546e7a; font-size: 13px; }
+        #group-score-container[hidden] { display: none !important; }
+        .group-score-card { border: 2px solid #d8eeee; border-radius: 12px; padding: 12px; background: #f8ffff; display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 0; }
+        .group-score-title { font-size: 21px; font-weight: bold; color: #007c91; text-align: center; }
+        .group-score-number { font-size: 32px; font-weight: bold; color: #ff5722; }
+        .group-score-members { font-size: 14px; color: #455a64; text-align: center; overflow-wrap: anywhere; }
+        .group-score-actions { display: flex; gap: 10px; }
+        .group-score-actions button { width: 42px; height: 42px; border: 0; border-radius: 50%; color: white; font-size: 25px; font-weight: bold; cursor: pointer; }
+        .group-score-actions .minus { background: #f44336; } .group-score-actions .plus { background: #4caf50; }
+        @media (max-width: 520px) { .board-view-switch { gap: 4px; } .board-view-switch button { font-size: 12px; padding: 8px 2px; } #group-score-container { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; } .group-score-card { padding: 8px 4px; gap: 6px; } .group-score-title { font-size: 18px; } .group-score-number { font-size: 26px; } .stats-columns { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 3px; } .stats-half-title { font-size: 10px; padding: 3px 1px; } .stats-note { font-size: 10px; margin-bottom: 4px; } .stats-table { font-size: 10px; } .stats-table th, .stats-table td { padding: 3px 1px; overflow-wrap: anywhere; } .stats-table th:first-child, .stats-table td:first-child { width: 25%; } }
+        @media (max-width: 360px) {
+            #side-panel { padding: 5px; }
+            #stats-board-container { padding: 2px 0; }
+            .stats-columns { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2px; }
+            .stats-half-title { font-size: 9px; }
+            .stats-table { font-size: 9px; }
+            .stats-table th, .stats-table td { padding: 2px 0; }
+            .stats-table th:first-child, .stats-table td:first-child { width: 24%; }
+        }
+        #identity-table-btn { flex:1; min-width:0; margin-top:0; border:0; border-radius:7px; padding:9px 10px; background:#5c6bc0; color:#fff; font-family:inherit; font-size:15px; font-weight:bold; cursor:pointer; }
+        #identity-reference-panel { margin-top:8px; padding:9px; border:1px solid #c5cae9; border-radius:8px; background:#f8f8ff; max-height:48vh; overflow:auto; }
+        #identity-reference-panel[hidden] { display:none !important; }
+        .identity-help { margin:0 0 8px; font-size:13px; color:#455a64; line-height:1.45; }
+        .identity-table { width:100%; border-collapse:collapse; table-layout:fixed; font-size:14px; }
+        .identity-table th,.identity-table td { border:1px solid #d7d9e8; padding:5px 4px; text-align:left; overflow-wrap:anywhere; }
+        .identity-table th { background:#e8eaf6; }
+        .identity-table th:nth-child(1) { width:19%; }
+        .identity-table th:nth-child(2) { width:37%; }
+        .identity-table th:nth-child(3) { width:44%; }
+        .identity-table input,.identity-table select { width:100%; min-width:0; box-sizing:border-box; border:1px solid #c5cae9; border-radius:5px; padding:6px 4px; font:inherit; background:#fff; }
+        .identity-actions { display:flex; gap:7px; margin-top:8px; }
+        .identity-actions button { flex:1; border:0; border-radius:6px; padding:8px; font:inherit; font-weight:bold; cursor:pointer; background:#5c6bc0; color:white; }
+        .identity-actions button.secondary { background:#78909c; }
+        #settings-panel { margin-top: 8px; padding: 10px; border: 1px solid #dce3e6; border-radius: 8px; background: #f8fbfc; max-height: 65vh; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; scrollbar-gutter: stable; box-sizing: border-box; }
+        #settings-panel[hidden] { display: none; }
+        #board-title, #toggle-button-label { width: 100%; box-sizing: border-box; border: 1px solid #cfd8dc; border-radius: 6px; padding: 8px; color: #333; font-family: inherit; font-size: 18px; font-weight: bold; background: #fff; }
+        .settings-save { margin-top: 7px; border: 0; border-radius: 7px; padding: 8px 12px; background: #008b9a; color: white; font-family: inherit; font-size: 15px; font-weight: bold; cursor: pointer; }
+        .close-panel { cursor: pointer; font-size: 24px; color: #aaa; padding: 5px; flex-shrink: 0; }
+        @media (max-width: 420px) { #date-time { font-size: 15px; } #board-title-display { font-size: 18px; } #board-title { font-size: 16px; } #screenshot-btn, #top-wheel-btn { font-size: 13px; padding: 6px 8px; } .config-actions { gap: 5px; } .config-actions button { font-size: 13px; padding: 9px 4px; } }
 
-        .grid-container { overflow-y: auto; flex-grow: 1; padding-right: 5px; }
-        .team-card {
-            background: var(--bg-color); border: 1px solid #eef0f5; border-radius: 12px;
-            padding: 12px 15px; margin-bottom: 12px; display: flex;
-            justify-content: space-between; align-items: center; border-left: 6px solid #2196F3;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        /* 男生 6 欄 3 行、女生 6 欄 2 行；兩區各自排列 */
+        .grid-container {
+            overflow: hidden; flex: 1 1 auto; min-height: 0; padding-right: 1px;
+            display: flex; flex-direction: column; gap: 5px;
         }
-        .team-info { display: flex; flex-direction: column; }
-        .team-name { font-weight: bold; font-size: 16px; color: #333; }
-        .team-score { font-size: 22px; color: #ff5722; font-weight: bold; margin-top: 3px; }
-        
-        .action-btns { display: flex; align-items: center; }
+        .student-section { display: flex; flex-direction: column; gap: 4px; min-height: 0; }
+        .section-heading {
+            flex: 0 0 auto; font-size: 16px; line-height: 20px; font-weight: bold; color: #008b9a;
+            background: #e8f8fa; border-radius: 5px; padding: 1px 7px; margin: 0;
+        }
+        .student-grid { display: grid; gap: 5px; align-content: start; grid-auto-rows: 68px; }
+        .boys-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+        .girls-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+        .team-card {
+            background: var(--bg-color); border: 1px solid #eef0f5; border-radius: 7px;
+            padding: 2px; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; gap: 2px; border-top: 2px solid #00bcd4;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02); text-align: center; min-width: 0; height: 68px; box-sizing: border-box;
+        }
+        .team-info { display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 4px; min-width: 0; width: 100%; flex: 0 0 auto; margin: 0; }
+        .team-name { font-weight: bold; font-size: 16px; line-height: 1; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .team-score { font-size: 15px; line-height: 1; color: #ff5722; font-weight: bold; margin: 0; white-space: nowrap; }
+        .action-btns { display: flex; justify-content: center; align-items: center; gap: 3px; flex: 0 0 auto; }
         .action-btns button {
-            width: 40px; height: 40px; border-radius: 50%; border: none;
-            font-size: 20px; font-weight: bold; color: white; cursor: pointer; margin-left: 8px;
+            width: 32px; height: 32px; min-width: 32px; padding: 0; border-radius: 50%; border: none; font-size: 20px; line-height: 32px; font-weight: bold; color: white; cursor: pointer;
         }
         .btn-plus { background-color: var(--primary-color); }
         .btn-minus { background-color: var(--danger-color); }
 
-        .config-area { border-top: 1px solid #eee; padding-top: 15px; margin-top: 10px; }
+        .config-area { border-top: 1px solid #eee; padding-top: 7px; margin-top: 7px; flex-shrink: 0; }
+        .config-actions { display: flex; gap: 8px; }
+        .config-actions button { flex: 1; padding: 10px 8px; border: 0; border-radius: 8px; cursor: pointer; font-family: inherit; font-size: 16px; font-weight: bold; }
+        #edit-roster-btn { background: #00bcd4; color: white; }
+        #open-wheel-btn { background: #7e57c2; color: white; }
+        #settings-btn { background: #607d8b; color: white; }
+        #roster-menu { margin-top: 8px; max-height: 38vh; overflow-y: auto; }
+        #side-panel.group-edit-mode #config-area { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+        #side-panel.group-edit-mode #roster-menu { max-height: none; overflow: visible; }
+        .settings-field { display: block; font-weight: bold; margin: 10px 0 4px; }
+        .settings-section-title { margin: 14px 0 5px; padding-bottom: 4px; border-bottom: 1px solid #dce3e6; color: #007c91; font-weight: bold; }
+        .settings-hint { margin: 4px 0; color: #607d8b; font-size: 12px; }
+        #roster-menu[hidden], #roster-editor[hidden], #group-editor[hidden] { display: none; }
+        .roster-submenu-buttons { display: flex; gap: 8px; margin-bottom: 8px; }
+        .roster-submenu-buttons button { flex: 1; border: 0; border-radius: 8px; padding: 9px 6px; background: #e0f7fa; color: #006064; font-family: inherit; font-size: 15px; font-weight: bold; cursor: pointer; }
+        .group-count-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .group-count-row label { font-weight: bold; }
+        .group-count-row input { width: 70px; padding: 7px; border: 1px solid #bbb; border-radius: 6px; font: inherit; }
+        .group-count-row .btn-update { flex: 1; }
+        .regroup-actions { display:flex; gap:8px; margin-top:8px; }
+        .regroup-actions button { flex:1; min-width:0; padding:9px 7px; border:0; border-radius:8px; font:inherit; font-size:14px; font-weight:bold; cursor:pointer; }
+        .regroup-random-btn { background:#e8eaf6; color:#303f9f; }
+        .regroup-manual-btn { background:#fff3e0; color:#8d4b00; }
+        .regroup-undo-btn { background:#eceff1; color:#37474f; }
+        .regroup-undo-btn:disabled { opacity:.45; cursor:not-allowed; }
+        .group-help { margin: 7px 0; color: #555; font-size: 13px; }
+        #group-members-editor { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+        .group-edit-card { border: 1px solid #d5e3e6; border-radius: 8px; padding: 8px; min-width: 0; }
+        .group-edit-card h4 { margin: 0 0 6px; color: #007c91; }
+        .group-card-actions { display: flex; gap: 6px; margin: 7px 0; }
+        .group-card-actions button { flex: 1; padding: 6px; border: 0; border-radius: 6px; cursor: pointer; font: inherit; font-size: 13px; font-weight: bold; background: #e0f2f1; color: #00695c; }
+        .group-student-options { display: flex; flex-wrap: wrap; gap: 5px; }
+        .group-student-option { display: inline-flex; align-items: center; gap: 4px; border: 1px solid #d5dce0; border-radius: 15px; padding: 4px 7px; font-size: 14px; cursor: pointer; background: #fff; }
+        .group-student-option.selected { background: #c8f1e6; border-color: #009688; }
+        .group-student-option input { margin: 0; }
+        .group-role-settings { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:7px; margin-top:10px; padding-top:8px; border-top:1px dashed #c5dadd; }
+        .group-role-field { display:flex; flex-direction:column; gap:4px; min-width:0; font-size:13px; font-weight:bold; color:#455a64; }
+        .group-role-field select { width:100%; min-width:0; box-sizing:border-box; border:1px solid #cbd5d8; border-radius:6px; padding:7px 5px; font:inherit; background:#fff; }
+        .group-role-note { grid-column:1 / -1; margin:0; color:#607d8b; font-size:12px; font-weight:normal; }
+        .group-score-members { white-space:pre-line; line-height:1.55; }
+        @media (max-width:360px) { .group-role-settings { grid-template-columns:1fr; } }
+        @media (max-width: 420px) { #group-members-editor { grid-template-columns: 1fr; } }
+        .wheel-overlay { position: fixed; inset: 0; z-index: 200000; display: none; align-items: center; justify-content: center; padding: 16px; box-sizing: border-box; background: rgba(0,0,0,.58); }
+        .wheel-overlay.open { display: flex; }
+        .wheel-dialog { width: min(560px, 100%); max-height: 94vh; overflow: auto; box-sizing: border-box; padding: 18px; border-radius: 16px; background: white; text-align: center; box-shadow: 0 12px 40px rgba(0,0,0,.3); }
+        .wheel-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+        .wheel-top h2 { margin: 0; font-size: 22px; }
+        .wheel-close { border: 0; background: transparent; font-size: 28px; cursor: pointer; }
+        .wheel-stage { position: relative; width: min( min(72vw, 420px), 100%); aspect-ratio: 1; margin: 14px auto; }
+        #wheel-canvas { width: 100%; height: 100%; display: block; transform: rotate(0deg); }
+        .wheel-pointer { position: absolute; z-index: 2; left: 50%; top: -5px; transform: translateX(-50%); width: 0; height: 0; border-left: 17px solid transparent; border-right: 17px solid transparent; border-top: 0; border-bottom: 32px solid #f44336; filter: drop-shadow(0 2px 2px #777); }
+        #spin-btn { border: 0; border-radius: 9px; padding: 12px 28px; background: #7e57c2; color: white; font-family: inherit; font-size: 19px; font-weight: bold; cursor: pointer; }
+        #spin-btn:disabled { opacity: .6; cursor: wait; }
+        #wheel-result { min-height: 32px; margin-top: 12px; font-size: 23px; font-weight: bold; color: #d84315; }
+        #wheel-hint { margin: 8px 0 0; color: #666; font-size: 13px; }
         .config-area textarea {
-            width: 100%; height: 60px; box-sizing: border-box; margin-bottom: 10px;
-            border: 1px solid #ccc; border-radius: 8px; padding: 8px; font-size: 13px; resize: none;
+            width: 100%; height: 50px; box-sizing: border-box; margin-bottom: 8px;
+            border: 1px solid #ccc; border-radius: 8px; padding: 6px; font-size: 16px; resize: none;
         }
         
-        .btn-group { display: flex; flex-direction: column; gap: 8px; }
-        .btn-row { display: flex; gap: 8px; }
+        .btn-group { display: flex; flex-direction: column; gap: 6px; }
+        .btn-row { display: flex; gap: 6px; }
         .btn-update {
-            flex: 1; padding: 11px; background-color: #2196F3; color: white;
-            border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: bold;
+            flex: 1; padding: 10px; background-color: #00bcd4; color: white;
+            border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold;
         }
         .btn-undo {
-            flex: 1; padding: 11px; background-color: #78909C; color: white;
-            border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: bold;
+            flex: 1; padding: 10px; background-color: #78909C; color: white;
+            border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold;
         }
         .btn-reset {
-            width: 100%; padding: 9px; background-color: var(--danger-color); color: white;
-            border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: bold;
+            width: 100%; padding: 8px; background-color: var(--danger-color); color: white;
+            border: none; border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: bold;
         }
         
         #celebrate {
@@ -97,60 +243,911 @@
 </head>
 <body>
 
-    <!-- 橘色星星懸浮鈕 -->
-    <button id="toggle-btn" onclick="openPanel()">⭐ 班級紀錄</button>
+    <!-- 藍綠色個人版懸浮鈕 -->
+    <button id="toggle-btn" onclick="openPanel()">👤 個人紀錄</button>
 
-    <!-- 側邊抽屜面板 -->
     <div id="side-panel">
         <div class="panel-header">
-            <h3>🏫 課堂互動計分板</h3>
+            <div class="header-main">
+                <div class="date-time-row">
+                    <div id="date-time">20261025_AM：09:03</div>
+                    <button id="screenshot-btn" type="button" onclick="saveScreenshot()" data-html2canvas-ignore="true">📸 截圖存檔</button>
+                    <button id="top-wheel-btn" type="button" onclick="openWheel()" data-html2canvas-ignore="true">🎡 課堂抽籤轉盤</button>
+                </div>
+                <h3 id="board-title-display">四１課堂計分板</h3>
+                <div class="board-view-switch" role="group" aria-label="切換計分板">
+                    <button type="button" id="show-personal-board" class="active" onclick="switchBoardView('personal')">👤 個人計分板</button>
+                    <button type="button" id="show-group-board" onclick="switchBoardView('groups')">👥 分組計分板</button>
+                    <button type="button" id="show-stats-board" onclick="switchBoardView('stats')">📊 個人統計板</button>
+                </div>
+            </div>
             <span class="close-panel" onclick="closePanel()">✕</span>
         </div>
         <div class="grid-container" id="list-container"></div>
-        <div class="config-area">
-            <textarea id="names-input" placeholder="輸入組名或名字，用逗號或換行隔開"></textarea>
-            <div class="btn-group">
-                <div class="btn-row">
-                    <button class="btn-update" onclick="updateTeams()">更新名單</button>
-                    <button class="btn-undo" id="undo-btn" onclick="undoAction()" style="opacity: 0.5; cursor: not-allowed;" disabled>↩️ 復原</button>
+        <div id="group-score-container" hidden></div>
+        <div id="stats-board-container" hidden></div>
+        <div class="config-area" id="config-area">
+            <div class="config-actions">
+                <button id="edit-roster-btn" type="button" onclick="toggleRosterEditor()">✏️ 修改名單</button>
+                <button id="settings-btn" type="button" onclick="toggleSettings()">⚙️ 設定</button>
+                <button id="identity-table-btn" type="button" onclick="toggleIdentityReference()">🪪 識別碼參照表</button>
+            </div>
+            <div id="identity-reference-panel" hidden>
+                <p class="identity-help">此表的固定識別碼與分組由名單設定自動決定，不可在此修改；只有顯示姓名可以修改。改名後按「儲存參照表」，系統會同步更新分組名單與統計紀錄。</p>
+                <div id="identity-reference-table-wrap"></div>
+                <div class="identity-actions">
+                    <button type="button" onclick="saveIdentityReference()">儲存參照表</button>
+                    <button type="button" class="secondary" onclick="renderIdentityReference()">取消／重新載入</button>
                 </div>
-                <button class="btn-reset" onclick="resetAllScores()">⚠️ 全班分數歸零</button>
+            </div>
+            <div id="settings-panel" hidden>
+                <label for="board-title" style="display:block;font-weight:bold;margin-bottom:6px;">修改計分板名稱</label>
+                <input id="board-title" type="text" value="🏫 課堂個人計分板 (29人版)" aria-label="計分板標題，可自行輸入" placeholder="請輸入計分板標題">
+                <button class="settings-save" type="button" onclick="saveBoardTitle()">儲存名稱</button>
+                <label for="toggle-button-label" style="display:block;font-weight:bold;margin:12px 0 6px;">修改右側直式按鈕名稱</label>
+                <input id="toggle-button-label" type="text" value="個人紀錄" aria-label="右側直式按鈕名稱" placeholder="例如：個人紀錄">
+                <button class="settings-save" type="button" onclick="saveToggleButtonLabel()">儲存按鈕名稱</button>
+                <div class="settings-section-title">修改上方計分板切換標籤</div>
+                <label class="settings-field" for="label-personal-board">個人計分板</label>
+                <input id="label-personal-board" type="text" placeholder="👤 個人計分板">
+                <label class="settings-field" for="label-group-board">分組計分板</label>
+                <input id="label-group-board" type="text" placeholder="👥 分組計分板">
+                <label class="settings-field" for="label-stats-board">個人統計板</label>
+                <input id="label-stats-board" type="text" placeholder="📊 個人統計板">
+                <div class="settings-section-title">修改下方功能按鈕</div>
+                <label class="settings-field" for="label-edit-roster">修改名單</label>
+                <input id="label-edit-roster" type="text" placeholder="✏️ 修改名單">
+                <label class="settings-field" for="label-open-wheel">抽籤轉盤</label>
+                <input id="label-open-wheel" type="text" placeholder="🎡 抽籤轉盤">
+                <label class="settings-field" for="label-settings">設定</label>
+                <input id="label-settings" type="text" placeholder="⚙️ 設定">
+                <div class="settings-section-title">修改名單的子選單</div>
+                <label class="settings-field" for="label-edit-students">修改學生名單</label>
+                <input id="label-edit-students" type="text" placeholder="👩‍🎓 修改學生名單">
+                <label class="settings-field" for="label-edit-groups">修改分組名單</label>
+                <input id="label-edit-groups" type="text" placeholder="👥 修改分組名單">
+                <p class="settings-hint">以上名稱儲存後會保留，下次開啟仍會使用。</p>
+                <button class="settings-save" type="button" onclick="saveAllHeaderLabels()">儲存所有標籤名稱</button>
+                <div class="settings-section-title">成績匯出與完整備份</div>
+                <div class="settings-data-actions" style="display:flex;flex-wrap:wrap;gap:8px;margin:8px 0;">
+                    <button type="button" onclick="exportExcelGrades()">📊 匯出 Excel 成績</button>
+                    <button type="button" onclick="exportJsonBackup()">💾 匯出 JSON 完整備份</button>
+                    <button type="button" onclick="document.getElementById('json-import-file').click()">📥 匯入 JSON 備份</button>
+                    <input id="json-import-file" type="file" accept=".json,application/json" hidden onchange="importJsonBackup(event)">
+                </div>
+                <p class="settings-hint">Excel 用來查看、整理及列印成績；JSON 用來完整還原計分板。檔名會使用計分板標題加上年月日_時分，例如：四１課堂計分板_20261025_1530。</p>
+            </div>
+            <div id="roster-menu" hidden>
+                <div class="roster-submenu-buttons">
+                    <button type="button" id="edit-students-btn" onclick="showRosterSubpanel('students')">👩‍🎓 修改學生名單</button>
+                    <button type="button" id="edit-groups-btn" onclick="showRosterSubpanel('groups')">👥 修改分組名單</button>
+                </div>
+                <div id="roster-editor" hidden>
+                    <textarea id="names-input" placeholder="輸入學生名字，用逗號或換行隔開"></textarea>
+                    <div class="btn-group">
+                        <div class="btn-row">
+                            <button class="btn-update" onclick="updateTeams()">儲存學生名單</button>
+                            <button class="btn-undo" id="undo-btn" onclick="undoAction()" style="opacity: 0.5; cursor: not-allowed;" disabled>↩️ 復原</button>
+                        </div>
+                        <button class="btn-reset" onclick="resetAllScores()">⚠️ 全班分數歸零</button>
+                    </div>
+                </div>
+                <div id="group-editor" hidden>
+                    <div class="group-count-row">
+                        <label for="group-count">分成幾組：</label>
+                        <input id="group-count" type="number" min="1" max="20" value="5" onchange="renderGroupEditor()">
+                        <button type="button" class="btn-update" onclick="saveGroups()">儲存分組</button>
+                    </div>
+                    <div class="regroup-actions">
+                        <button type="button" class="regroup-random-btn" onclick="randomRegroup()">🔀 自動隨機分組</button>
+                        <button type="button" class="regroup-manual-btn" onclick="startManualRegroup()">✍️ 手動重新分組</button>
+                        <button type="button" id="undo-regroup-btn" class="regroup-undo-btn" onclick="undoRegroup()" disabled>↩️ 復原上次分組</button>
+                    </div>
+                    <p class="group-help">自動分組時，女生（名單性別標記為女生，或姓名／座號以 21 以上數字開頭）會平均分配，每組女生至少為「女生總數 ÷ 組數」去掉小數後的數量。重新分組會清除所有組長、副組長職務，需由老師重新指派；個人分數、各組團體分數及既有團體加分紀錄會保留。點選學生姓名即可加入該組；每位學生只能分配到一組。再次點選可取消。</p>
+                    <div id="group-members-editor"></div>
+                </div>
             </div>
         </div>
     </div>
 
+    <div id="wheel-overlay" class="wheel-overlay" role="dialog" aria-modal="true" aria-label="抽籤轉盤">
+        <div class="wheel-dialog">
+            <div class="wheel-top"><h2>🎡 課堂抽籤轉盤</h2><button class="wheel-close" onclick="closeWheel()" aria-label="關閉轉盤">×</button></div>
+            <div class="wheel-stage"><div class="wheel-pointer"></div><canvas id="wheel-canvas" width="600" height="600"></canvas></div>
+            <button id="spin-btn" onclick="spinWheel()">開始抽籤</button>
+            <div id="wheel-result" aria-live="polite">準備好了嗎？</div>
+            <p id="wheel-hint">轉盤使用目前計分板的學生名單；修改名單後會自動更新。</p>
+        </div>
+    </div>
     <div id="celebrate">🎉</div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script>
-        let teams = JSON.parse(localStorage.getItem('tab_class_teams')) || [
-            { name: "第一組", score: 0 }, { name: "第二組", score: 0 },
-            { name: "第三組", score: 0 }, { name: "第四組", score: 0 }
+        // 男生 1–17、女生 21–32；沿用舊版儲存的同號分數
+        const defaultStudents = [
+            ...Array.from({ length: 17 }, (_, i) => ({ name: String(i + 1), score: 0, gender: '男生' })),
+            ...Array.from({ length: 12 }, (_, i) => ({ name: String(i + 21), score: 0, gender: '女生' }))
         ];
-
+        const savedStudents = JSON.parse(localStorage.getItem('tab_class_teams_29') || 'null');
+        const savedScoreByNumber = {};
+        if (Array.isArray(savedStudents)) {
+            savedStudents.forEach(student => {
+                const match = String(student.name).match(/^\s*(\d+)/);
+                if (match) savedScoreByNumber[match[1]] = Number(student.score) || 0;
+            });
+        }
+        // 優先讀取上次儲存的完整名單與分數，重新開啟檔案也能保留自訂名字
+        let teams = Array.isArray(savedStudents) && savedStudents.length
+            ? savedStudents.map((student, index) => ({
+                id: student.id ? String(student.id) : '',
+                name: String(student.name ?? (index + 1)),
+                score: Number(student.score) || 0,
+                gender: student.gender || (index < 17 ? '男生' : '女生')
+            }))
+            : defaultStudents.map(student => ({
+                ...student, score: savedScoreByNumber[student.name] ?? 0
+            }));
+        // 每位學生使用固定內部識別碼；舊資料首次載入時自動補上並保存。
+        let nextStudentId = Math.max(1, Number(localStorage.getItem('tab_class_student_id_counter')) || 1);
+        function makeStudentId() {
+            const id = 'S' + String(nextStudentId).padStart(3, '0');
+            nextStudentId += 1;
+            localStorage.setItem('tab_class_student_id_counter', String(nextStudentId));
+            return id;
+        }
+        const usedInitialIds = new Set();
+        teams.forEach(team => {
+            if (!team.id || usedInitialIds.has(String(team.id))) team.id = makeStudentId();
+            team.id = String(team.id);
+            usedInitialIds.add(team.id);
+            const numeric = Number(team.id.replace(/^S/i, ''));
+            if (Number.isFinite(numeric)) nextStudentId = Math.max(nextStudentId, numeric + 1);
+        });
+        localStorage.setItem('tab_class_student_id_counter', String(nextStudentId));
+        localStorage.setItem('tab_class_teams_29', JSON.stringify(teams));
         let previousState = null;
 
-        // 簡化開關邏輯，徹底移除點空白處收合，防止穿透衝突
-        function openPanel() {
-            document.getElementById('side-panel').classList.add('open');
+        // 匯出檔名：使用計分板上方標題 + YYYYMMDD_HHMM。
+        function exportBaseName() {
+            const title = (document.getElementById('board-title-display')?.textContent || document.title || '課堂計分板').trim();
+            const safeTitle = title.replace(/[\\/:*?"<>|\u0000-\u001F]/g, '_').replace(/\s+/g, '_').replace(/[. ]+$/g, '') || '課堂計分板';
+            const d = new Date();
+            const pad = n => String(n).padStart(2, '0');
+            return `${safeTitle}_${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}_${pad(d.getHours())}${pad(d.getMinutes())}`;
         }
-        function closePanel() {
-            document.getElementById('side-panel').classList.remove('open');
+        function downloadBlob(blob, filename) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a'); a.href = url; a.download = filename;
+            document.body.appendChild(a); a.click(); a.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
         }
+        function appStorageSnapshot() {
+            const data = {};
+            for (let i=0; i<localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith('tab_class_')) data[key] = localStorage.getItem(key);
+            }
+            // 確保畫面上最新狀態也包含在備份中。
+            data.tab_class_teams_29 = JSON.stringify(teams);
+            data.tab_class_student_groups = JSON.stringify(studentGroups);
+            data.tab_class_group_scores = JSON.stringify(groupScores);
+            data.tab_class_group_contributions = JSON.stringify(groupContributions);
+            data.tab_class_board_title = document.getElementById('board-title-display')?.textContent || '四１課堂計分板';
+            return data;
+        }
+        function exportJsonBackup() {
+            const payload = { format: 'class-scoreboard-backup', version: 1, exportedAt: new Date().toISOString(), boardTitle: document.getElementById('board-title-display')?.textContent || '課堂計分板', localStorage: appStorageSnapshot() };
+            const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json;charset=utf-8'});
+            downloadBlob(blob, exportBaseName() + '.json');
+        }
+        function importJsonBackup(event) {
+            const file = event.target.files && event.target.files[0];
+            event.target.value = '';
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = () => {
+                try {
+                    const payload = JSON.parse(String(reader.result || ''));
+                    const data = payload && payload.localStorage;
+                    if (!data || typeof data !== 'object' || !data.tab_class_teams_29) throw new Error('格式不符');
+                    if (!confirm('匯入備份會覆蓋目前計分板的名單、分數、分組及相關設定。建議先匯出目前資料。確定要繼續嗎？')) return;
+                    Object.keys(localStorage).filter(k => k.startsWith('tab_class_')).forEach(k => localStorage.removeItem(k));
+                    Object.entries(data).forEach(([k,v]) => { if (k.startsWith('tab_class_') && v != null) localStorage.setItem(k, String(v)); });
+                    alert('備份匯入完成，計分板即將重新載入。'); location.reload();
+                } catch (err) { alert('無法匯入此檔案。請選擇本計分板匯出的 JSON 完整備份。'); }
+            };
+            reader.readAsText(file, 'utf-8');
+        }
+        function xmlEscape(value) {
+            return String(value ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;');
+        }
+        function excelCell(value, type) {
+            const numeric = type === 'Number' && Number.isFinite(Number(value));
+            return `<Cell><Data ss:Type="${numeric ? 'Number' : 'String'}">${xmlEscape(value)}</Data></Cell>`;
+        }
+        function excelSheet(name, rows) {
+            return `<Worksheet ss:Name="${xmlEscape(name).slice(0,31)}"><Table>${rows.map(row=>`<Row>${row.map(v=>Array.isArray(v) ? excelCell(v[0],v[1]) : excelCell(v)).join('')}</Row>`).join('')}</Table></Worksheet>`;
+        }
+        function exportExcelGrades() {
+            ensureGroupRoles();
+            const contribution = student => Number(groupContributions[student.id] ?? groupContributions[student.name] ?? 0) || 0;
+            const memberGroup = new Map();
+            const roleByStudentId = new Map();
+            (studentGroups.groups || []).forEach((members, idx) => (members || []).forEach(name => memberGroup.set(name, `第 ${idx+1} 組`)));
+            const groupCount = Math.max(1, Math.min(20, Number(studentGroups.count) || 5));
+            for (let i = 0; i < groupCount; i++) {
+                const leaderId = studentGroups.roles.leaders[i] || '';
+                const deputyId = studentGroups.roles.deputies[i] || '';
+                if (leaderId) roleByStudentId.set(leaderId, '組長');
+                if (deputyId) roleByStudentId.set(deputyId, '副組長');
+            }
+            const studentRows = [[ '固定識別碼','學生姓名','分組','職務','個人分數','團體加分','統計總分' ]];
+            teams.forEach(t => {
+                const group = memberGroup.get(t.name) || '';
+                const personal = Number(t.score) || 0, groupPoints = contribution(t);
+                studentRows.push([t.id || '',t.name,group,roleByStudentId.get(t.id) || '',[personal,'Number'],[groupPoints,'Number'],[personal+groupPoints,'Number']]);
+            });
+            const groupMembers = Array.from({length: groupCount}, (_, i) => (studentGroups.groups[i] || []).filter(n => teams.some(t => t.name === n)));
+            const maxMembers = Math.max(1, ...groupMembers.map(members => members.length));
+            const groupRows = [['組別','團體分數','組長','副組長', ...Array.from({length:maxMembers}, (_, i) => `組員${i+1}`)]];
+            for (let i=0;i<groupCount;i++) {
+                const members = groupMembers[i];
+                const leader = teams.find(t => t.id === studentGroups.roles.leaders[i]);
+                const deputy = teams.find(t => t.id === studentGroups.roles.deputies[i]);
+                groupRows.push([`第 ${i+1} 組`, [Number(groupScores[String(i)])||0,'Number'], leader?.name || '', deputy?.name || '', ...Array.from({length:maxMembers}, (_, j) => members[j] || '')]);
+            }
+            const refRows = [['固定識別碼','顯示姓名','分組','職務','個人分數','團體加分']];
+            teams.forEach(t => refRows.push([t.id || '',t.name,memberGroup.get(t.name)||'',roleByStudentId.get(t.id)||'', [Number(t.score)||0,'Number'],[contribution(t),'Number']]));
+            const workbook = `<?xml version="1.0"?><Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet" xmlns:html="http://www.w3.org/TR/REC-html40">${excelSheet('學生總成績',studentRows)}${excelSheet('分組成績',groupRows)}${excelSheet('識別碼參照表',refRows)}</Workbook>`;
+            // Excel 可直接開啟的多工作表 SpreadsheetML 活頁簿（.xls）。
+            downloadBlob(new Blob(['\ufeff', workbook], {type:'application/vnd.ms-excel;charset=utf-8'}), exportBaseName() + '.xls');
+        }
+
+        function createNewClass() {
+            const confirmed = confirm('建立新班級會清除目前班級的學生名單、個人分數、分組與團體加分；設定的按鈕名稱及計分板標題會保留。要繼續嗎？');
+            if (!confirmed) return;
+            const raw = prompt('請輸入新班級學生姓名，以逗號、中文逗號或換行分隔。\n例如：王小明,陳小華,林小美');
+            if (raw === null) return;
+            const names = raw.split(/[\n,，;；]+/).map(name => name.trim()).filter(Boolean);
+            if (!names.length) return alert('沒有輸入學生姓名，未建立新班級。');
+            if (new Set(names).size !== names.length) return alert('名單中有重複姓名，請先整理後再建立新班級。');
+            teams = names.map((name, index) => ({ id: makeStudentId(), name, score: 0, gender: index < 17 ? '男生' : '女生' }));
+            studentGroups = { count: 5, groups: Array.from({length: 5}, () => []), roles: { leaders: Array(5).fill(''), deputies: Array(5).fill('') } };
+            groupScores = {};
+            groupContributions = {};
+            previousState = null;
+            groupUndoSnapshot = null;
+            localStorage.removeItem('tab_class_group_undo_snapshot');
+            updateGroupUndoButton();
+            confirmedGroups = [];
+            localStorage.setItem('tab_class_teams_29', JSON.stringify(teams));
+            localStorage.setItem('tab_class_student_groups', JSON.stringify(studentGroups));
+            localStorage.setItem('tab_class_group_scores', '{}');
+            localStorage.setItem('tab_class_group_contributions', '{}');
+            persistGroupData();
+            const countInput = document.getElementById('group-count');
+            if (countInput) countInput.value = '5';
+            renderList();
+            if (document.getElementById('group-editor') && !document.getElementById('group-editor').hidden) renderGroupEditor();
+            renderGroupScoreBoard();
+            renderStatsBoard();
+            switchBoardView('personal');
+            document.getElementById('roster-menu').hidden = true;
+            document.getElementById('roster-editor').hidden = true;
+            document.getElementById('identity-reference-panel').hidden = true;
+            document.getElementById('identity-table-btn').textContent = '🪪 識別碼參照表';
+            document.getElementById('identity-table-btn').setAttribute('aria-expanded', 'false');
+            alert(`新班級已建立，共 ${teams.length} 位學生。所有分數已歸零，請至「修改名單」或「識別碼參照表」設定分組。`);
+        }
+
+        function openPanel() { document.getElementById('side-panel').classList.add('open'); }
+        function closePanel() { document.getElementById('side-panel').classList.remove('open'); }
+
+        function toggleSettings() {
+            const panel = document.getElementById('settings-panel');
+            const button = document.getElementById('settings-btn');
+            const rosterMenu = document.getElementById('roster-menu');
+            const rosterButton = document.getElementById('edit-roster-btn');
+            const willOpen = panel.hidden;
+            if (willOpen) {
+                rosterMenu.hidden = true;
+                rosterButton.textContent = getSavedLabel('editRoster');
+                document.getElementById('roster-editor').hidden = true;
+                document.getElementById('group-editor').hidden = true;
+                document.getElementById('list-container').hidden = false;
+                document.getElementById('side-panel').classList.remove('group-edit-mode');
+            }
+            panel.hidden = !willOpen;
+            button.textContent = willOpen ? '✖ 收合設定' : getSavedLabel('settings');
+            if (willOpen) document.getElementById('board-title').focus();
+        }
+
+        function saveBoardTitle() {
+            const input = document.getElementById('board-title');
+            const title = input.value.trim() || '四１課堂計分板';
+            input.value = title;
+            document.getElementById('board-title-display').textContent = title;
+            localStorage.setItem('tab_class_board_title', title);
+            const panel = document.getElementById('settings-panel');
+            panel.hidden = true;
+            document.getElementById('settings-btn').textContent = getSavedLabel('settings');
+        }
+
+        function saveToggleButtonLabel() {
+            const input = document.getElementById('toggle-button-label');
+            const label = input.value.trim() || '個人紀錄';
+            input.value = label;
+            document.getElementById('toggle-btn').textContent = '👤 ' + label;
+            localStorage.setItem('tab_class_toggle_label', label);
+        }
+
+        const labelDefaults = {
+            personal: '👤 個人計分板', groups: '👥 分組計分板', stats: '📊 個人統計板',
+            editRoster: '✏️ 修改名單', wheel: '🎡 課堂抽籤轉盤', settings: '⚙️ 設定',
+            editStudents: '👩‍🎓 修改學生名單', editGroups: '👥 修改分組名單'
+        };
+        const labelStorageKeys = {
+            personal: 'tab_class_label_personal_board', groups: 'tab_class_label_group_board', stats: 'tab_class_label_stats_board',
+            editRoster: 'tab_class_label_edit_roster', wheel: 'tab_class_label_open_wheel', settings: 'tab_class_label_settings',
+            editStudents: 'tab_class_label_edit_students', editGroups: 'tab_class_label_edit_groups'
+        };
+        function getSavedLabel(key) { return localStorage.getItem(labelStorageKeys[key]) || labelDefaults[key]; }
+        function applyHeaderLabels() {
+            document.getElementById('show-personal-board').textContent = getSavedLabel('personal');
+            document.getElementById('show-group-board').textContent = getSavedLabel('groups');
+            document.getElementById('show-stats-board').textContent = getSavedLabel('stats');
+            document.getElementById('edit-roster-btn').textContent = getSavedLabel('editRoster');
+            document.getElementById('top-wheel-btn').textContent = getSavedLabel('wheel');
+            document.getElementById('settings-btn').textContent = getSavedLabel('settings');
+            document.getElementById('edit-students-btn').textContent = getSavedLabel('editStudents');
+            document.getElementById('edit-groups-btn').textContent = getSavedLabel('editGroups');
+            for (const key of Object.keys(labelStorageKeys)) {
+                const input = document.getElementById('label-' + ({personal:'personal-board',groups:'group-board',stats:'stats-board',editRoster:'edit-roster',wheel:'open-wheel',settings:'settings',editStudents:'edit-students',editGroups:'edit-groups'}[key]));
+                if (input) input.value = getSavedLabel(key);
+            }
+        }
+        function saveAllHeaderLabels() {
+            const ids = { personal:'label-personal-board', groups:'label-group-board', stats:'label-stats-board', editRoster:'label-edit-roster', wheel:'label-open-wheel', settings:'label-settings', editStudents:'label-edit-students', editGroups:'label-edit-groups' };
+            for (const [key, id] of Object.entries(ids)) {
+                const value = document.getElementById(id).value.trim() || labelDefaults[key];
+                localStorage.setItem(labelStorageKeys[key], value);
+            }
+            applyHeaderLabels();
+            // 若名單/設定面板目前開啟，保留其狀態文字
+            if (!document.getElementById('roster-menu').hidden) document.getElementById('edit-roster-btn').textContent = '✖ 收合名單';
+            if (!document.getElementById('settings-panel').hidden) document.getElementById('settings-btn').textContent = '✖ 收合設定';
+        }
+
+        function toggleRosterEditor() {
+            const menu = document.getElementById('roster-menu');
+            const button = document.getElementById('edit-roster-btn');
+            const willOpen = menu.hidden;
+            if (willOpen) {
+                document.getElementById('settings-panel').hidden = true;
+                document.getElementById('settings-btn').textContent = getSavedLabel('settings');
+            }
+            menu.hidden = !willOpen;
+            button.textContent = willOpen ? '✖ 收合名單' : getSavedLabel('editRoster');
+            if (!willOpen) {
+                document.getElementById('roster-editor').hidden = true;
+                document.getElementById('group-editor').hidden = true;
+                document.getElementById('list-container').hidden = false;
+                document.getElementById('side-panel').classList.remove('group-edit-mode');
+            }
+        }
+
+        function showRosterSubpanel(which) {
+            const studentPanel = document.getElementById('roster-editor');
+            const groupPanel = document.getElementById('group-editor');
+            studentPanel.hidden = which !== 'students';
+            groupPanel.hidden = which !== 'groups';
+            // 編輯分組時收合上方個人計分板，把空間留給分組名單
+            document.getElementById('list-container').hidden = which === 'groups';
+            document.getElementById('side-panel').classList.toggle('group-edit-mode', which === 'groups');
+            document.getElementById('edit-students-btn').style.background = which === 'students' ? '#00bcd4' : '#e0f7fa';
+            document.getElementById('edit-students-btn').style.color = which === 'students' ? '#fff' : '#006064';
+            document.getElementById('edit-groups-btn').style.background = which === 'groups' ? '#00bcd4' : '#e0f7fa';
+            document.getElementById('edit-groups-btn').style.color = which === 'groups' ? '#fff' : '#006064';
+            if (which === 'students') document.getElementById('names-input').focus();
+            else renderGroupEditor();
+        }
+
+        let studentGroups = loadSavedGroups();
+        let confirmedGroups = [];
+        function loadSavedGroups() {
+            try {
+                const saved = JSON.parse(localStorage.getItem('tab_class_student_groups') || 'null');
+                if (saved && Array.isArray(saved.groups)) return saved;
+            } catch (e) {}
+            return { count: 5, groups: Array.from({length: 5}, () => []), roles: { leaders: [], deputies: [] } };
+        }
+
+        function ensureGroupRoles() {
+            const count = Math.max(1, Math.min(20, Number(studentGroups.count) || 5));
+            const existing = studentGroups.roles || {};
+            const leaders = Array.from({length: count}, (_, i) => existing.leaders?.[i] || '');
+            const deputies = Array.from({length: count}, (_, i) => existing.deputies?.[i] || '');
+            for (let i = 0; i < count; i++) {
+                const memberIds = new Set((studentGroups.groups[i] || []).map(name => teams.find(t => t.name === name)?.id).filter(Boolean));
+                if (!memberIds.has(leaders[i])) leaders[i] = '';
+                if (!memberIds.has(deputies[i]) || deputies[i] === leaders[i]) deputies[i] = '';
+            }
+            studentGroups.roles = { leaders, deputies };
+            return studentGroups.roles;
+        }
+
+        function renderGroupEditor() {
+            const countInput = document.getElementById('group-count');
+            let count = Math.max(1, Math.min(20, parseInt(countInput.value, 10) || 5));
+            countInput.value = count;
+            const oldGroups = studentGroups.groups || [];
+            const existingRoles = studentGroups.roles || { leaders: [], deputies: [] };
+            const groups = Array.from({length: count}, (_, i) => oldGroups[i] ? [...oldGroups[i]] : []);
+            confirmedGroups = Array.from({length: count}, (_, i) => !!confirmedGroups[i]);
+            const validNames = new Set(teams.map(t => t.name));
+            const assigned = new Set();
+            groups.forEach(group => group.forEach(name => {
+                if (!validNames.has(name) || assigned.has(name)) group.splice(group.indexOf(name), 1);
+                else assigned.add(name);
+            }));
+            studentGroups = { count, groups, roles: existingRoles };
+            ensureGroupRoles();
+            const root = document.getElementById('group-members-editor');
+            root.innerHTML = '';
+            groups.forEach((members, groupIndex) => {
+                const card = document.createElement('section');
+                card.className = 'group-edit-card';
+                const heading = document.createElement('h4');
+                heading.textContent = `第 ${groupIndex + 1} 組（${members.length} 人）`;
+                card.appendChild(heading);
+
+                const actions = document.createElement('div');
+                actions.className = 'group-card-actions';
+                const updateButton = document.createElement('button');
+                updateButton.type = 'button';
+                updateButton.textContent = confirmedGroups[groupIndex] ? '重新編輯名單' : '更新名單（只顯示已選學生）';
+                updateButton.addEventListener('click', () => {
+                    confirmedGroups[groupIndex] = !confirmedGroups[groupIndex];
+                    renderGroupEditor();
+                });
+                actions.appendChild(updateButton);
+                card.appendChild(actions);
+
+                const options = document.createElement('div');
+                options.className = 'group-student-options';
+                const assignedToOtherGroups = new Set();
+                studentGroups.groups.forEach((group, i) => {
+                    if (i !== groupIndex) group.forEach(name => assignedToOtherGroups.add(name));
+                });
+                teams.forEach(team => {
+                    const isMember = members.includes(team.name);
+                    // 已確認的組別只顯示該組已選學生；其他組已分配的學生不再提供選取。
+                    if (confirmedGroups[groupIndex] && !isMember) return;
+                    if (!isMember && assignedToOtherGroups.has(team.name)) return;
+                    const label = document.createElement('label');
+                    label.className = 'group-student-option' + (isMember ? ' selected' : '');
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.checked = isMember;
+                    checkbox.setAttribute('aria-label', `將 ${team.name} 分配至第 ${groupIndex + 1} 組`);
+                    checkbox.addEventListener('change', () => {
+                        studentGroups.groups.forEach((group, i) => {
+                            studentGroups.groups[i] = group.filter(name => name !== team.name);
+                        });
+                        if (checkbox.checked) studentGroups.groups[groupIndex].push(team.name);
+                        // 名單有變動時解除該組的確認狀態，讓使用者能繼續調整。
+                        confirmedGroups[groupIndex] = false;
+                        renderGroupEditor();
+                    });
+                    label.appendChild(checkbox);
+                    label.appendChild(document.createTextNode(team.name));
+                    options.appendChild(label);
+                });
+                if (!options.children.length) {
+                    const empty = document.createElement('span');
+                    empty.className = 'group-help';
+                    empty.textContent = '目前沒有可選學生';
+                    options.appendChild(empty);
+                }
+                card.appendChild(options);
+
+                const roleSettings = document.createElement('div');
+                roleSettings.className = 'group-role-settings';
+                const makeRoleSelect = (labelText, roleKey, icon) => {
+                    const field = document.createElement('label');
+                    field.className = 'group-role-field';
+                    field.textContent = `${icon} ${labelText}`;
+                    const select = document.createElement('select');
+                    select.setAttribute('aria-label', `第 ${groupIndex + 1} 組${labelText}`);
+                    const placeholder = document.createElement('option');
+                    placeholder.value = '';
+                    placeholder.textContent = members.length ? '請選擇組員' : '先選擇組員';
+                    select.appendChild(placeholder);
+                    const otherRoleKey = roleKey === 'leaders' ? 'deputies' : 'leaders';
+                    const otherRoleId = studentGroups.roles[otherRoleKey][groupIndex] || '';
+                    members.forEach(name => {
+                        const member = teams.find(t => t.name === name);
+                        if (!member || (member.id === otherRoleId && member.id !== studentGroups.roles[roleKey][groupIndex])) return;
+                        const option = document.createElement('option');
+                        option.value = member.id;
+                        option.textContent = member.name;
+                        select.appendChild(option);
+                    });
+                    select.value = studentGroups.roles[roleKey][groupIndex] || '';
+                    select.disabled = members.length === 0;
+                    select.addEventListener('change', () => {
+                        studentGroups.roles[roleKey][groupIndex] = select.value;
+                        ensureGroupRoles();
+                        localStorage.setItem('tab_class_student_groups', JSON.stringify(studentGroups));
+                        renderGroupEditor();
+                        if (currentBoardView === 'groups') renderGroupScoreBoard();
+                    });
+                    field.appendChild(select);
+                    return field;
+                };
+                roleSettings.appendChild(makeRoleSelect('組長', 'leaders', '👑'));
+                roleSettings.appendChild(makeRoleSelect('副組長', 'deputies', '⭐'));
+                const roleNote = document.createElement('p');
+                roleNote.className = 'group-role-note';
+                roleNote.textContent = '職務只能從本組組員中選擇；同一位學生不能同時擔任組長與副組長。';
+                roleSettings.appendChild(roleNote);
+                card.appendChild(roleSettings);
+                root.appendChild(card);
+            });
+            updateGroupUndoButton();
+        }
+
+        // 分組復原快照：只在開始一次新的重新分組前更新，手動選組員時不覆蓋，
+        // 因此即使清空後已勾選了幾位學生，仍可回復清空前的完整分組與職務。
+        let groupUndoSnapshot = null;
+        try { groupUndoSnapshot = JSON.parse(localStorage.getItem('tab_class_group_undo_snapshot') || 'null'); } catch (e) { groupUndoSnapshot = null; }
+        function updateGroupUndoButton() {
+            const button = document.getElementById('undo-regroup-btn');
+            if (button) button.disabled = !groupUndoSnapshot;
+        }
+        function captureGroupUndoSnapshot() {
+            groupUndoSnapshot = {
+                studentGroups: JSON.parse(JSON.stringify(studentGroups)),
+                confirmedGroups: [...(confirmedGroups || [])]
+            };
+            localStorage.setItem('tab_class_group_undo_snapshot', JSON.stringify(groupUndoSnapshot));
+            updateGroupUndoButton();
+        }
+        function undoRegroup() {
+            if (!groupUndoSnapshot) return alert('目前沒有可復原的分組紀錄。');
+            if (!confirm('要回復上一次重新分組前的組員名單與組長／副組長職務嗎？個人分數和團體分數不會改變。')) return;
+            studentGroups = JSON.parse(JSON.stringify(groupUndoSnapshot.studentGroups));
+            confirmedGroups = [...(groupUndoSnapshot.confirmedGroups || [])];
+            localStorage.setItem('tab_class_student_groups', JSON.stringify(studentGroups));
+            groupUndoSnapshot = null;
+            localStorage.removeItem('tab_class_group_undo_snapshot');
+            const countInput = document.getElementById('group-count');
+            if (countInput) countInput.value = String(studentGroups.count || 5);
+            renderGroupEditor();
+            renderGroupScoreBoard();
+            renderStatsBoard();
+            updateGroupUndoButton();
+            alert('已復原上一次分組，個人分數與團體分數均已保留。');
+        }
+        function isFemaleForRegroup(student) {
+            if (String(student.gender || '').trim() === '女生') return true;
+            // 兼容以座號命名的名單，例如「21」、「21 王小美」。
+            const match = String(student.name || '').match(/^\s*(\d+)/);
+            return !!match && Number(match[1]) >= 21;
+        }
+
+        function clearGroupLeadership(count) {
+            studentGroups.roles = {
+                leaders: Array.from({ length: count }, () => ''),
+                deputies: Array.from({ length: count }, () => '')
+            };
+        }
+
+        function persistRegroupResult() {
+            ensureGroupRoles();
+            localStorage.setItem('tab_class_student_groups', JSON.stringify(studentGroups));
+            renderGroupEditor();
+            renderGroupScoreBoard();
+            renderStatsBoard();
+            updateGroupUndoButton();
+        }
+
+        function randomRegroup() {
+            const count = Math.max(1, Math.min(20, parseInt(document.getElementById('group-count').value, 10) || 5));
+            const girls = teams.filter(isFemaleForRegroup);
+            const boys = teams.filter(student => !isFemaleForRegroup(student));
+            const minimumGirls = Math.floor(girls.length / count);
+            const ok = confirm(`確定要將 ${teams.length} 位學生隨機分配到 ${count} 組嗎？\n\n女生人數：${girls.length} 位；每組至少安排 ${minimumGirls} 位女生（女生總數 ÷ 組數，去掉小數）。\n這會重新安排所有組員，並清除全部組長、副組長職務，之後需重新指派。\n個人分數、各組團體分數及既有團體加分紀錄會保留。`);
+            if (!ok) return;
+            captureGroupUndoSnapshot();
+            const shuffle = list => {
+                const result = [...list];
+                for (let i = result.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [result[i], result[j]] = [result[j], result[i]];
+                }
+                return result;
+            };
+            const shuffledGirls = shuffle(girls);
+            const shuffledBoys = shuffle(boys);
+            const nextGroups = Array.from({ length: count }, () => []);
+            // 先以輪流方式安排女生，確保每組女生數量至少為 floor(女生總數/組數)，並盡量平均。
+            shuffledGirls.forEach((student, index) => nextGroups[index % count].push(student.name));
+            // 再輪流安排其他學生，打散起始組別，讓總人數也盡量平均。
+            const offset = Math.floor(Math.random() * count);
+            shuffledBoys.forEach((student, index) => nextGroups[(index + offset) % count].push(student.name));
+            studentGroups.count = count;
+            studentGroups.groups = nextGroups;
+            clearGroupLeadership(count);
+            confirmedGroups = Array.from({ length: count }, () => false);
+            document.getElementById('group-count').value = String(count);
+            persistRegroupResult();
+            alert(`已完成隨機分組：${teams.length} 位學生分成 ${count} 組。女生共 ${girls.length} 位，每組至少 ${minimumGirls} 位女生。請重新指派各組組長與副組長。`);
+        }
+
+        function startManualRegroup() {
+            const count = Math.max(1, Math.min(20, parseInt(document.getElementById('group-count').value, 10) || 5));
+            const ok = confirm(`確定要開始手動重新分組嗎？\n\n目前各組名單會清空，請重新勾選學生並按「儲存分組」。全部組長、副組長職務也會清除，需重新指派。\n個人分數、各組團體分數及既有團體加分紀錄都會保留。`);
+            if (!ok) return;
+            captureGroupUndoSnapshot();
+            studentGroups.count = count;
+            studentGroups.groups = Array.from({ length: count }, () => []);
+            clearGroupLeadership(count);
+            confirmedGroups = Array.from({ length: count }, () => false);
+            document.getElementById('group-count').value = String(count);
+            persistRegroupResult();
+            alert('已清空分組名單。請重新勾選每組組員，完成後按「儲存分組」，再指派組長與副組長。');
+        }
+
+        function saveGroups() {
+            const count = Math.max(1, Math.min(20, parseInt(document.getElementById('group-count').value, 10) || 5));
+            studentGroups.count = count;
+            studentGroups.groups = studentGroups.groups.slice(0, count);
+            while (studentGroups.groups.length < count) studentGroups.groups.push([]);
+            ensureGroupRoles();
+            localStorage.setItem('tab_class_student_groups', JSON.stringify(studentGroups));
+            renderGroupEditor();
+            if (currentBoardView === 'groups') renderGroupScoreBoard();
+            if (currentBoardView === 'stats') renderStatsBoard();
+            alert('分組名單已儲存！');
+        }
+
+        function toggleIdentityReference() {
+            const panel = document.getElementById('identity-reference-panel');
+            const willOpen = panel.hidden;
+            if (willOpen) {
+                document.getElementById('settings-panel').hidden = true;
+                document.getElementById('settings-btn').textContent = getSavedLabel('settings');
+                document.getElementById('roster-menu').hidden = true;
+                document.getElementById('roster-editor').hidden = true;
+                document.getElementById('group-editor').hidden = true;
+                document.getElementById('edit-roster-btn').textContent = getSavedLabel('editRoster');
+            }
+            panel.hidden = !willOpen;
+            const identityButton = document.getElementById('identity-table-btn');
+            if (identityButton) {
+                identityButton.textContent = willOpen ? '🪪 識別碼參照收合' : '🪪 識別碼參照表';
+                identityButton.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+            }
+            if (willOpen) renderIdentityReference();
+        }
+
+        function renderIdentityReference() {
+            const wrap = document.getElementById('identity-reference-table-wrap');
+            if (!wrap) return;
+            const table = document.createElement('table');
+            table.className = 'identity-table';
+            table.innerHTML = '<thead><tr><th>固定識別碼（不可修改）</th><th>顯示姓名（可修改）</th><th>分組別（由名單設定決定）</th></tr></thead>';
+            const tbody = document.createElement('tbody');
+            teams.forEach((team, index) => {
+                const tr = document.createElement('tr');
+                const idCell = document.createElement('td');
+                idCell.textContent = team.id || '';
+                idCell.style.color = '#666';
+                idCell.style.background = '#f3f4f6';
+                idCell.title = '固定識別碼由系統管理，請至名單設定調整學生資料';
+                const nameCell = document.createElement('td');
+                const nameInput = document.createElement('input');
+                nameInput.type = 'text'; nameInput.value = team.name; nameInput.dataset.field = 'name'; nameInput.dataset.index = index;
+                nameInput.setAttribute('aria-label', `${team.name} 顯示姓名`);
+                nameCell.appendChild(nameInput);
+                const groupCell = document.createElement('td');
+                const groupIndex = (studentGroups.groups || []).findIndex(group => group.includes(team.name));
+                groupCell.textContent = groupIndex >= 0 ? `第 ${groupIndex + 1} 組` : '未分組';
+                groupCell.style.color = '#666';
+                groupCell.style.background = '#f3f4f6';
+                tr.append(idCell, nameCell, groupCell); tbody.appendChild(tr);
+            });
+            table.appendChild(tbody); wrap.replaceChildren(table);
+        }
+
+        function saveIdentityReference() {
+            const wrap = document.getElementById('identity-reference-table-wrap');
+            const nameInputs = [...wrap.querySelectorAll('input[data-field="name"]')];
+            const values = new Map();
+            nameInputs.forEach(input => values.set(Number(input.dataset.index), input.value.trim()));
+            if ([...values.values()].some(name => !name)) return alert('顯示姓名不能空白。');
+            const oldTeams = teams.map(t => ({...t}));
+            const oldNameToNewName = new Map();
+            teams = teams.map((team, index) => {
+                const newName = values.get(index);
+                oldNameToNewName.set(team.name, newName);
+                return {...team, name: newName}; // 固定識別碼不可由此表修改
+            });
+            // 只同步姓名變更；分組仍以「修改名單」中的分組設定為準。
+            studentGroups.groups = (studentGroups.groups || []).map(group => group.map(name => oldNameToNewName.get(name) || name));
+            ensureGroupRoles();
+            localStorage.setItem('tab_class_student_groups', JSON.stringify(studentGroups));
+            // 舊版團體加分若以姓名儲存，改名時遷移至固定識別碼，保留既有紀錄。
+            oldTeams.forEach((oldTeam, index) => {
+                const newTeam = teams[index];
+                const oldPoints = groupContributions[oldTeam.id] ?? groupContributions[oldTeam.name];
+                if (oldPoints !== undefined) groupContributions[newTeam.id] = Number(oldPoints) || 0;
+                if (oldTeam.name !== newTeam.name) delete groupContributions[oldTeam.name];
+            });
+            localStorage.setItem('tab_class_teams_29', JSON.stringify(teams));
+            persistGroupData();
+            renderList();
+            if (!document.getElementById('group-editor').hidden) renderGroupEditor();
+            if (currentBoardView === 'groups') renderGroupScoreBoard();
+            if (currentBoardView === 'stats') renderStatsBoard();
+            renderIdentityReference();
+            alert('參照表已儲存！姓名已更新；固定識別碼與分組維持原設定。');
+        }
+
+        let wheelRotation = 0;
+        let wheelSpinning = false;
+        const wheelColors = ['#f8bbd0','#bbdefb','#c8e6c9','#ffe0b2','#d1c4e9','#b2dfdb','#fff9c4','#ffccbc','#c5cae9','#dcedc8'];
+        function openWheel() {
+            document.getElementById('wheel-overlay').classList.add('open');
+            drawWheel();
+            document.getElementById('wheel-result').textContent = '準備好了嗎？';
+        }
+        function closeWheel() {
+            if (wheelSpinning) return;
+            document.getElementById('wheel-overlay').classList.remove('open');
+        }
+        function drawWheel() {
+            const canvas = document.getElementById('wheel-canvas');
+            const ctx = canvas.getContext('2d');
+            const names = teams.map(t => t.name);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (!names.length) {
+                ctx.fillStyle = '#eeeeee'; ctx.beginPath(); ctx.arc(300,300,285,0,Math.PI*2); ctx.fill();
+                ctx.fillStyle = '#333'; ctx.font = 'bold 28px Microsoft JhengHei, sans-serif'; ctx.textAlign = 'center'; ctx.fillText('請先加入學生名單',300,310); return;
+            }
+            const slice = Math.PI * 2 / names.length;
+            names.forEach((name, i) => {
+                const start = -Math.PI / 2 + i * slice;
+                const end = start + slice;
+                ctx.beginPath(); ctx.moveTo(300,300); ctx.arc(300,300,285,start,end); ctx.closePath();
+                ctx.fillStyle = wheelColors[i % wheelColors.length]; ctx.fill();
+                ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 3; ctx.stroke();
+                ctx.save(); ctx.translate(300,300); ctx.rotate(start + slice / 2);
+                ctx.textAlign = 'right'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#263238';
+                const fontSize = names.length > 24 ? 15 : names.length > 16 ? 18 : 22;
+                ctx.font = `bold ${fontSize}px Microsoft JhengHei, sans-serif`;
+                let label = String(name); const maxChars = names.length > 24 ? 6 : 10;
+                if (label.length > maxChars) label = label.slice(0, maxChars - 1) + '…';
+                ctx.fillText(label, 255, 0); ctx.restore();
+            });
+            ctx.beginPath(); ctx.arc(300,300,38,0,Math.PI*2); ctx.fillStyle='#ffffff'; ctx.fill(); ctx.strokeStyle='#777'; ctx.lineWidth=3; ctx.stroke();
+        }
+        function spinWheel() {
+            if (wheelSpinning || !teams.length) return;
+            const winnerIndex = Math.floor(Math.random() * teams.length);
+            const sliceDeg = 360 / teams.length;
+            const desired = 360 - (winnerIndex + 0.5) * sliceDeg;
+            const current = ((wheelRotation % 360) + 360) % 360;
+            const delta = ((desired - current) + 360) % 360;
+            wheelRotation += 360 * (5 + Math.floor(Math.random() * 3)) + delta;
+            wheelSpinning = true;
+            const canvas = document.getElementById('wheel-canvas');
+            const button = document.getElementById('spin-btn');
+            button.disabled = true; button.textContent = '抽籤中…';
+            document.getElementById('wheel-result').textContent = '轉盤旋轉中……';
+            canvas.style.transition = 'transform 4.5s cubic-bezier(0.12, 0.75, 0.12, 1)';
+            canvas.style.transform = `rotate(${wheelRotation}deg)`;
+            window.setTimeout(() => {
+                document.getElementById('wheel-result').textContent = `🎉 抽中：${teams[winnerIndex].name}`;
+                button.disabled = false; button.textContent = '再抽一次'; wheelSpinning = false;
+            }, 4600);
+        }
+        document.getElementById('wheel-overlay').addEventListener('click', event => {
+            if (event.target.id === 'wheel-overlay') closeWheel();
+        });
+
+        // 將計分板存成 PNG；瀏覽器會存到預設下載資料夾
+        async function saveScreenshot() {
+            if (typeof html2canvas !== 'function') {
+                alert('截圖功能載入失敗，請確認網路連線後重新開啟此檔案再試一次。');
+                return;
+            }
+            const button = document.getElementById('screenshot-btn');
+            const panel = document.getElementById('side-panel');
+            button.disabled = true;
+            button.textContent = '截圖中…';
+            try {
+                updateDateTime();
+                const canvas = await html2canvas(panel, {
+                    backgroundColor: '#ffffff',
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                    ignoreElements: element => element.hasAttribute && element.hasAttribute('data-html2canvas-ignore')
+                });
+                const now = new Date();
+                const ymd = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}`;
+                const hm = `${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}`;
+                const link = document.createElement('a');
+                link.download = `${ymd}_${hm}.png`;
+                link.href = canvas.toDataURL('image/png');
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+            } catch (error) {
+                console.error('截圖失敗：', error);
+                alert('截圖存檔失敗，請再試一次。若瀏覽器詢問下載權限，請允許下載。');
+            } finally {
+                button.disabled = false;
+                button.textContent = '📸 截圖存檔';
+            }
+        }
+
+        // 顯示目前日期與時間，格式例如：20261025_AM：09:03
+        function updateDateTime() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hour24 = now.getHours();
+            const ampm = hour24 < 12 ? 'AM' : 'PM';
+            const hour12 = String(hour24 % 12 || 12).padStart(2, '0');
+            const minute = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('date-time').textContent = `${year}${month}${day}_${ampm}：${hour12}:${minute}`;
+        }
+        const titleInput = document.getElementById('board-title');
+        const savedBoardTitle = localStorage.getItem('tab_class_board_title') || '四１課堂計分板';
+        titleInput.value = savedBoardTitle;
+        document.getElementById('board-title-display').textContent = savedBoardTitle;
+        updateDateTime();
+        setInterval(updateDateTime, 15000);
 
         function renderList() {
             const container = document.getElementById('list-container');
             container.innerHTML = '';
-            teams.forEach((team, index) => {
-                const card = document.createElement('div');
-                card.className = 'team-card';
-                card.innerHTML = `
-                    <div class="team-info"><span class="team-name">${team.name}</span><span class="team-score" id="score-${index}">${team.score} 分</span></div>
-                    <div class="action-btns">
-                        <button class="btn-minus" onclick="changeScore(${index}, -1)">-</button>
-                        <button class="btn-plus" onclick="changeScore(${index}, 1)">+</button>
-                    </div>
-                `;
-                container.appendChild(card);
+            const genders = [...new Set(teams.map(team => team.gender || '學生'))];
+            const sections = genders.map(gender => ({
+                title: gender === '男生' ? '男生區' : gender === '女生' ? '女生區' : gender,
+                className: gender === '女生' ? 'girls-grid' : 'boys-grid',
+                students: teams.map((team, index) => ({ team, index })).filter(item => (item.team.gender || '學生') === gender)
+            }));
+            sections.forEach(section => {
+                const wrapper = document.createElement('section');
+                wrapper.className = 'student-section';
+                const heading = document.createElement('div');
+                heading.className = 'section-heading';
+                heading.textContent = section.title;
+                wrapper.appendChild(heading);
+                const grid = document.createElement('div');
+                grid.className = 'student-grid ' + section.className;
+                section.students.forEach(({team, index}) => {
+                    const card = document.createElement('div');
+                    card.className = 'team-card';
+                    card.innerHTML = `
+                        <div class="team-info">
+                            <span class="team-name" title="${team.name}">${team.name}</span>
+                            <span class="team-score" id="score-${index}">${team.score}分</span>
+                        </div>
+                        <div class="action-btns">
+                            <button class="btn-minus" aria-label="學生 ${team.name} 扣一分" onclick="changeScore(${index}, -1)">-</button>
+                            <button class="btn-plus" aria-label="學生 ${team.name} 加一分" onclick="changeScore(${index}, 1)">+</button>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+                wrapper.appendChild(grid);
+                container.appendChild(wrapper);
             });
             document.getElementById('names-input').value = teams.map(t => t.name).join(', ');
             updateUndoButtonState();
@@ -175,7 +1172,7 @@
             teams[index].score += value;
             if(teams[index].score < 0) teams[index].score = 0;
             document.getElementById(`score-${index}`).innerText = `${teams[index].score} 分`;
-            localStorage.setItem('tab_class_teams', JSON.stringify(teams));
+            localStorage.setItem('tab_class_teams_29', JSON.stringify(teams));
             if (value > 0) {
                 const cb = document.getElementById('celebrate');
                 cb.style.display = 'block';
@@ -190,23 +1187,35 @@
             if (newNames.length === 0) return alert('請輸入名字！');
             
             saveCurrentState();
-            const scoreMap = {};
-            teams.forEach(t => { scoreMap[t.name] = t.score; });
-            
-            teams = newNames.map(name => {
-                return { name: name, score: scoreMap[name] !== undefined ? scoreMap[name] : 0 };
+            // 先依完全相同姓名配對；若是同位置改名，沿用原識別碼及分數。
+            const oldTeams = [...teams];
+            const usedOldIndexes = new Set();
+            teams = newNames.map((name, index) => {
+                let oldIndex = oldTeams.findIndex((t, i) => !usedOldIndexes.has(i) && t.name === name);
+                if (oldIndex < 0 && oldTeams[index] && !usedOldIndexes.has(index)) oldIndex = index;
+                const old = oldIndex >= 0 ? oldTeams[oldIndex] : null;
+                if (oldIndex >= 0) usedOldIndexes.add(oldIndex);
+                return {
+                    id: old && old.id ? old.id : makeStudentId(),
+                    name,
+                    score: old ? (Number(old.score) || 0) : 0,
+                    gender: old?.gender || (index < 17 ? '男生' : '女生')
+                };
             });
             
-            localStorage.setItem('tab_class_teams', JSON.stringify(teams));
+            localStorage.setItem('tab_class_teams_29', JSON.stringify(teams));
             renderList();
+            if (!document.getElementById('group-editor').hidden) renderGroupEditor();
+            if (currentBoardView === 'groups') renderGroupScoreBoard();
+            if (currentBoardView === 'stats') renderStatsBoard();
         }
 
         function resetAllScores() {
-            const isConfirm = confirm("⚠️ 確定要將全班所有小組的分數全部歸零重來嗎？");
+            const isConfirm = confirm("⚠️ 確定要將全班 29 位學生的分數全部歸零重來嗎？");
             if (isConfirm) {
                 saveCurrentState();
                 teams.forEach(team => { team.score = 0; });
-                localStorage.setItem('tab_class_teams', JSON.stringify(teams));
+                localStorage.setItem('tab_class_teams_29', JSON.stringify(teams));
                 renderList();
             }
         }
@@ -215,12 +1224,160 @@
             if (previousState) {
                 teams = JSON.parse(previousState);
                 previousState = null;
-                localStorage.setItem('tab_class_teams', JSON.stringify(teams));
+                localStorage.setItem('tab_class_teams_29', JSON.stringify(teams));
                 renderList();
             }
         }
 
+        // 個人、分組、統計資料皆存入 localStorage，關閉瀏覽器後仍可保留。
+        let currentBoardView = 'personal';
+        let groupScores = {};
+        let groupContributions = {};
+        try { groupScores = JSON.parse(localStorage.getItem('tab_class_group_scores') || '{}') || {}; } catch (e) { groupScores = {}; }
+        try { groupContributions = JSON.parse(localStorage.getItem('tab_class_group_contributions') || '{}') || {}; } catch (e) { groupContributions = {}; }
+
+        function persistGroupData() {
+            localStorage.setItem('tab_class_group_scores', JSON.stringify(groupScores));
+            localStorage.setItem('tab_class_group_contributions', JSON.stringify(groupContributions));
+        }
+
+        function switchBoardView(view) {
+            currentBoardView = ['groups', 'stats'].includes(view) ? view : 'personal';
+            const personal = currentBoardView === 'personal';
+            const groups = currentBoardView === 'groups';
+            document.getElementById('list-container').hidden = !personal;
+            document.getElementById('group-score-container').hidden = !groups;
+            document.getElementById('stats-board-container').hidden = currentBoardView !== 'stats';
+            document.getElementById('config-area').hidden = !personal;
+            document.getElementById('show-personal-board').classList.toggle('active', personal);
+            document.getElementById('show-group-board').classList.toggle('active', groups);
+            document.getElementById('show-stats-board').classList.toggle('active', currentBoardView === 'stats');
+            if (groups) renderGroupScoreBoard();
+            if (currentBoardView === 'stats') renderStatsBoard();
+        }
+
+        function renderGroupScoreBoard() {
+            const root = document.getElementById('group-score-container');
+            root.innerHTML = '';
+            const count = Math.max(1, Math.min(20, Number(studentGroups.count) || 5));
+            const members = Array.from({length: count}, (_, i) => (studentGroups.groups[i] || []).filter(name => teams.some(t => t.name === name)));
+            for (let i = 0; i < count; i++) {
+                const key = String(i);
+                const card = document.createElement('div');
+                card.className = 'group-score-card';
+                const title = document.createElement('div');
+                title.className = 'group-score-title';
+                title.textContent = `第 ${i + 1} 組`;
+                const score = document.createElement('div');
+                score.className = 'group-score-number';
+                score.id = `group-score-${i}`;
+                score.textContent = `${Number(groupScores[key]) || 0} 分`;
+                const names = document.createElement('div');
+                names.className = 'group-score-members';
+                ensureGroupRoles();
+                const leader = teams.find(t => t.id === studentGroups.roles.leaders[i]);
+                const deputy = teams.find(t => t.id === studentGroups.roles.deputies[i]);
+                const displayMembers = members[i].map(name => {
+                    const member = teams.find(t => t.name === name);
+                    if (member && leader && member.id === leader.id) return `👑 ${name}（組長）`;
+                    if (member && deputy && member.id === deputy.id) return `⭐ ${name}（副組長）`;
+                    return name;
+                });
+                names.textContent = members[i].length ? displayMembers.join('、') : '尚未設定組員';
+                const actions = document.createElement('div');
+                actions.className = 'group-score-actions';
+                const minus = document.createElement('button');
+                minus.className = 'minus'; minus.textContent = '−'; minus.setAttribute('aria-label', `第 ${i + 1} 組扣一分`);
+                minus.onclick = () => changeGroupScore(i, -1);
+                const plus = document.createElement('button');
+                plus.className = 'plus'; plus.textContent = '+'; plus.setAttribute('aria-label', `第 ${i + 1} 組加一分`);
+                plus.onclick = () => changeGroupScore(i, 1);
+                actions.append(minus, plus);
+                card.append(title, score, names, actions);
+                root.appendChild(card);
+            }
+        }
+
+        function changeGroupScore(index, delta) {
+            const key = String(index);
+            const oldScore = Math.max(0, Number(groupScores[key]) || 0);
+            const nextScore = Math.max(0, oldScore + delta);
+            const actualDelta = nextScore - oldScore;
+            if (!actualDelta) return;
+            groupScores[key] = nextScore;
+            // 每次組分增減，同步記錄當下該組每位組員的團體加分，留作個人統計。
+            const members = (studentGroups.groups[index] || []).filter(name => teams.some(t => t.name === name));
+            members.forEach(name => {
+                const student = teams.find(t => t.name === name);
+                if (!student) return;
+                const keyForStudent = student.id || student.name;
+                groupContributions[keyForStudent] = Math.max(0, (Number(groupContributions[keyForStudent] ?? groupContributions[student.name]) || 0) + actualDelta);
+                if (student.name in groupContributions) delete groupContributions[student.name];
+            });
+            persistGroupData();
+            const score = document.getElementById(`group-score-${index}`);
+            if (score) score.textContent = `${groupScores[key]} 分`;
+            if (currentBoardView === 'stats') renderStatsBoard();
+            if (actualDelta > 0) {
+                const cb = document.getElementById('celebrate');
+                cb.style.display = 'block'; setTimeout(() => { cb.style.display = 'none'; }, 600);
+            }
+        }
+
+        function renderStatsBoard() {
+            const root = document.getElementById('stats-board-container');
+            root.innerHTML = '';
+            const note = document.createElement('p');
+            note.className = 'stats-note';
+            note.textContent = '統計板僅供查看；左欄為第 1–15 筆，右欄為第 16–30 筆。個人分數與團體加分合計為統計總分。';
+            root.appendChild(note);
+            const columns = document.createElement('div');
+            columns.className = 'stats-columns';
+            const makeHalf = (students, titleText) => {
+                const half = document.createElement('section');
+                half.className = 'stats-half';
+                const heading = document.createElement('h4');
+                heading.className = 'stats-half-title';
+                heading.textContent = titleText;
+                half.appendChild(heading);
+                const table = document.createElement('table');
+                table.className = 'stats-table';
+                const thead = document.createElement('thead');
+                const headRow = document.createElement('tr');
+                ['學生姓名', '個人', '團體', '總分'].forEach(label => {
+                    const th = document.createElement('th'); th.textContent = label; headRow.appendChild(th);
+                });
+                thead.appendChild(headRow); table.appendChild(thead);
+                const tbody = document.createElement('tbody');
+                students.forEach(team => {
+                    const groupPoints = Number(groupContributions[team.id] ?? groupContributions[team.name]) || 0;
+                    const personal = Number(team.score) || 0;
+                    const tr = document.createElement('tr');
+                    [team.name, personal, groupPoints, personal + groupPoints].forEach((value, i) => {
+                        const td = document.createElement('td');
+                        td.textContent = i === 0 ? value : `${value} 分`;
+                        if (i === 3) td.className = 'total';
+                        tr.appendChild(td);
+                    });
+                    tbody.appendChild(tr);
+                });
+                table.appendChild(tbody); half.appendChild(table);
+                columns.appendChild(half);
+            };
+            makeHalf(teams.slice(0, 15), '第 1–15 筆學生資料');
+            makeHalf(teams.slice(15, 30), '第 16–30 筆學生資料');
+            root.appendChild(columns);
+        }
+
+        // 載入已儲存的右側入口按鈕名稱；計分板標題已在上方初始化
+        const savedToggleLabel = localStorage.getItem('tab_class_toggle_label') || '個人紀錄';
+        document.getElementById('toggle-btn').textContent = '👤 ' + savedToggleLabel;
+        document.getElementById('toggle-button-label').value = savedToggleLabel;
+
+        document.getElementById('group-count').value = studentGroups.count || 5;
+        applyHeaderLabels();
         renderList();
+        updateGroupUndoButton();
     </script>
 </body>
 </html>
