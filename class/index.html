@@ -600,6 +600,27 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script>
+        // 匯入保險：在任何學生資料被讀取之前，先套用上一輪匯入暫存，避免舊頁面狀態覆蓋匯入值。
+        try {
+            const pendingImportRaw = localStorage.getItem('tab_class_pending_import_v1');
+            if (pendingImportRaw) {
+                const pendingImport = JSON.parse(pendingImportRaw);
+                const pendingEntries = pendingImport && pendingImport.entries;
+                if (pendingEntries && typeof pendingEntries === 'object') {
+                    Object.entries(pendingEntries).forEach(([key, value]) => {
+                        if (key.startsWith('tab_class_') && value != null) {
+                            localStorage.setItem(key, typeof value === 'string' ? value : JSON.stringify(value));
+                        }
+                    });
+                    if (pendingImport.fileName) {
+                        localStorage.setItem('tab_class_import_report_v1', JSON.stringify({ fileName: pendingImport.fileName, importedAt: pendingImport.importedAt || new Date().toISOString() }));
+                    }
+                }
+                localStorage.removeItem('tab_class_pending_import_v1');
+            }
+        } catch (pendingImportError) {
+            console.error('套用待匯入備份失敗：', pendingImportError);
+        }
         // 男生 1–17、女生 21–32；沿用舊版儲存的同號分數
         const defaultStudents = [
             ...Array.from({ length: 17 }, (_, i) => ({ name: String(i + 1), score: 0, gender: '男生' })),
@@ -709,13 +730,43 @@
                 const key = localStorage.key(i);
                 if (key && key.startsWith('tab_class_')) data[key] = localStorage.getItem(key);
             }
-            // 確保畫面上最新狀態也包含在備份中。
-            data.tab_class_teams_29 = JSON.stringify(teams);
+            // 匯出前以畫面目前顯示值校正資料，避免畫面與 teams 狀態短暫不同步時匯出舊分數／獎牌。
+            const exportTeams = teams.map((team, index) => {
+                const copy = { ...team };
+                const scoreEl = document.getElementById(`score-${index}`);
+                if (scoreEl) {
+                    const match = String(scoreEl.textContent || '').match(/-?\d+(?:\.\d+)?/);
+                    if (match) copy.score = Number(match[0]);
+                }
+                for (const [field, idPrefix] of [['silver','silver-medal-'], ['gold','gold-medal-'], ['blackCard','black-medal-']]) {
+                    const badge = document.getElementById(`${idPrefix}${index}`);
+                    if (badge) {
+                        const count = Number(String(badge.textContent || '').trim());
+                        if (Number.isFinite(count)) copy[field] = Math.max(0, count);
+                    }
+                }
+                return copy;
+            });
+            data.tab_class_teams_29 = JSON.stringify(exportTeams);
+            data.tab_class_medals_backup_v1 = JSON.stringify({
+                savedAt: new Date().toISOString(),
+                students: exportTeams.map(team => ({ id: String(team.id || ''), name: String(team.name ?? ''), silver: Number(team.silver) || 0, gold: Number(team.gold) || 0, blackCard: Number(team.blackCard) || 0 }))
+            });
             data.tab_class_student_groups = JSON.stringify(studentGroups);
             data.tab_class_group_scores = JSON.stringify(groupScores);
             data.tab_class_group_contributions = JSON.stringify(groupContributions);
             data.tab_class_group_contribution_totals = JSON.stringify(groupContributionTotals);
             data.tab_class_board_title = document.getElementById('board-title-display')?.textContent || '四１課堂計分板';
+            // 復原快照也必須與本次匯出的目前狀態一致，避免匯入後「還原」跳回另一個視窗的舊資料。
+            data.tab_class_score_undo_snapshot_v1 = JSON.stringify({
+                students: exportTeams.map(team => ({ id: team.id, name: team.name, score: Number(team.score) || 0, personalAccumulated: Number(team.personalAccumulated) || 0 })),
+                groupScores: JSON.parse(JSON.stringify(groupScores || {})),
+                groupContributions: JSON.parse(JSON.stringify(groupContributions || {})),
+                groupContributionTotals: JSON.parse(JSON.stringify(groupContributionTotals || {}))
+            });
+            data.tab_class_medal_undo_snapshot_v1 = JSON.stringify({
+                students: exportTeams.map(team => ({ id: team.id, name: team.name, silver: Number(team.silver) || 0, gold: Number(team.gold) || 0, blackCard: Number(team.blackCard) || 0 }))
+            });
             return data;
         }
         function exportJsonBackup() {
@@ -759,17 +810,30 @@
                             gender: student && student.gender ? student.gender : (index < 17 ? '男生' : '女生')
                         }));
                         data.tab_class_teams_29 = JSON.stringify(normalizedTeams);
-                        if (!data.tab_class_medals_backup_v1) {
-                            data.tab_class_medals_backup_v1 = JSON.stringify({
-                                savedAt: new Date().toISOString(),
-                                students: normalizedTeams.map(student => ({ id: student.id, name: student.name, silver: student.silver, gold: student.gold, blackCard: student.blackCard }))
-                            });
-                        }
+                        // 獎牌備援必須與本次匯入的學生資料一致，不能沿用檔案內可能過期的獨立備援。
+                        data.tab_class_medals_backup_v1 = JSON.stringify({
+                            savedAt: new Date().toISOString(),
+                            students: normalizedTeams.map(student => ({ id: student.id, name: student.name, silver: student.silver, gold: student.gold, blackCard: student.blackCard }))
+                        });
                     }
 
                     let parsedTeams = data.tab_class_teams_29;
                     if (typeof parsedTeams === 'string') parsedTeams = JSON.parse(parsedTeams);
                     if (!Array.isArray(parsedTeams)) throw new Error('這份檔案找不到有效的學生名單（tab_class_teams_29）。');
+                    // 匯入後，復原功能的基準應是「剛匯入的資料」，不可沿用備份內過期的操作快照。
+                    const importedGroups = (() => { try { const v=data.tab_class_student_groups; return typeof v === 'string' ? JSON.parse(v) : (v || {}); } catch (_) { return {}; } })();
+                    const importedGroupScores = (() => { try { const v=data.tab_class_group_scores; return typeof v === 'string' ? JSON.parse(v) : (v || {}); } catch (_) { return {}; } })();
+                    const importedContributions = (() => { try { const v=data.tab_class_group_contributions; return typeof v === 'string' ? JSON.parse(v) : (v || {}); } catch (_) { return {}; } })();
+                    const importedContributionTotals = (() => { try { const v=data.tab_class_group_contribution_totals; return typeof v === 'string' ? JSON.parse(v) : (v || {}); } catch (_) { return {}; } })();
+                    data.tab_class_score_undo_snapshot_v1 = JSON.stringify({
+                        students: parsedTeams.map(student => ({ id: student.id, name: student.name, score: Number(student.score) || 0, personalAccumulated: Number(student.personalAccumulated) || 0 })),
+                        groupScores: importedGroupScores,
+                        groupContributions: importedContributions,
+                        groupContributionTotals: importedContributionTotals
+                    });
+                    data.tab_class_medal_undo_snapshot_v1 = JSON.stringify({
+                        students: parsedTeams.map(student => ({ id: student.id, name: student.name, silver: Number(student.silver) || 0, gold: Number(student.gold) || 0, blackCard: Number(student.blackCard) || 0 }))
+                    });
                     const entries = Object.entries(data).filter(([key, value]) => key.startsWith('tab_class_') && value != null);
                     if (!entries.some(([key]) => key === 'tab_class_teams_29')) throw new Error('備份中沒有學生資料。');
                     if (!confirm('準備匯入「' + fileName + '」。\n學生人數：' + parsedTeams.length + '\n備份資料項目：' + entries.length + '\n\n匯入會覆蓋目前資料，建議先匯出備份。確定繼續嗎？')) {
@@ -788,6 +852,9 @@
                         });
                         const verifyTeams = JSON.parse(localStorage.getItem('tab_class_teams_29') || 'null');
                         if (!Array.isArray(verifyTeams) || verifyTeams.length !== parsedTeams.length) throw new Error('學生名單寫入後驗證不符。');
+                        const expectedScoreSum = parsedTeams.reduce((sum, student) => sum + (Number(student.score) || 0), 0);
+                        const writtenScoreSum = verifyTeams.reduce((sum, student) => sum + (Number(student.score) || 0), 0);
+                        if (expectedScoreSum !== writtenScoreSum) throw new Error(`分數寫入驗證不符：備份 ${expectedScoreSum} 分，寫入 ${writtenScoreSum} 分。`);
                         // 重開後顯示實際載入結果，方便辨識匯入是否真的生效。
                         localStorage.setItem('tab_class_import_report_v1', JSON.stringify({
                             fileName,
@@ -806,8 +873,12 @@
                         }
                         throw writeErr;
                     }
+                    // 將匯入內容再存成一次性待套用資料；重載後會在讀取 teams 之前再次寫入。
+                    const pendingEntries = {};
+                    entries.forEach(([key, value]) => { pendingEntries[key] = value; });
+                    localStorage.setItem('tab_class_pending_import_v1', JSON.stringify({ fileName, importedAt: new Date().toISOString(), entries: pendingEntries }));
                     if (input) input.value = '';
-                    alert('備份已寫入並驗證成功，即將重新載入。重新載入後會顯示實際讀到的分數與獎牌總數。');
+                    alert('備份已寫入並驗證成功，即將重新載入。系統會在載入學生資料前再次套用備份，並顯示實際讀到的分數與獎牌總數。');
                     location.reload();
                 } catch (err) {
                     console.error('JSON 匯入失敗：', err);
