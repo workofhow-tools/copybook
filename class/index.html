@@ -10,12 +10,22 @@
             --danger-color: #f44336;
             --bg-color: #fcfcfc;
         }
+        html {
+            min-height: 100%;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
         body {
-            margin: 0; padding: 0;
+            margin: 0;
+            padding: 0 0 calc(32px + env(safe-area-inset-bottom, 0px));
+            box-sizing: border-box;
             font-family: 'Microsoft JhengHei', sans-serif;
             background: transparent; /* 保持透明，方便疊加電子書 */
-            height: 100vh;
-            overflow: hidden;
+            min-height: 100vh;
+            min-height: 100dvh;
+            height: auto;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         /* 觸控優化懸浮鈕 */
@@ -67,6 +77,8 @@
         #date-time { color: #007c91; font-size: 18px; font-weight: bold; line-height: 1.2; }
         #screenshot-btn { border: 0; border-radius: 7px; padding: 7px 11px; background: #4caf50; color: white; font-family: inherit; font-size: 15px; font-weight: bold; cursor: pointer; white-space: nowrap; }
         #screenshot-btn:disabled { opacity: .65; cursor: wait; }
+        #top-wheel-btn { border:0; border-radius:7px; padding:7px 11px; background:#7e57c2; color:#fff; font-family:inherit; font-size:15px; font-weight:bold; cursor:pointer; white-space:nowrap; }
+        .top-wheel-reset-area #wheel-reset-btn { width:auto; height:100%; }
         #new-class-btn { border:0; border-radius:7px; padding:7px 11px; background:#ef6c00; color:#fff; font-family:inherit; font-size:15px; font-weight:bold; cursor:pointer; white-space:nowrap; }
         #board-title-display { margin: 0; color: #333; font-size: 22px; line-height: 1.25; overflow-wrap: anywhere; }
         .board-view-switch { display: flex; gap: 6px; margin-top: 7px; }
@@ -196,19 +208,44 @@
         .group-score-members { white-space:pre-line; line-height:1.55; }
         @media (max-width:360px) { .group-role-settings { grid-template-columns:1fr; } }
         @media (max-width: 420px) { #group-members-editor { grid-template-columns: 1fr; } }
-        .wheel-overlay { position: fixed; inset: 0; z-index: 200000; display: none; align-items: center; justify-content: center; padding: 16px; box-sizing: border-box; background: rgba(0,0,0,.58); }
+        .wheel-reset-area { position:relative; width:100%; margin:0; }
+        .top-wheel-reset-area { width:auto; flex:0 0 auto; }
+        #wheel-reset-btn { width:100%; }
+        #wheel-reset-btn { border:0; border-radius:8px; padding:8px 10px; background:#607d8b; color:#fff; font: bold 14px 'Microsoft JhengHei',sans-serif; cursor:pointer; white-space:nowrap; }
+        #wheel-reset-menu { position:absolute; right:0; top:calc(100% + 6px); z-index:200010; width:min(280px, 78vw); padding:10px; background:#fff; border:1px solid #cfd8dc; border-radius:10px; box-shadow:0 5px 18px rgba(0,0,0,.2); text-align:left; }
+        #wheel-reset-menu[hidden], #old-class-reset-options[hidden] { display:none !important; }
+        #wheel-reset-menu button { display:block; width:100%; margin:4px 0; padding:9px 8px; border:0; border-radius:7px; background:#e0f2f1; color:#004d40; font: bold 14px 'Microsoft JhengHei',sans-serif; text-align:left; cursor:pointer; }
+        #wheel-reset-menu button.danger { background:#ffebee; color:#b71c1c; }
+        #old-class-reset-options { margin-top:7px; padding-top:7px; border-top:1px solid #ddd; }
+        #old-class-reset-options button { background:#e8eaf6; color:#303f9f; }
+        .wheel-top { flex-wrap:wrap; }
+        .wheel-overlay { position: fixed; inset: 0; z-index: 200000; display: none; align-items: center; justify-content: center; padding: 16px 16px calc(16px + env(safe-area-inset-bottom, 0px)); box-sizing: border-box; background: rgba(0,0,0,.58); overflow-y: auto; -webkit-overflow-scrolling: touch; }
         .wheel-overlay.open { display: flex; }
-        .wheel-dialog { width: min(560px, 100%); max-height: 94vh; overflow: auto; box-sizing: border-box; padding: 18px; border-radius: 16px; background: white; text-align: center; box-shadow: 0 12px 40px rgba(0,0,0,.3); }
-        .wheel-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+        .wheel-dialog {
+            width: min(760px, 100%); max-height: calc(100dvh - 32px); overflow: auto;
+            box-sizing: border-box; padding: 18px; border-radius: 16px; background: white;
+            text-align: center; box-shadow: 0 12px 40px rgba(0,0,0,.3);
+            display: grid; grid-template-columns: minmax(0, 1fr) minmax(150px, .42fr);
+            grid-template-areas: "header header" "wheel controls";
+            align-items: center; gap: 10px 18px;
+            -webkit-overflow-scrolling: touch;
+        }
+        .wheel-top { grid-area: header; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+        .wheel-controls { grid-area: controls; display:flex; flex-direction:column; align-items:stretch; justify-content:center; gap:12px; min-width:0; }
         .wheel-top h2 { margin: 0; font-size: 22px; }
         .wheel-close { border: 0; background: transparent; font-size: 28px; cursor: pointer; }
-        .wheel-stage { position: relative; width: min( min(72vw, 420px), 100%); aspect-ratio: 1; margin: 14px auto; }
+        .wheel-stage { grid-area: wheel; position: relative; width: min(100%, 420px); aspect-ratio: 1; margin: 8px auto; }
         #wheel-canvas { width: 100%; height: 100%; display: block; transform: rotate(0deg); }
         .wheel-pointer { position: absolute; z-index: 2; left: 50%; top: -5px; transform: translateX(-50%); width: 0; height: 0; border-left: 17px solid transparent; border-right: 17px solid transparent; border-top: 0; border-bottom: 32px solid #f44336; filter: drop-shadow(0 2px 2px #777); }
-        #spin-btn { border: 0; border-radius: 9px; padding: 12px 28px; background: #7e57c2; color: white; font-family: inherit; font-size: 19px; font-weight: bold; cursor: pointer; }
+        #spin-btn { width:100%; border: 0; border-radius: 9px; padding: 12px 14px; background: #7e57c2; color: white; font-family: inherit; font-size: 19px; font-weight: bold; cursor: pointer; }
         #spin-btn:disabled { opacity: .6; cursor: wait; }
-        #wheel-result { min-height: 32px; margin-top: 12px; font-size: 23px; font-weight: bold; color: #d84315; }
-        #wheel-hint { margin: 8px 0 0; color: #666; font-size: 13px; }
+        #wheel-result { min-height: 32px; margin-top: 0; font-size: 23px; font-weight: bold; color: #d84315; overflow-wrap: anywhere; }
+        #wheel-hint { margin: 0; color: #666; font-size: 13px; }
+        @media (max-width: 560px) {
+            .wheel-dialog { width: min(440px, 100%); grid-template-columns: minmax(0, 1fr); grid-template-areas: "header" "wheel" "controls"; gap: 8px; padding: 14px; }
+            .wheel-stage { width: min(72vw, 320px); grid-row: 2; }
+            .wheel-controls { grid-row: 3; }
+        }
         .config-area textarea {
             width: 100%; height: 50px; box-sizing: border-box; margin-bottom: 8px;
             border: 1px solid #ccc; border-radius: 8px; padding: 6px; font-size: 16px; resize: none;
@@ -253,6 +290,7 @@
                     <div id="date-time">20261025_AM：09:03</div>
                     <button id="screenshot-btn" type="button" onclick="saveScreenshot()" data-html2canvas-ignore="true">📸 截圖存檔</button>
                     <button id="top-wheel-btn" type="button" onclick="openWheel()" data-html2canvas-ignore="true">🎡 課堂抽籤轉盤</button>
+                    <div class="wheel-reset-area top-wheel-reset-area" data-html2canvas-ignore="true"><button id="wheel-reset-btn" type="button" onclick="toggleWheelResetMenu()">🔄 重設</button><div id="wheel-reset-menu" hidden><button type="button" onclick="showOldClassResetOptions()">舊班：重新計分</button><div id="old-class-reset-options" hidden><button type="button" onclick="resetPersonalScores()">Ａ 個人分數歸零</button><button type="button" onclick="resetGroupScores()">Ｂ 分組歸零</button></div><button class="danger" type="button" onclick="resetToNewClass()">新班：清空所有記錄</button></div></div>
                 </div>
                 <h3 id="board-title-display">四１課堂計分板</h3>
                 <div class="board-view-switch" role="group" aria-label="切換計分板">
@@ -354,9 +392,11 @@
         <div class="wheel-dialog">
             <div class="wheel-top"><h2>🎡 課堂抽籤轉盤</h2><button class="wheel-close" onclick="closeWheel()" aria-label="關閉轉盤">×</button></div>
             <div class="wheel-stage"><div class="wheel-pointer"></div><canvas id="wheel-canvas" width="600" height="600"></canvas></div>
-            <button id="spin-btn" onclick="spinWheel()">開始抽籤</button>
-            <div id="wheel-result" aria-live="polite">準備好了嗎？</div>
-            <p id="wheel-hint">轉盤使用目前計分板的學生名單；修改名單後會自動更新。</p>
+            <div class="wheel-controls">
+                <button id="spin-btn" onclick="spinWheel()">開始抽籤</button>
+                <div id="wheel-result" aria-live="polite">準備好了嗎？</div>
+                <p id="wheel-hint">轉盤使用目前計分板的學生名單；修改名單後會自動更新。</p>
+            </div>
         </div>
     </div>
     <div id="celebrate">🎉</div>
@@ -538,6 +578,43 @@
             document.getElementById('identity-table-btn').textContent = '🪪 識別碼參照表';
             document.getElementById('identity-table-btn').setAttribute('aria-expanded', 'false');
             alert(`新班級已建立，共 ${teams.length} 位學生。所有分數已歸零，請至「修改名單」或「識別碼參照表」設定分組。`);
+        }
+
+        function toggleWheelResetMenu() {
+            const menu = document.getElementById('wheel-reset-menu');
+            menu.hidden = !menu.hidden;
+            if (menu.hidden) document.getElementById('old-class-reset-options').hidden = true;
+        }
+        function showOldClassResetOptions() {
+            document.getElementById('old-class-reset-menu');
+            const options = document.getElementById('old-class-reset-options');
+            options.hidden = !options.hidden;
+        }
+        function resetPersonalScores() {
+            if (!confirm('確定要將舊班所有學生的「個人分數」歸零嗎？學生名單、固定識別碼、分組、組長／副組長及團體分數都會保留。')) return;
+            saveCurrentState();
+            teams.forEach(team => { team.score = 0; });
+            localStorage.setItem('tab_class_teams_29', JSON.stringify(teams));
+            renderList(); renderStatsBoard();
+            document.getElementById('wheel-reset-menu').hidden = true;
+            document.getElementById('old-class-reset-options').hidden = true;
+            alert('個人分數已歸零；名單、分組與職務設定均已保留。');
+        }
+        function resetGroupScores() {
+            if (!confirm('確定要將各組團體分數，以及統計板中的團體加分全部歸零嗎？個人分數、學生名單、分組及組長／副組長設定都會保留。')) return;
+            groupScores = {};
+            groupContributions = {};
+            persistGroupData();
+            renderGroupScoreBoard(); renderStatsBoard();
+            document.getElementById('wheel-reset-menu').hidden = true;
+            document.getElementById('old-class-reset-options').hidden = true;
+            alert('各組分數與統計中的團體加分已歸零。');
+        }
+        function resetToNewClass() {
+            if (!confirm('⚠️ 新班將清除舊班學生名單、個人分數、固定識別碼對應、分組、組長／副組長及團體加分紀錄。此操作無法直接復原，建議先到「設定」匯出 JSON 備份。確定繼續嗎？')) return;
+            document.getElementById('wheel-reset-menu').hidden = true;
+            document.getElementById('old-class-reset-options').hidden = true;
+            createNewClass(true);
         }
 
         function openPanel() { document.getElementById('side-panel').classList.add('open'); }
