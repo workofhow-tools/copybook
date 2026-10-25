@@ -616,9 +616,14 @@
         // 優先讀取上次儲存的完整名單與分數，重新開啟檔案也能保留自訂名字
         let teams = Array.isArray(savedStudents) && savedStudents.length
             ? savedStudents.map((student, index) => ({
+                ...student,
                 id: student.id ? String(student.id) : '',
                 name: String(student.name ?? (index + 1)),
                 score: Number(student.score) || 0,
+                personalAccumulated: Number(student.personalAccumulated) || 0,
+                silver: Number(student.silver) || 0,
+                gold: Number(student.gold) || 0,
+                blackCard: Number(student.blackCard) || 0,
                 gender: student.gender || (index < 17 ? '男生' : '女生')
             }))
             : defaultStudents.map(student => ({
@@ -2371,6 +2376,25 @@
         applyHeaderLabels();
         renderList();
         updateGroupUndoButton();
+
+        // 關閉、切換背景前再補存一次，降低 iPad 瀏覽器中途離開頁面時遺失最新資料的風險。
+        function flushClassroomData() {
+            try {
+                if (typeof teams !== 'undefined' && Array.isArray(teams)) {
+                    localStorage.setItem('tab_class_teams_29', JSON.stringify(teams));
+                }
+                if (typeof groupScores !== 'undefined') localStorage.setItem('tab_class_group_scores', JSON.stringify(groupScores));
+                if (typeof groupContributions !== 'undefined') localStorage.setItem('tab_class_group_contributions', JSON.stringify(groupContributions));
+                if (typeof groupContributionTotals !== 'undefined') localStorage.setItem('tab_class_group_contribution_totals', JSON.stringify(groupContributionTotals));
+            } catch (err) {
+                console.warn('課堂資料無法寫入瀏覽器儲存空間。請使用「匯出 JS」備份資料。', err);
+            }
+        }
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden') flushClassroomData();
+        });
+        window.addEventListener('pagehide', flushClassroomData);
+        window.addEventListener('beforeunload', flushClassroomData);
     </script>
 </body>
 </html>
