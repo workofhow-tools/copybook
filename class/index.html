@@ -276,7 +276,41 @@
             50% { transform: translate(-50%, -50%) scale(1.3); opacity: 1; }
             100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
         }
-    </style>
+    
+        /* iPad Safari / Chrome：讓整個個人紀錄面板可垂直捲動，避免底部功能被瀏覽器視窗高度裁切 */
+        #side-panel {
+            height: 100vh;
+            height: 100dvh;
+            overflow-x: hidden;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior-y: contain;
+        }
+        #side-panel .panel-header {
+            flex-shrink: 0;
+        }
+        #side-panel .grid-container {
+            flex: 0 0 auto;
+            min-height: auto;
+            overflow: visible;
+        }
+        #side-panel #group-score-container,
+        #side-panel #stats-board-container {
+            flex: 0 0 auto;
+            min-height: auto;
+            overflow: visible;
+        }
+        #side-panel .config-area {
+            flex-shrink: 0;
+            padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+        }
+        /* 設定與名單等長內容仍在各自區域捲動，不影響面板底部按鈕 */
+        #settings-panel,
+        #roster-menu,
+        #identity-reference-panel {
+            -webkit-overflow-scrolling: touch;
+        }
+</style>
 </head>
 <body>
 
