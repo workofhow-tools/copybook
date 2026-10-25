@@ -1548,10 +1548,63 @@
             canvas.style.transform = `rotate(${wheelRotation}deg)`;
             startWheelSound(4600);
             window.setTimeout(() => {
-                document.getElementById('wheel-result').textContent = `🎉 抽中：${teams[winnerIndex].name}`;
+                const winnerName = String(teams[winnerIndex].name || '').trim();
+                document.getElementById('wheel-result').textContent = `🎉 抽中：${winnerName}`;
                 button.disabled = false; button.textContent = '再抽一次'; wheelSpinning = false;
+                announceWheelWinner(winnerName);
             }, 4600);
         }
+        // V40：抽籤停止後，優先使用繁體中文女聲播報，再接 1.5 秒觀眾歡呼。
+        let wheelAnnouncementToken = 0;
+        function announceWheelWinner(name) {
+            if (!name) return;
+            const token = ++wheelAnnouncementToken;
+            const synth = window.speechSynthesis;
+            if (!synth || typeof SpeechSynthesisUtterance === 'undefined') {
+                playWheelWinnerCheer();
+                return;
+            }
+            // 中止前一次尚未完成的播報，避免連續抽籤時語音互相重疊。
+            try { synth.cancel(); } catch (e) {}
+            const utterance = new SpeechSynthesisUtterance(`恭喜你，${name}！`);
+            utterance.lang = 'zh-TW';
+            utterance.rate = 0.95;
+            utterance.pitch = 1.12;
+            const voices = synth.getVoices ? synth.getVoices() : [];
+            const chineseVoices = voices.filter(v => /^zh(-|_)(TW|Hant)/i.test(v.lang || '') || /繁體|台灣|臺灣|Taiwan/i.test(v.name || ''));
+            const femaleHint = /female|女|雅婷|婷|美|xiaoxiao|huihui|tingting/i;
+            const preferred = chineseVoices.find(v => femaleHint.test(v.name || '')) || chineseVoices.find(v => /zh-TW/i.test(v.lang || ''));
+            if (preferred) utterance.voice = preferred;
+            utterance.onend = () => { if (token === wheelAnnouncementToken) playWheelWinnerCheer(); };
+            utterance.onerror = () => { if (token === wheelAnnouncementToken) playWheelWinnerCheer(); };
+            try { synth.speak(utterance); }
+            catch (e) { playWheelWinnerCheer(); }
+        }
+        function playWheelWinnerCheer() {
+            const ctx = getClassroomAudioContext();
+            // 優先沿用計分板已有的觀眾歡呼音檔，播放 1.5 秒後停止。
+            if (typeof classroomCheerAudio !== 'undefined' && classroomCheerAudio) {
+                try {
+                    classroomCheerAudio.pause();
+                    classroomCheerAudio.currentTime = 0;
+                    classroomCheerAudio.volume = 0.72;
+                    const playback = classroomCheerAudio.play();
+                    if (playback && typeof playback.then === 'function') {
+                        playback.then(() => {
+                            window.setTimeout(() => {
+                                classroomCheerAudio.pause();
+                                try { classroomCheerAudio.currentTime = 0; } catch (e) {}
+                            }, 1500);
+                        }).catch(() => { if (ctx) playCheerNoise(ctx, ctx.currentTime, 1.5); });
+                    } else {
+                        window.setTimeout(() => { classroomCheerAudio.pause(); try { classroomCheerAudio.currentTime = 0; } catch (e) {} }, 1500);
+                    }
+                    return;
+                } catch (e) {}
+            }
+            if (ctx) playCheerNoise(ctx, ctx.currentTime, 1.5);
+        }
+
         document.getElementById('wheel-overlay').addEventListener('click', event => {
             if (event.target.id === 'wheel-overlay') closeWheel();
         });
