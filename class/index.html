@@ -173,8 +173,28 @@
         #open-wheel-btn { background: #7e57c2; color: white; }
         #settings-btn { background: #607d8b; color: white; }
         #roster-menu { margin-top: 8px; max-height: 38vh; overflow-y: auto; }
-        #side-panel.group-edit-mode #config-area { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
-        #side-panel.group-edit-mode #roster-menu { max-height: none; overflow: visible; }
+        /* 編輯分組時，隱藏計分畫面並把可用高度留給分組編輯器 */
+        #side-panel.group-edit-mode {
+            overflow: hidden;
+        }
+        #side-panel.group-edit-mode #config-area {
+            display: block;
+            flex: 1 1 auto;
+            min-height: 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior-y: contain;
+            padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+        }
+        #side-panel.group-edit-mode #roster-menu {
+            max-height: none;
+            overflow: visible;
+            margin-bottom: 8px;
+        }
+        #side-panel.group-edit-mode #group-editor {
+            padding-bottom: 12px;
+        }
         .settings-field { display: block; font-weight: bold; margin: 10px 0 4px; }
         .settings-section-title { margin: 14px 0 5px; padding-bottom: 4px; border-bottom: 1px solid #dce3e6; color: #007c91; font-weight: bold; }
         .settings-hint { margin: 4px 0; color: #607d8b; font-size: 12px; }
@@ -310,6 +330,86 @@
         #identity-reference-panel {
             -webkit-overflow-scrolling: touch;
         }
+
+        /* iPad / Safari / Chrome：上方保留三個計分板切換；底部固定的是三個功能按鈕 */
+        #side-panel {
+            height: 100vh;
+            height: 100dvh;
+            box-sizing: border-box;
+            padding-bottom: calc(82px + env(safe-area-inset-bottom, 0px));
+        }
+        #side-panel .board-view-switch {
+            position: static;
+            width: auto;
+            z-index: auto;
+            margin-top: 7px;
+            padding: 0;
+            background: transparent;
+            border-top: 0;
+            box-shadow: none;
+        }
+        #side-panel .board-view-switch button {
+            flex: 1 1 0;
+            min-width: 0;
+            min-height: 44px;
+            border-radius: 8px;
+        }
+        /* 只有面板開啟時才把「修改名單／設定／識別碼參照表」固定在螢幕底部 */
+        #side-panel.open .config-actions {
+            position: fixed;
+            left: max(0px, calc(100vw - 1100px));
+            right: 0;
+            bottom: 0;
+            width: min(1100px, 100vw);
+            z-index: 100002;
+            box-sizing: border-box;
+            display: flex;
+            gap: 8px;
+            margin: 0;
+            padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 0px));
+            background: rgba(255, 255, 255, 0.98);
+            border-top: 1px solid #e3eaed;
+            box-shadow: 0 -4px 14px rgba(0, 0, 0, 0.08);
+        }
+        #side-panel.open .config-actions button {
+            flex: 1 1 0;
+            min-width: 0;
+            min-height: 44px;
+            border-radius: 10px;
+        }
+        @media (max-width: 520px) {
+            #side-panel.open .config-actions {
+                gap: 4px;
+                padding-left: 8px;
+                padding-right: 8px;
+            }
+            #side-panel.open .config-actions button {
+                font-size: 12px;
+                padding: 8px 2px;
+            }
+        }
+
+
+        /* 修正：功能列移到 config-area 外，因此個人／分組／統計板都會顯示 */
+        #side-panel.open {
+            padding-bottom: calc(82px + env(safe-area-inset-bottom, 0px)) !important;
+        }
+        #side-panel.open .config-actions {
+            position: fixed;
+            bottom: 0;
+        }
+
+
+        /* 功能列已獨立固定在底部；這裡只承載各功能面板，未開啟時不佔空間 */
+        #config-area {
+            border-top: 0;
+            padding-top: 0;
+            margin-top: 0;
+        }
+        #config-area:has(> #identity-reference-panel[hidden]):has(> #settings-panel[hidden]):has(> #roster-menu[hidden]) {
+            display: none;
+        }
+
 </style>
 </head>
 <body>
@@ -338,12 +438,12 @@
         <div class="grid-container" id="list-container"></div>
         <div id="group-score-container" hidden></div>
         <div id="stats-board-container" hidden></div>
+        <div class="config-actions">
+            <button id="edit-roster-btn" type="button" onclick="toggleRosterEditor()">✏️ 修改名單</button>
+            <button id="settings-btn" type="button" onclick="toggleSettings()">⚙️ 設定</button>
+            <button id="identity-table-btn" type="button" onclick="toggleIdentityReference()">👁️ 識別碼參照表</button>
+        </div>
         <div class="config-area" id="config-area">
-            <div class="config-actions">
-                <button id="edit-roster-btn" type="button" onclick="toggleRosterEditor()">✏️ 修改名單</button>
-                <button id="settings-btn" type="button" onclick="toggleSettings()">⚙️ 設定</button>
-                <button id="identity-table-btn" type="button" onclick="toggleIdentityReference()">🪪 識別碼參照表</button>
-            </div>
             <div id="identity-reference-panel" hidden>
                 <p class="identity-help">此表的固定識別碼與分組由名單設定自動決定，不可在此修改；只有顯示姓名可以修改。改名後按「儲存參照表」，系統會同步更新分組名單與統計紀錄。</p>
                 <div id="identity-reference-table-wrap"></div>
@@ -609,7 +709,7 @@
             document.getElementById('roster-menu').hidden = true;
             document.getElementById('roster-editor').hidden = true;
             document.getElementById('identity-reference-panel').hidden = true;
-            document.getElementById('identity-table-btn').textContent = '🪪 識別碼參照表';
+            document.getElementById('identity-table-btn').textContent = '👁️ 識別碼參照表';
             document.getElementById('identity-table-btn').setAttribute('aria-expanded', 'false');
             alert(`新班級已建立，共 ${teams.length} 位學生。所有分數已歸零，請至「修改名單」或「識別碼參照表」設定分組。`);
         }
@@ -665,8 +765,8 @@
                 rosterButton.textContent = getSavedLabel('editRoster');
                 document.getElementById('roster-editor').hidden = true;
                 document.getElementById('group-editor').hidden = true;
-                document.getElementById('list-container').hidden = false;
                 document.getElementById('side-panel').classList.remove('group-edit-mode');
+                switchBoardView(currentBoardView);
             }
             panel.hidden = !willOpen;
             button.textContent = willOpen ? '✖ 收合設定' : getSavedLabel('settings');
@@ -742,8 +842,8 @@
             if (!willOpen) {
                 document.getElementById('roster-editor').hidden = true;
                 document.getElementById('group-editor').hidden = true;
-                document.getElementById('list-container').hidden = false;
                 document.getElementById('side-panel').classList.remove('group-edit-mode');
+                switchBoardView(currentBoardView);
             }
         }
 
@@ -752,9 +852,15 @@
             const groupPanel = document.getElementById('group-editor');
             studentPanel.hidden = which !== 'students';
             groupPanel.hidden = which !== 'groups';
-            // 編輯分組時收合上方個人計分板，把空間留給分組名單
-            document.getElementById('list-container').hidden = which === 'groups';
+            // 編輯分組時隱藏計分畫面，將可視高度留給分組名單；離開時恢復原本選取的計分板。
             document.getElementById('side-panel').classList.toggle('group-edit-mode', which === 'groups');
+            if (which === 'groups') {
+                document.getElementById('list-container').hidden = true;
+                document.getElementById('group-score-container').hidden = true;
+                document.getElementById('stats-board-container').hidden = true;
+            } else {
+                switchBoardView(currentBoardView);
+            }
             document.getElementById('edit-students-btn').style.background = which === 'students' ? '#00bcd4' : '#e0f7fa';
             document.getElementById('edit-students-btn').style.color = which === 'students' ? '#fff' : '#006064';
             document.getElementById('edit-groups-btn').style.background = which === 'groups' ? '#00bcd4' : '#e0f7fa';
@@ -1037,7 +1143,7 @@
             panel.hidden = !willOpen;
             const identityButton = document.getElementById('identity-table-btn');
             if (identityButton) {
-                identityButton.textContent = willOpen ? '🪪 識別碼參照收合' : '🪪 識別碼參照表';
+                identityButton.textContent = willOpen ? '👁️ 收合參照表' : '👁️ 識別碼參照表';
                 identityButton.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
             }
             if (willOpen) renderIdentityReference();
@@ -1536,10 +1642,12 @@
             currentBoardView = ['groups', 'stats'].includes(view) ? view : 'personal';
             const personal = currentBoardView === 'personal';
             const groups = currentBoardView === 'groups';
-            document.getElementById('list-container').hidden = !personal;
-            document.getElementById('group-score-container').hidden = !groups;
-            document.getElementById('stats-board-container').hidden = currentBoardView !== 'stats';
-            document.getElementById('config-area').hidden = !personal;
+            const editingGroups = document.getElementById('side-panel').classList.contains('group-edit-mode');
+            document.getElementById('list-container').hidden = editingGroups || !personal;
+            document.getElementById('group-score-container').hidden = editingGroups || !groups;
+            document.getElementById('stats-board-container').hidden = editingGroups || currentBoardView !== 'stats';
+            // 功能面板在三種計分板都可使用；編輯分組時優先把空間留給分組名單。
+            document.getElementById('config-area').hidden = false;
             document.getElementById('show-personal-board').classList.toggle('active', personal);
             document.getElementById('show-group-board').classList.toggle('active', groups);
             document.getElementById('show-stats-board').classList.toggle('active', currentBoardView === 'stats');
