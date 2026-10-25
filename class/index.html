@@ -124,6 +124,9 @@
         .seat-picker-option:active { background:#d9f3f5; }
         .seat-picker-option.clear { background:#fff3e0; border-color:#ffcc80; font-size:10px; padding:3px 2px; }
         .seat-cell-score { text-align: center; font-weight: bold; font-size: 15px; color: #ff5722; min-height: 18px; }
+        .seat-cell-medals { display:flex; justify-content:center; align-items:center; gap:3px; min-height:20px; }
+        .seat-cell-medals .team-medal { width:18px; height:18px; min-width:18px; font-size:9px; }
+        .seat-cell-medals .team-medal.black { width:18px; min-width:18px; }
         .seat-cell-actions { display: flex; justify-content: center; gap: 5px; }
         .seat-cell-actions button { flex: 1; min-width: 0; border: 0; border-radius: 6px; padding: 5px 0; color: white; font-size: 17px; line-height: 1; font-weight: bold; }
         .seat-cell-actions .minus { background: #f44336; }
@@ -137,6 +140,9 @@
         .stats-table th { position: sticky; top: 0; background: #e0f7fa; color: #006064; z-index: 1; }
         .stats-table th:first-child, .stats-table td:first-child { width: 27%; text-align: left; }
         .stats-table .total { font-weight: bold; color: #d84315; }
+        .medal-settings { display:flex; flex-wrap:wrap; gap:8px; align-items:center; padding:8px; margin:0 0 8px; border:1px solid #cfd8dc; border-radius:8px; background:#fafcfd; font-size:13px; }
+        .medal-settings label { display:flex; gap:4px; align-items:center; }
+        .medal-settings select { font:inherit; padding:4px; border:1px solid #b0bec5; border-radius:5px; background:white; }
         /* .grid-container 本身設定 display:flex，需明確遵守 hidden，避免切換頁面時個人板留在背景 */
         #list-container[hidden] { display: none !important; }
         .stats-note { margin: 0 0 8px; color: #546e7a; font-size: 13px; }
@@ -166,8 +172,9 @@
         .identity-table th,.identity-table td { border:1px solid #d7d9e8; padding:5px 4px; text-align:left; overflow-wrap:anywhere; }
         .identity-table th { background:#e8eaf6; }
         .identity-table th:nth-child(1) { width:19%; }
-        .identity-table th:nth-child(2) { width:37%; }
-        .identity-table th:nth-child(3) { width:44%; }
+        .identity-table th:nth-child(2) { width:14%; text-align:center; }
+        .identity-table th:nth-child(3) { width:31%; }
+        .identity-table th:nth-child(4) { width:36%; }
         .identity-table input,.identity-table select { width:100%; min-width:0; box-sizing:border-box; border:1px solid #c5cae9; border-radius:5px; padding:6px 4px; font:inherit; background:#fff; }
         .identity-actions { display:flex; gap:7px; margin-top:8px; }
         .identity-actions button { flex:1; border:0; border-radius:6px; padding:8px; font:inherit; font-weight:bold; cursor:pointer; background:#5c6bc0; color:white; }
@@ -201,6 +208,12 @@
         .team-info { display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 4px; min-width: 0; width: 100%; flex: 0 0 auto; margin: 0; }
         .team-name { font-weight: bold; font-size: 16px; line-height: 1; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .team-score { font-size: 15px; line-height: 1; color: #ff5722; font-weight: bold; margin: 0; white-space: nowrap; }
+        .team-medals { display:flex; justify-content:center; align-items:center; gap:5px; height:17px; flex:0 0 17px; }
+        .team-medal { position:relative; display:inline-flex; align-items:center; justify-content:center; width:20px; height:20px; min-width:20px; box-sizing:border-box; border-radius:50%; font-size:10px; line-height:1; font-weight:900; color:#fff; border:3px solid #8b929b; box-shadow:0 1px 3px rgba(0,0,0,.30); }
+        .team-medal.silver { background:linear-gradient(145deg,#f5f7fa,#aab3be); color:#263238; border-color:#7d8794; box-shadow:0 1px 3px rgba(0,0,0,.28); }
+        .team-medal.gold { background:linear-gradient(145deg,#fff176,#f0b900); color:#5d3900; border-color:#b17b00; box-shadow:0 1px 3px rgba(0,0,0,.28); }
+        .team-medal.black { width:20px; min-width:20px; border-radius:50%; background:linear-gradient(145deg,#454545,#050505); color:#fff; border:3px solid #a5a5a5; box-shadow:0 1px 3px rgba(0,0,0,.32); }
+        .team-medal[hidden] { display:none !important; }
         .action-btns { display: flex; justify-content: center; align-items: center; gap: 3px; flex: 0 0 auto; }
         .action-btns button {
             width: 32px; height: 32px; min-width: 32px; padding: 0; border-radius: 50%; border: none; font-size: 20px; line-height: 32px; font-weight: bold; color: white; cursor: pointer;
@@ -464,11 +477,11 @@
         <div class="panel-header">
             <div class="header-main">
                 <div class="date-time-row">
-                    <div id="date-time">20261025_AM：09:03</div>
+                    <div id="date-time">19:45</div>
                     <button id="screenshot-btn" type="button" onclick="saveScreenshot()" data-html2canvas-ignore="true">📸 截圖</button>
                     <button id="top-wheel-btn" type="button" onclick="openWheel()" data-html2canvas-ignore="true">🎡 抽籤</button>
                     <div class="top-data-actions" data-html2canvas-ignore="true">
-                        <button type="button" class="top-data-btn json" onclick="exportJsonBackup()">匯出 JSON</button>
+                        <button type="button" class="top-data-btn json" onclick="exportJsonBackup()">匯出 JS</button>
                         <button type="button" class="top-data-btn excel" onclick="exportExcelGrades()">匯出 EXCEL</button>
                         <button type="button" class="top-data-btn import" onclick="document.getElementById('json-import-file').click()">匯入</button>
                     </div>
@@ -533,7 +546,7 @@
                 <div class="settings-section-title">成績匯出與完整備份</div>
                 <div class="settings-data-actions" style="display:flex;flex-wrap:wrap;gap:8px;margin:8px 0;">
                     <button type="button" onclick="exportExcelGrades()">📊 匯出 Excel 成績</button>
-                    <button type="button" onclick="exportJsonBackup()">💾 匯出 JSON 完整備份</button>
+                    <button type="button" onclick="exportJsonBackup()">💾 匯出 JS 完整備份</button>
                     <button type="button" onclick="document.getElementById('json-import-file').click()">📥 匯入 JSON 備份</button>
                     <input id="json-import-file" type="file" accept=".json,application/json" hidden onchange="importJsonBackup(event)">
                 </div>
@@ -565,7 +578,7 @@
                         <button type="button" class="regroup-manual-btn" onclick="startManualRegroup()">✍️ 手動重新分組</button>
                         <button type="button" id="undo-regroup-btn" class="regroup-undo-btn" onclick="undoRegroup()" disabled>↩️ 復原上次分組</button>
                     </div>
-                    <p class="group-help">自動分組時，女生（名單性別標記為女生，或姓名／座號以 21 以上數字開頭）會平均分配，每組女生至少為「女生總數 ÷ 組數」去掉小數後的數量。重新分組會清除所有組長、副組長職務，需由老師重新指派；個人分數、各組團體分數及既有團體加分紀錄會保留。點選學生姓名即可加入該組；每位學生只能分配到一組。再次點選可取消。</p>
+                    <p class="group-help">自動分組時，女生（名單性別標記為女生，或姓名／座號以 21 以上數字開頭）會平均分配，每組女生至少為「女生總數 ÷ 組數」去掉小數後的數量。重新分組會清除所有組長、副組長職務，需由老師重新指派；個人分數、各組分組分數及既有分組加分紀錄會保留。點選學生姓名即可加入該組；每位學生只能分配到一組。再次點選可取消。</p>
                     <div id="group-members-editor"></div>
                 </div>
             </div>
@@ -656,6 +669,7 @@
             data.tab_class_student_groups = JSON.stringify(studentGroups);
             data.tab_class_group_scores = JSON.stringify(groupScores);
             data.tab_class_group_contributions = JSON.stringify(groupContributions);
+            data.tab_class_group_contribution_totals = JSON.stringify(groupContributionTotals);
             data.tab_class_board_title = document.getElementById('board-title-display')?.textContent || '四１課堂計分板';
             return data;
         }
@@ -705,7 +719,7 @@
                 if (leaderId) roleByStudentId.set(leaderId, '組長');
                 if (deputyId) roleByStudentId.set(deputyId, '副組長');
             }
-            const studentRows = [[ '固定識別碼','學生姓名','分組','職務','個人分數','團體加分','統計總分' ]];
+            const studentRows = [[ '固定識別碼','學生姓名','分組','職務','個人分數','分組加分','統計總分' ]];
             teams.forEach(t => {
                 const group = memberGroup.get(t.name) || '';
                 const personal = Number(t.score) || 0, groupPoints = contribution(t);
@@ -713,14 +727,14 @@
             });
             const groupMembers = Array.from({length: groupCount}, (_, i) => (studentGroups.groups[i] || []).filter(n => teams.some(t => t.name === n)));
             const maxMembers = Math.max(1, ...groupMembers.map(members => members.length));
-            const groupRows = [['組別','團體分數','組長','副組長', ...Array.from({length:maxMembers}, (_, i) => `組員${i+1}`)]];
+            const groupRows = [['組別','分組分數','組長','副組長', ...Array.from({length:maxMembers}, (_, i) => `組員${i+1}`)]];
             for (let i=0;i<groupCount;i++) {
                 const members = groupMembers[i];
                 const leader = teams.find(t => t.id === studentGroups.roles.leaders[i]);
                 const deputy = teams.find(t => t.id === studentGroups.roles.deputies[i]);
                 groupRows.push([`第 ${i+1} 組`, [Number(groupScores[String(i)])||0,'Number'], leader?.name || '', deputy?.name || '', ...Array.from({length:maxMembers}, (_, j) => members[j] || '')]);
             }
-            const refRows = [['固定識別碼','顯示姓名','分組','職務','個人分數','團體加分']];
+            const refRows = [['固定識別碼','顯示姓名','分組','職務','個人分數','分組加分']];
             teams.forEach(t => refRows.push([t.id || '',t.name,memberGroup.get(t.name)||'',roleByStudentId.get(t.id)||'', [Number(t.score)||0,'Number'],[contribution(t),'Number']]));
             const seatLayout = getSeatLayout();
             const seatRows = [];
@@ -739,7 +753,7 @@
         }
 
         function createNewClass() {
-            const confirmed = confirm('建立新班級會清除目前班級的學生名單、個人分數、分組與團體加分；設定的按鈕名稱及計分板標題會保留。要繼續嗎？');
+            const confirmed = confirm('建立新班級會清除目前班級的學生名單、個人分數、分組與分組加分；設定的按鈕名稱及計分板標題會保留。要繼續嗎？');
             if (!confirmed) return;
             const raw = prompt('請輸入新班級學生姓名，以逗號、中文逗號或換行分隔。\n例如：王小明,陳小華,林小美');
             if (raw === null) return;
@@ -786,7 +800,7 @@
             options.hidden = !options.hidden;
         }
         function resetPersonalScores() {
-            if (!confirm('確定要將舊班所有學生的「個人分數」歸零嗎？學生名單、固定識別碼、分組、組長／副組長及團體分數都會保留。')) return;
+            if (!confirm('確定要將舊班所有學生的「個人分數」歸零嗎？學生名單、固定識別碼、分組、組長／副組長及分組分數都會保留。')) return;
             saveCurrentState();
             teams.forEach(team => { team.score = 0; });
             localStorage.setItem('tab_class_teams_29', JSON.stringify(teams));
@@ -796,17 +810,17 @@
             alert('個人分數已歸零；名單、分組與職務設定均已保留。');
         }
         function resetGroupScores() {
-            if (!confirm('確定要將各組團體分數，以及統計板中的團體加分全部歸零嗎？個人分數、學生名單、分組及組長／副組長設定都會保留。')) return;
+            if (!confirm('確定要將各組分組分數，以及統計板中的分組加分全部歸零嗎？個人分數、學生名單、分組及組長／副組長設定都會保留。')) return;
             groupScores = {};
             groupContributions = {};
             persistGroupData();
             renderGroupScoreBoard(); renderStatsBoard();
             document.getElementById('wheel-reset-menu').hidden = true;
             document.getElementById('old-class-reset-options').hidden = true;
-            alert('各組分數與統計中的團體加分已歸零。');
+            alert('各組分數與統計中的分組加分已歸零。');
         }
         function resetToNewClass() {
-            if (!confirm('⚠️ 新班將清除舊班學生名單、個人分數、固定識別碼對應、分組、組長／副組長及團體加分紀錄。此操作無法直接復原，建議先到「設定」匯出 JSON 備份。確定繼續嗎？')) return;
+            if (!confirm('⚠️ 新班將清除舊班學生名單、個人分數、固定識別碼對應、分組、組長／副組長及分組加分紀錄。此操作無法直接復原，建議先到「設定」匯出 JSON 備份。確定繼續嗎？')) return;
             document.getElementById('wheel-reset-menu').hidden = true;
             document.getElementById('old-class-reset-options').hidden = true;
             createNewClass(true);
@@ -855,7 +869,7 @@
 
         const labelDefaults = {
             personal: '👤 個人計分板', groups: '👥 分組計分板', stats: '📊 個人統計板',
-            editRoster: '✏️ 修改名單', wheel: '🎡 課堂抽籤轉盤', settings: '⚙️ 設定',
+            editRoster: '✏️ 修改名單', wheel: '🎡 抽籤', settings: '⚙️ 設定',
             editStudents: '👩‍🎓 修改學生名單', editGroups: '👥 修改分組名單'
         };
         const labelStorageKeys = {
@@ -1094,7 +1108,7 @@
         }
         function undoRegroup() {
             if (!groupUndoSnapshot) return alert('目前沒有可復原的分組紀錄。');
-            if (!confirm('要回復上一次重新分組前的組員名單與組長／副組長職務嗎？個人分數和團體分數不會改變。')) return;
+            if (!confirm('要回復上一次重新分組前的組員名單與組長／副組長職務嗎？個人分數和分組分數不會改變。')) return;
             studentGroups = JSON.parse(JSON.stringify(groupUndoSnapshot.studentGroups));
             confirmedGroups = [...(groupUndoSnapshot.confirmedGroups || [])];
             localStorage.setItem('tab_class_student_groups', JSON.stringify(studentGroups));
@@ -1106,7 +1120,7 @@
             renderGroupScoreBoard();
             renderStatsBoard();
             updateGroupUndoButton();
-            alert('已復原上一次分組，個人分數與團體分數均已保留。');
+            alert('已復原上一次分組，個人分數與分組分數均已保留。');
         }
         function isFemaleForRegroup(student) {
             if (String(student.gender || '').trim() === '女生') return true;
@@ -1136,7 +1150,7 @@
             const girls = teams.filter(isFemaleForRegroup);
             const boys = teams.filter(student => !isFemaleForRegroup(student));
             const minimumGirls = Math.floor(girls.length / count);
-            const ok = confirm(`確定要將 ${teams.length} 位學生隨機分配到 ${count} 組嗎？\n\n女生人數：${girls.length} 位；每組至少安排 ${minimumGirls} 位女生（女生總數 ÷ 組數，去掉小數）。\n這會重新安排所有組員，並清除全部組長、副組長職務，之後需重新指派。\n個人分數、各組團體分數及既有團體加分紀錄會保留。`);
+            const ok = confirm(`確定要將 ${teams.length} 位學生隨機分配到 ${count} 組嗎？\n\n女生人數：${girls.length} 位；每組至少安排 ${minimumGirls} 位女生（女生總數 ÷ 組數，去掉小數）。\n這會重新安排所有組員，並清除全部組長、副組長職務，之後需重新指派。\n個人分數、各組分組分數及既有分組加分紀錄會保留。`);
             if (!ok) return;
             captureGroupUndoSnapshot();
             const shuffle = list => {
@@ -1166,7 +1180,7 @@
 
         function startManualRegroup() {
             const count = Math.max(1, Math.min(20, parseInt(document.getElementById('group-count').value, 10) || 5));
-            const ok = confirm(`確定要開始手動重新分組嗎？\n\n目前各組名單會清空，請重新勾選學生並按「儲存分組」。全部組長、副組長職務也會清除，需重新指派。\n個人分數、各組團體分數及既有團體加分紀錄都會保留。`);
+            const ok = confirm(`確定要開始手動重新分組嗎？\n\n目前各組名單會清空，請重新勾選學生並按「儲存分組」。全部組長、副組長職務也會清除，需重新指派。\n個人分數、各組分組分數及既有分組加分紀錄都會保留。`);
             if (!ok) return;
             captureGroupUndoSnapshot();
             studentGroups.count = count;
@@ -1217,7 +1231,13 @@
             if (!wrap) return;
             const table = document.createElement('table');
             table.className = 'identity-table';
-            table.innerHTML = '<thead><tr><th>固定識別碼（不可修改）</th><th>顯示姓名（可修改）</th><th>分組別（由名單設定決定）</th></tr></thead>';
+            table.innerHTML = '<thead><tr><th>固定識別碼（不可修改）</th><th>座號（自動生成）</th><th>顯示姓名（可修改）</th><th>分組別（由名單設定決定）</th></tr></thead>';
+            const seatNumbers = new Map();
+            let boySeat = 1, girlSeat = 21;
+            teams.forEach(team => {
+                if (String(team.gender || '') === '男生') seatNumbers.set(team.id, boySeat++);
+                else if (String(team.gender || '') === '女生') seatNumbers.set(team.id, girlSeat++);
+            });
             const tbody = document.createElement('tbody');
             teams.forEach((team, index) => {
                 const tr = document.createElement('tr');
@@ -1226,6 +1246,12 @@
                 idCell.style.color = '#666';
                 idCell.style.background = '#f3f4f6';
                 idCell.title = '固定識別碼由系統管理，請至名單設定調整學生資料';
+                const seatCell = document.createElement('td');
+                seatCell.textContent = seatNumbers.has(team.id) ? String(seatNumbers.get(team.id)) : '—';
+                seatCell.style.textAlign = 'center';
+                seatCell.style.color = '#666';
+                seatCell.style.background = '#f3f4f6';
+                seatCell.title = '座號由系統依性別自動生成，不可修改';
                 const nameCell = document.createElement('td');
                 const nameInput = document.createElement('input');
                 nameInput.type = 'text'; nameInput.value = team.name; nameInput.dataset.field = 'name'; nameInput.dataset.index = index;
@@ -1236,7 +1262,7 @@
                 groupCell.textContent = groupIndex >= 0 ? `第 ${groupIndex + 1} 組` : '未分組';
                 groupCell.style.color = '#666';
                 groupCell.style.background = '#f3f4f6';
-                tr.append(idCell, nameCell, groupCell); tbody.appendChild(tr);
+                tr.append(idCell, seatCell, nameCell, groupCell); tbody.appendChild(tr);
             });
             table.appendChild(tbody); wrap.replaceChildren(table);
         }
@@ -1258,7 +1284,7 @@
             studentGroups.groups = (studentGroups.groups || []).map(group => group.map(name => oldNameToNewName.get(name) || name));
             ensureGroupRoles();
             localStorage.setItem('tab_class_student_groups', JSON.stringify(studentGroups));
-            // 舊版團體加分若以姓名儲存，改名時遷移至固定識別碼，保留既有紀錄。
+            // 舊版分組加分若以姓名儲存，改名時遷移至固定識別碼，保留既有紀錄。
             oldTeams.forEach((oldTeam, index) => {
                 const newTeam = teams[index];
                 const oldPoints = groupContributions[oldTeam.id] ?? groupContributions[oldTeam.name];
@@ -1375,17 +1401,12 @@
             }
         }
 
-        // 顯示目前日期與時間，格式例如：20261025_AM：09:03
+        // 左上角只顯示 24 小時制時間，例如：19:45
         function updateDateTime() {
             const now = new Date();
-            const year = now.getFullYear();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const day = String(now.getDate()).padStart(2, '0');
-            const hour24 = now.getHours();
-            const ampm = hour24 < 12 ? 'AM' : 'PM';
-            const hour12 = String(hour24 % 12 || 12).padStart(2, '0');
+            const hour24 = String(now.getHours()).padStart(2, '0');
             const minute = String(now.getMinutes()).padStart(2, '0');
-            document.getElementById('date-time').textContent = `${year}${month}${day}_${ampm}：${hour12}:${minute}`;
+            document.getElementById('date-time').textContent = `${hour24}:${minute}`;
         }
         const titleInput = document.getElementById('board-title');
         const savedBoardTitle = localStorage.getItem('tab_class_board_title') || '四１課堂計分板';
@@ -1420,9 +1441,14 @@
                             <span class="team-name" title="${team.name}">${team.name}</span>
                             <span class="team-score" id="score-${index}">${team.score}分</span>
                         </div>
+                        <div class="team-medals" aria-label="獎牌數量">
+                            <span class="team-medal silver" id="silver-medal-${index}" title="銀牌" ${Number(team.silver)||0 ? '' : 'hidden'}>${Number(team.silver)||0}</span>
+                            <span class="team-medal gold" id="gold-medal-${index}" title="金牌" ${Number(team.gold)||0 ? '' : 'hidden'}>${Number(team.gold)||0}</span>
+                            <span class="team-medal black" id="black-medal-${index}" title="黑卡" ${Number(team.blackCard)||0 ? '' : 'hidden'}>${Number(team.blackCard)||0}</span>
+                        </div>
                         <div class="action-btns">
-                            <button class="btn-minus" aria-label="學生 ${team.name} 扣一分" onclick="changeScore(${index}, -1)">-</button>
-                            <button class="btn-plus" aria-label="學生 ${team.name} 加一分" onclick="changeScore(${index}, 1)">+</button>
+                            <button class="btn-minus" aria-label="學生 ${team.name} 扣 0.5 分" onclick="changeScore(${index}, -0.5)">-</button>
+                            <button class="btn-plus" aria-label="學生 ${team.name} 加 1 分" onclick="changeScore(${index}, 1)">+</button>
                         </div>
                     `;
                     grid.appendChild(card);
@@ -1623,6 +1649,17 @@
             }
         }
 
+        function updatePersonalMedalBadges(index) {
+            const team = teams[index];
+            if (!team) return;
+            [['silver', Number(team.silver)||0], ['gold', Number(team.gold)||0], ['black', Number(team.blackCard)||0]].forEach(([kind, count]) => {
+                const badge = document.getElementById(`${kind}-medal-${index}`);
+                if (!badge) return;
+                badge.textContent = String(Math.max(0, Math.floor(count)));
+                badge.hidden = !(count > 0);
+            });
+        }
+
         function changeScore(index, value) {
             const oldScore = Number(teams[index].score) || 0;
             const nextScore = Math.max(0, oldScore + value);
@@ -1630,9 +1667,14 @@
             if (!actualDelta) return;
             saveCurrentState();
             teams[index].score = nextScore;
+            teams[index].personalAccumulated = Math.max(0, Math.round(((Number(teams[index].personalAccumulated ?? oldScore) || 0) + actualDelta) * 100) / 100);
+            processStudentMedals(teams[index]);
             const personalScoreElement = document.getElementById(`score-${index}`);
             if (personalScoreElement) personalScoreElement.innerText = `${teams[index].score} 分`;
+            updatePersonalMedalBadges(index);
             localStorage.setItem('tab_class_teams_29', JSON.stringify(teams));
+            persistGroupData();
+            if (currentBoardView === 'stats') renderStatsBoard();
             if (currentBoardView === 'seats') renderSeatBoard();
             playScoreSound(actualDelta);
             if (value > 0) {
@@ -1658,9 +1700,14 @@
                 const old = oldIndex >= 0 ? oldTeams[oldIndex] : null;
                 if (oldIndex >= 0) usedOldIndexes.add(oldIndex);
                 return {
+                    ...(old || {}),
                     id: old && old.id ? old.id : makeStudentId(),
                     name,
                     score: old ? (Number(old.score) || 0) : 0,
+                    personalAccumulated: old ? (Number(old.personalAccumulated) || 0) : 0,
+                    silver: old ? (Number(old.silver) || 0) : 0,
+                    gold: old ? (Number(old.gold) || 0) : 0,
+                    blackCard: old ? (Number(old.blackCard) || 0) : 0,
                     gender: old?.gender || (index < 17 ? '男生' : '女生')
                 };
             });
@@ -1700,8 +1747,11 @@
         let groupContributions = {};
         try { groupScores = JSON.parse(localStorage.getItem('tab_class_group_scores') || '{}') || {}; } catch (e) { groupScores = {}; }
         try { groupContributions = JSON.parse(localStorage.getItem('tab_class_group_contributions') || '{}') || {}; } catch (e) { groupContributions = {}; }
+        let groupContributionTotals = {};
+        try { groupContributionTotals = JSON.parse(localStorage.getItem('tab_class_group_contribution_totals') || '{}') || {}; } catch (e) { groupContributionTotals = {}; }
 
         function persistGroupData() {
+            localStorage.setItem('tab_class_group_contribution_totals', JSON.stringify(groupContributionTotals));
             localStorage.setItem('tab_class_group_scores', JSON.stringify(groupScores));
             localStorage.setItem('tab_class_group_contributions', JSON.stringify(groupContributions));
         }
@@ -1757,10 +1807,10 @@
                 const actions = document.createElement('div');
                 actions.className = 'group-score-actions';
                 const minus = document.createElement('button');
-                minus.className = 'minus'; minus.textContent = '−'; minus.setAttribute('aria-label', `第 ${i + 1} 組扣一分`);
-                minus.onclick = () => changeGroupScore(i, -1);
+                minus.className = 'minus'; minus.textContent = '−'; minus.setAttribute('aria-label', `第 ${i + 1} 組扣 0.5 分`);
+                minus.onclick = () => changeGroupScore(i, -0.5);
                 const plus = document.createElement('button');
-                plus.className = 'plus'; plus.textContent = '+'; plus.setAttribute('aria-label', `第 ${i + 1} 組加一分`);
+                plus.className = 'plus'; plus.textContent = '+'; plus.setAttribute('aria-label', `第 ${i + 1} 組加 1 分`);
                 plus.onclick = () => changeGroupScore(i, 1);
                 actions.append(minus, plus);
                 card.append(title, score, names, actions);
@@ -1776,15 +1826,22 @@
             if (!actualDelta) return;
             playScoreSound(actualDelta);
             groupScores[key] = nextScore;
-            // 每次組分增減，同步記錄當下該組每位組員的團體加分，留作個人統計。
+            // 每次組分增減，同步記錄當下該組每位組員的分組加分，留作個人統計。
             const members = (studentGroups.groups[index] || []).filter(name => teams.some(t => t.name === name));
             members.forEach(name => {
                 const student = teams.find(t => t.name === name);
                 if (!student) return;
                 const keyForStudent = student.id || student.name;
-                groupContributions[keyForStudent] = Math.max(0, (Number(groupContributions[keyForStudent] ?? groupContributions[student.name]) || 0) + actualDelta);
+                const previousContribution = Number(groupContributions[keyForStudent] ?? groupContributions[student.name]) || 0;
+                const previousAccumulated = Number(groupContributionTotals[keyForStudent] ?? groupContributionTotals[student.name] ?? previousContribution) || 0;
+                groupContributions[keyForStudent] = Math.max(0, Math.round((previousContribution + actualDelta) * 100) / 100);
+                // 累積值以「修改前」的分組加分為基準，避免第一次加分時把本次分數重複計入。
+                groupContributionTotals[keyForStudent] = Math.max(0, Math.round((previousAccumulated + actualDelta) * 100) / 100);
                 if (student.name in groupContributions) delete groupContributions[student.name];
+                if (student.name in groupContributionTotals) delete groupContributionTotals[student.name];
+                processStudentMedals(student);
             });
+            localStorage.setItem('tab_class_teams_29', JSON.stringify(teams));
             persistGroupData();
             const score = document.getElementById(`group-score-${index}`);
             if (score) score.textContent = `${groupScores[key]} 分`;
@@ -1932,17 +1989,30 @@
                 const findStudentIndex = () => teams.findIndex(t => String(t.id || t.name) === seatAssignments[seat]);
                 const studentIndex = findStudentIndex();
                 score.textContent = studentIndex >= 0 ? `${Number(teams[studentIndex].score) || 0} 分` : '—';
+                const medals = document.createElement('div');
+                medals.className = 'seat-cell-medals';
+                if (studentIndex >= 0) {
+                    const student = teams[studentIndex];
+                    [['silver','silver','銀牌',Number(student.silver)||0],['gold','gold','金牌',Number(student.gold)||0],['black','blackCard','黑卡',Number(student.blackCard)||0]].forEach(([className,field,label,count]) => {
+                        if (count <= 0) return;
+                        const badge = document.createElement('span');
+                        badge.className = `team-medal ${className}`;
+                        badge.title = label;
+                        badge.textContent = String(Math.max(0, Math.floor(count)));
+                        medals.appendChild(badge);
+                    });
+                }
                 const actions = document.createElement('div');
                 actions.className = 'seat-cell-actions';
                 const minus = document.createElement('button');
-                minus.type = 'button'; minus.className = 'minus'; minus.textContent = '−'; minus.setAttribute('aria-label', `座位 ${seat + 1} 扣一分`);
+                minus.type = 'button'; minus.className = 'minus'; minus.textContent = '−'; minus.setAttribute('aria-label', `座位 ${seat + 1} 扣 0.5 分`);
                 const plus = document.createElement('button');
-                plus.type = 'button'; plus.className = 'plus'; plus.textContent = '+'; plus.setAttribute('aria-label', `座位 ${seat + 1} 加一分`);
+                plus.type = 'button'; plus.className = 'plus'; plus.textContent = '+'; plus.setAttribute('aria-label', `座位 ${seat + 1} 加 1 分`);
                 minus.disabled = studentIndex < 0; plus.disabled = studentIndex < 0;
-                minus.addEventListener('click', event => { event.stopPropagation(); const i = findStudentIndex(); if (i >= 0) changeScore(i, -1); });
+                minus.addEventListener('click', event => { event.stopPropagation(); const i = findStudentIndex(); if (i >= 0) changeScore(i, -0.5); });
                 plus.addEventListener('click', event => { event.stopPropagation(); const i = findStudentIndex(); if (i >= 0) changeScore(i, 1); });
                 actions.append(minus, plus);
-                cell.append(pick, score, actions);
+                cell.append(pick, score, medals, actions);
                 grid.appendChild(cell);
             }
             root.appendChild(grid);
@@ -2009,13 +2079,185 @@
             saveSeatAssignments();
         }
 
+        const MEDAL_SETTINGS_KEY = 'tab_class_medal_exchange_settings_v1';
+        function getMedalSettings() {
+            let saved = {};
+            try { saved = JSON.parse(localStorage.getItem(MEDAL_SETTINGS_KEY) || '{}') || {}; } catch (e) {}
+            return {
+                silverPoints: Math.min(100, Math.max(5, Math.round((Number(saved.silverPoints) || 20) / 5) * 5)),
+                goldSilver: Math.min(30, Math.max(1, Number(saved.goldSilver) || 5)),
+                blackGold: Math.min(20, Math.max(1, Number(saved.blackGold) || 3))
+            };
+        }
+        function setMedalSetting(key, value) {
+            const settings = getMedalSettings();
+            settings[key] = Number(value);
+            localStorage.setItem(MEDAL_SETTINGS_KEY, JSON.stringify(settings));
+            // 設定調整後，依新比例處理目前已累積的分數與卡片。
+            teams.forEach(team => processStudentMedals(team));
+            localStorage.setItem('tab_class_teams_29', JSON.stringify(teams));
+            persistGroupData();
+            renderStatsBoard();
+        }
+        function deductStudentPoints(team, amount) {
+            let remaining = amount;
+            const personal = Math.max(0, Number(team.score) || 0);
+            const fromPersonal = Math.min(personal, remaining);
+            team.score = Math.round((personal - fromPersonal) * 100) / 100;
+            remaining -= fromPersonal;
+            if (remaining > 0.000001) {
+                const key = team.id || team.name;
+                const old = Math.max(0, Number(groupContributions[key] ?? groupContributions[team.name]) || 0);
+                const take = Math.min(old, remaining);
+                groupContributions[key] = Math.round((old - take) * 100) / 100;
+                if (team.name in groupContributions) delete groupContributions[team.name];
+            }
+        }
+        function processStudentMedals(team) {
+            if (!team) return;
+            team.silver = Math.max(0, Math.floor(Number(team.silver) || 0));
+            team.gold = Math.max(0, Math.floor(Number(team.gold) || 0));
+            team.blackCard = Math.max(0, Math.floor(Number(team.blackCard) || 0));
+            const cfg = getMedalSettings();
+            let guard = 0;
+            while ((Number(team.score) || 0) + (Number(groupContributions[team.id] ?? groupContributions[team.name]) || 0) >= cfg.silverPoints && guard++ < 1000) {
+                deductStudentPoints(team, cfg.silverPoints);
+                team.silver++;
+            }
+            while (team.silver >= cfg.goldSilver) {
+                team.silver -= cfg.goldSilver;
+                team.gold++;
+            }
+            while (team.gold >= cfg.blackGold) {
+                team.gold -= cfg.blackGold;
+                team.blackCard++;
+            }
+        }
+        function medalSelect(key, min, max, current) {
+            const select = document.createElement('select');
+            const step = key === 'silverPoints' ? 5 : 1;
+            for (let n=min; n<=max; n+=step) {
+                const option = document.createElement('option'); option.value=String(n); option.textContent=String(n);
+                if (n===current) option.selected=true;
+                select.appendChild(option);
+            }
+            select.addEventListener('change', () => setMedalSetting(key, select.value));
+            return select;
+        }
+
+        let medalManualEditEnabled = false;
+        let scoreManualEditEnabled = false;
+
+        const SCORE_UNDO_STORAGE_KEY = 'tab_class_score_undo_snapshot_v1';
+        const MEDAL_UNDO_STORAGE_KEY = 'tab_class_medal_undo_snapshot_v1';
+        function saveScoreUndoSnapshot() {
+            const snapshot = {
+                students: teams.map(team => ({ id: team.id, name: team.name, score: Number(team.score) || 0, personalAccumulated: Number(team.personalAccumulated) || 0 })),
+                groupScores: JSON.parse(JSON.stringify(groupScores || {})),
+                groupContributions: JSON.parse(JSON.stringify(groupContributions || {})),
+                groupContributionTotals: JSON.parse(JSON.stringify(groupContributionTotals || {}))
+            };
+            localStorage.setItem(SCORE_UNDO_STORAGE_KEY, JSON.stringify(snapshot));
+        }
+        function clearAllScores() {
+            if (!confirm('確定要清空所有分數嗎？這會將個人分數、個人累積、分組分數及分組累積全部歸零，但不會清除銀牌、金牌、黑卡或學生名單。清空前會保存一次可還原的分數。')) return;
+            saveScoreUndoSnapshot();
+            teams.forEach(team => { team.score = 0; team.personalAccumulated = 0; });
+            groupScores = {};
+            groupContributions = {};
+            groupContributionTotals = {};
+            localStorage.setItem('tab_class_teams_29', JSON.stringify(teams));
+            persistGroupData();
+            renderList();
+            renderGroupScoreBoard();
+            renderStatsBoard();
+            if (typeof renderSeatBoard === 'function') renderSeatBoard();
+            alert('所有分數已清空。可按「還原上次分數」恢復清空前的分數。');
+        }
+        function restorePreviousScores() {
+            let snapshot;
+            try { snapshot = JSON.parse(localStorage.getItem(SCORE_UNDO_STORAGE_KEY) || 'null'); } catch (e) { snapshot = null; }
+            if (!snapshot) { alert('目前沒有可還原的分數紀錄。'); return; }
+            if (!confirm('確定還原上次清空前的分數嗎？目前的個人及分組分數會被上次紀錄取代。')) return;
+            const byKey = new Map((snapshot.students || []).map(item => [String(item.id || item.name), item]));
+            teams.forEach(team => {
+                const saved = byKey.get(String(team.id || team.name));
+                if (saved) {
+                    team.score = Number(saved.score) || 0;
+                    team.personalAccumulated = Number(saved.personalAccumulated) || 0;
+                }
+            });
+            groupScores = snapshot.groupScores || {};
+            groupContributions = snapshot.groupContributions || {};
+            groupContributionTotals = snapshot.groupContributionTotals || {};
+            localStorage.setItem('tab_class_teams_29', JSON.stringify(teams));
+            persistGroupData();
+            renderList();
+            renderGroupScoreBoard();
+            renderStatsBoard();
+            if (typeof renderSeatBoard === 'function') renderSeatBoard();
+            alert('已還原上次分數。');
+        }
+
         function renderStatsBoard() {
             const root = document.getElementById('stats-board-container');
             root.innerHTML = '';
             const note = document.createElement('p');
             note.className = 'stats-note';
-            note.textContent = '統計板僅供查看；左欄為第 1–15 筆，右欄為第 16–30 筆。個人分數與團體加分合計為統計總分。';
+            note.textContent = '統計板顯示個人分數、個人累積、分組分數、分組累積、總分與卡片數。累積欄位會保留歷史紀錄，不會因兌獎扣除。總分達銀牌門檻會自動扣除可兌換分數；銀牌自動換金牌，金牌自動換黑卡。';
             root.appendChild(note);
+            const cfg = getMedalSettings();
+            const settingsBox = document.createElement('div'); settingsBox.className='medal-settings';
+            const settingItems = [['銀牌門檻（分）','silverPoints',5,100,cfg.silverPoints],['幾銀換 1 金','goldSilver',1,30,cfg.goldSilver],['幾金換 1 黑卡','blackGold',1,20,cfg.blackGold]];
+            settingItems.forEach(([label,key,min,max,val]) => { const wrap=document.createElement('label'); wrap.append(document.createTextNode(label+' '),medalSelect(key,min,max,val)); settingsBox.appendChild(wrap); });
+            root.appendChild(settingsBox);
+            const cardActions = document.createElement('div');
+            cardActions.style.cssText = 'display:flex;flex-wrap:wrap;gap:8px;margin:0 0 8px;';
+            const clearAllCards = document.createElement('button');
+            clearAllCards.type = 'button'; clearAllCards.textContent = '清空全部銀牌、金牌、黑卡';
+            clearAllCards.style.cssText = 'border:0;border-radius:7px;padding:8px 11px;background:#c62828;color:#fff;font:inherit;font-weight:bold;cursor:pointer;';
+            clearAllCards.addEventListener('click', () => {
+                if (!confirm('確定清空所有學生的銀牌、金牌與黑卡數量？此操作不會改變分數。清空前會保存一次可還原的獎牌紀錄。')) return;
+                const medalSnapshot = { students: teams.map(team => ({ id: team.id, name: team.name, silver: Number(team.silver) || 0, gold: Number(team.gold) || 0, blackCard: Number(team.blackCard) || 0 })) };
+                localStorage.setItem(MEDAL_UNDO_STORAGE_KEY, JSON.stringify(medalSnapshot));
+                teams.forEach(team => { team.silver = 0; team.gold = 0; team.blackCard = 0; });
+                localStorage.setItem('tab_class_teams_29', JSON.stringify(teams));
+                persistGroupData();
+                renderStatsBoard();
+            });
+            cardActions.appendChild(clearAllCards);
+            const restoreCardsButton = document.createElement('button');
+            restoreCardsButton.type = 'button'; restoreCardsButton.textContent = '還原上次獎牌';
+            restoreCardsButton.style.cssText = 'border:0;border-radius:7px;padding:8px 11px;background:#2e7d32;color:#fff;font:inherit;font-weight:bold;cursor:pointer;';
+            restoreCardsButton.addEventListener('click', () => {
+                let snapshot;
+                try { snapshot = JSON.parse(localStorage.getItem(MEDAL_UNDO_STORAGE_KEY) || 'null'); } catch (e) { snapshot = null; }
+                if (!snapshot || !Array.isArray(snapshot.students)) { alert('目前沒有可還原的獎牌紀錄。'); return; }
+                if (!confirm('確定還原上次清空前的銀牌、金牌與黑卡數量嗎？目前獎牌數量會被上次紀錄取代。')) return;
+                const byKey = new Map(snapshot.students.map(item => [String(item.id || item.name), item]));
+                teams.forEach(team => {
+                    const saved = byKey.get(String(team.id || team.name));
+                    if (saved) { team.silver = Number(saved.silver) || 0; team.gold = Number(saved.gold) || 0; team.blackCard = Number(saved.blackCard) || 0; }
+                });
+                localStorage.setItem('tab_class_teams_29', JSON.stringify(teams));
+                persistGroupData();
+                renderStatsBoard();
+                alert('已還原上次獎牌。');
+            });
+            cardActions.appendChild(restoreCardsButton);
+            const clearScoresButton = document.createElement('button');
+            clearScoresButton.type = 'button';
+            clearScoresButton.textContent = '清空所有分數';
+            clearScoresButton.style.cssText = 'border:0;border-radius:7px;padding:8px 11px;background:#ef6c00;color:#fff;font:inherit;font-weight:bold;cursor:pointer;';
+            clearScoresButton.addEventListener('click', clearAllScores);
+            cardActions.appendChild(clearScoresButton);
+            const restoreScoresButton = document.createElement('button');
+            restoreScoresButton.type = 'button';
+            restoreScoresButton.textContent = '還原上次分數';
+            restoreScoresButton.style.cssText = 'border:0;border-radius:7px;padding:8px 11px;background:#2e7d32;color:#fff;font:inherit;font-weight:bold;cursor:pointer;';
+            restoreScoresButton.addEventListener('click', restorePreviousScores);
+            cardActions.appendChild(restoreScoresButton);
+            root.appendChild(cardActions);
             const columns = document.createElement('div');
             columns.className = 'stats-columns';
             const makeHalf = (students, titleText) => {
@@ -2029,7 +2271,7 @@
                 table.className = 'stats-table';
                 const thead = document.createElement('thead');
                 const headRow = document.createElement('tr');
-                ['學生姓名', '個人', '團體', '總分'].forEach(label => {
+                ['學生姓名', '個人', '個人累積', '分組', '分組累積', '總分', '銀牌', '金牌', '黑卡'].forEach(label => {
                     const th = document.createElement('th'); th.textContent = label; headRow.appendChild(th);
                 });
                 thead.appendChild(headRow); table.appendChild(thead);
@@ -2037,11 +2279,58 @@
                 students.forEach(team => {
                     const groupPoints = Number(groupContributions[team.id] ?? groupContributions[team.name]) || 0;
                     const personal = Number(team.score) || 0;
+                    if (team.personalAccumulated === undefined) team.personalAccumulated = personal;
+                    const personalAccumulated = Number(team.personalAccumulated) || 0;
+                    const groupAccumulated = Number(groupContributionTotals[team.id] ?? groupContributionTotals[team.name] ?? groupPoints) || 0;
                     const tr = document.createElement('tr');
-                    [team.name, personal, groupPoints, personal + groupPoints].forEach((value, i) => {
+                    [team.name, personal, personalAccumulated, groupPoints, groupAccumulated, personal + groupPoints, team.silver || 0, team.gold || 0, team.blackCard || 0].forEach((value, i) => {
                         const td = document.createElement('td');
-                        td.textContent = i === 0 ? value : `${value} 分`;
-                        if (i === 3) td.className = 'total';
+                        if (i >= 6) {
+                            const count = Math.max(0, Math.floor(Number(value) || 0));
+                            if (medalManualEditEnabled) {
+                                const input = document.createElement('input');
+                                input.type = 'number'; input.min = '0'; input.step = '1'; input.inputMode = 'numeric';
+                                input.value = String(count);
+                                input.setAttribute('aria-label', `${team.name}${['銀牌','金牌','黑卡'][i-6]}數量`);
+                                input.style.cssText = 'width:48px;max-width:100%;box-sizing:border-box;text-align:center;font:inherit;padding:3px 1px;border:1px solid #b0bec5;border-radius:5px;';
+                                input.addEventListener('change', () => {
+                                    const newCount = Math.max(0, Math.floor(Number(input.value) || 0));
+                                    input.value = String(newCount);
+                                    if (i === 6) team.silver = newCount;
+                                    else if (i === 7) team.gold = newCount;
+                                    else team.blackCard = newCount;
+                                    localStorage.setItem('tab_class_teams_29', JSON.stringify(teams));
+                                    persistGroupData();
+                                });
+                                td.appendChild(input);
+                            } else {
+                                td.textContent = String(count);
+                            }
+                        } else if (i >= 1 && i <= 4 && scoreManualEditEnabled) {
+                            const input = document.createElement('input');
+                            input.type = 'number'; input.step = '0.5'; input.min = '0'; input.inputMode = 'decimal';
+                            input.value = String(Number(value) || 0);
+                            input.setAttribute('aria-label', `${team.name}${['','個人分數','個人累積','分組分數','分組累積'][i]}修改`);
+                            input.style.cssText = 'width:64px;max-width:100%;box-sizing:border-box;text-align:center;font:inherit;padding:3px 1px;border:1px solid #b0bec5;border-radius:5px;';
+                            input.addEventListener('change', () => {
+                                const newValue = Math.max(0, Math.round((Number(input.value) || 0) * 100) / 100);
+                                input.value = String(newValue);
+                                const studentKey = team.id || team.name;
+                                if (i === 1) { team.score = newValue; processStudentMedals(team); }
+                                else if (i === 2) team.personalAccumulated = newValue;
+                                else if (i === 3) groupContributions[studentKey] = newValue;
+                                else if (i === 4) groupContributionTotals[studentKey] = newValue;
+                                localStorage.setItem('tab_class_teams_29', JSON.stringify(teams));
+                                persistGroupData();
+                                renderStatsBoard();
+                                if (currentBoardView === 'personal') renderList();
+                                if (currentBoardView === 'seats') renderSeatBoard();
+                            });
+                            td.appendChild(input);
+                        } else {
+                            td.textContent = i === 0 ? value : `${Number(value.toFixed ? value.toFixed(2) : value)} 分`;
+                        }
+                        if (i === 5) td.className = 'total';
                         tr.appendChild(td);
                     });
                     tbody.appendChild(tr);
@@ -2052,6 +2341,25 @@
             makeHalf(teams.slice(0, 15), '第 1–15 筆學生資料');
             makeHalf(teams.slice(15, 30), '第 16–30 筆學生資料');
             root.appendChild(columns);
+            const scoreEditOption = document.createElement('label');
+            scoreEditOption.style.cssText = 'display:flex;align-items:center;gap:8px;margin:12px 0 4px;padding:10px;border:1px solid #cfd8dc;border-radius:8px;background:#fafafa;font-weight:bold;';
+            const scoreEditCheckbox = document.createElement('input');
+            scoreEditCheckbox.type = 'checkbox'; scoreEditCheckbox.checked = scoreManualEditEnabled;
+            scoreEditCheckbox.style.cssText = 'width:20px;height:20px;';
+            scoreEditCheckbox.addEventListener('change', () => { scoreManualEditEnabled = scoreEditCheckbox.checked; renderStatsBoard(); });
+            scoreEditOption.append(scoreEditCheckbox, document.createTextNode('分數修改（勾選後可修改個人、個人累積、分組、分組累積）'));
+            root.appendChild(scoreEditOption);
+            const manualEditOption = document.createElement('label');
+            manualEditOption.style.cssText = 'display:flex;align-items:center;gap:8px;margin:8px 0 4px;padding:10px;border:1px solid #cfd8dc;border-radius:8px;background:#fafafa;font-weight:bold;';
+            const manualEditCheckbox = document.createElement('input');
+            manualEditCheckbox.type = 'checkbox';
+            manualEditCheckbox.checked = medalManualEditEnabled;
+            manualEditCheckbox.style.cssText = 'width:20px;height:20px;';
+            manualEditCheckbox.addEventListener('change', () => { medalManualEditEnabled = manualEditCheckbox.checked; renderStatsBoard(); });
+            manualEditOption.append(manualEditCheckbox, document.createTextNode('卡片修改（勾選後可個別修改銀牌、金牌、黑卡）'));
+            root.appendChild(manualEditOption);
+            localStorage.setItem('tab_class_teams_29', JSON.stringify(teams));
+            persistGroupData();
         }
 
         // 載入已儲存的右側入口按鈕名稱；計分板標題已在上方初始化
