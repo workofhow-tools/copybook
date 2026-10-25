@@ -674,6 +674,19 @@
             }));
         }
         saveTeamsAndMedals();
+        // 匯入後一次性顯示重新載入後真正讀到的資料，方便確認匯入結果。
+        try {
+            const importReportRaw = localStorage.getItem('tab_class_import_report_v1');
+            if (importReportRaw) {
+                const report = JSON.parse(importReportRaw);
+                localStorage.removeItem('tab_class_import_report_v1');
+                const scoreSum = teams.reduce((sum, student) => sum + (Number(student.score) || 0), 0);
+                const silverSum = teams.reduce((sum, student) => sum + (Number(student.silver) || 0), 0);
+                const goldSum = teams.reduce((sum, student) => sum + (Number(student.gold) || 0), 0);
+                const blackCardSum = teams.reduce((sum, student) => sum + (Number(student.blackCard) || 0), 0);
+                setTimeout(() => alert('匯入載入確認（' + report.fileName + '）\n學生：' + teams.length + ' 位\n目前分數合計：' + scoreSum + '\n銀牌：' + silverSum + ' 面\n金牌：' + goldSum + ' 面\n黑卡：' + blackCardSum + ' 張\n\n若數字與備份內容不同，請把這個結果告訴我。'), 150);
+            }
+        } catch (e) { console.error('讀取匯入結果紀錄失敗：', e); }
         let previousState = null;
 
         // 匯出檔名：使用計分板上方標題 + YYYYMMDD_HHMM。
@@ -711,20 +724,96 @@
             downloadBlob(blob, exportBaseName() + '.json');
         }
         function importJsonBackup(event) {
-            const file = event.target.files && event.target.files[0];
-            event.target.value = '';
-            if (!file) return;
+            const input = event && event.target;
+            const file = input && input.files && input.files[0];
+            if (!file) {
+                alert('沒有選到檔案。請再按一次「匯入」，選擇 .json 備份檔。');
+                return;
+            }
+            const fileName = file.name || 'JSON 備份';
             const reader = new FileReader();
+            reader.onerror = () => {
+                if (input) input.value = '';
+                alert('無法讀取檔案：' + fileName + '。請確認檔案存在且可正常開啟。');
+            };
             reader.onload = () => {
                 try {
                     const payload = JSON.parse(String(reader.result || ''));
-                    const data = payload && payload.localStorage;
-                    if (!data || typeof data !== 'object' || !data.tab_class_teams_29) throw new Error('格式不符');
-                    if (!confirm('匯入備份會覆蓋目前計分板的名單、分數、分組及相關設定。建議先匯出目前資料。確定要繼續嗎？')) return;
-                    Object.keys(localStorage).filter(k => k.startsWith('tab_class_')).forEach(k => localStorage.removeItem(k));
-                    Object.entries(data).forEach(([k,v]) => { if (k.startsWith('tab_class_') && v != null) localStorage.setItem(k, String(v)); });
-                    alert('備份匯入完成，計分板即將重新載入。'); location.reload();
-                } catch (err) { alert('無法匯入此檔案。請選擇本計分板匯出的 JSON 完整備份。'); }
+                    let source = payload && (payload.localStorage || payload.storage || payload.data);
+                    if (!source || typeof source !== 'object' || Array.isArray(source)) source = payload;
+                    const data = { ...source };
+
+                    // 支援完整備份（localStorage）、舊版 teams/students，以及單純學生陣列。
+                    let studentValue = data.tab_class_teams_29 ?? data.teams ?? data.students ?? payload.teams ?? payload.students;
+                    if (typeof studentValue === 'string') studentValue = JSON.parse(studentValue);
+                    if (Array.isArray(studentValue)) {
+                        const normalizedTeams = studentValue.map((student, index) => ({
+                            ...student,
+                            id: student && student.id ? String(student.id) : '',
+                            name: String(student && student.name != null ? student.name : (index + 1)),
+                            score: Number(student && student.score) || 0,
+                            personalAccumulated: Number(student && student.personalAccumulated) || 0,
+                            silver: Math.max(0, Number(student && student.silver) || 0),
+                            gold: Math.max(0, Number(student && student.gold) || 0),
+                            blackCard: Math.max(0, Number(student && student.blackCard) || 0),
+                            gender: student && student.gender ? student.gender : (index < 17 ? '男生' : '女生')
+                        }));
+                        data.tab_class_teams_29 = JSON.stringify(normalizedTeams);
+                        if (!data.tab_class_medals_backup_v1) {
+                            data.tab_class_medals_backup_v1 = JSON.stringify({
+                                savedAt: new Date().toISOString(),
+                                students: normalizedTeams.map(student => ({ id: student.id, name: student.name, silver: student.silver, gold: student.gold, blackCard: student.blackCard }))
+                            });
+                        }
+                    }
+
+                    let parsedTeams = data.tab_class_teams_29;
+                    if (typeof parsedTeams === 'string') parsedTeams = JSON.parse(parsedTeams);
+                    if (!Array.isArray(parsedTeams)) throw new Error('這份檔案找不到有效的學生名單（tab_class_teams_29）。');
+                    const entries = Object.entries(data).filter(([key, value]) => key.startsWith('tab_class_') && value != null);
+                    if (!entries.some(([key]) => key === 'tab_class_teams_29')) throw new Error('備份中沒有學生資料。');
+                    if (!confirm('準備匯入「' + fileName + '」。\n學生人數：' + parsedTeams.length + '\n備份資料項目：' + entries.length + '\n\n匯入會覆蓋目前資料，建議先匯出備份。確定繼續嗎？')) {
+                        if (input) input.value = '';
+                        return;
+                    }
+
+                    // 先寫入所有備份鍵，逐一讀回驗證；驗證失敗時清楚提示，不假裝成功。
+                    const previousValues = new Map();
+                    try {
+                        entries.forEach(([key, value]) => {
+                            previousValues.set(key, localStorage.getItem(key));
+                            const serialized = typeof value === 'string' ? value : JSON.stringify(value);
+                            localStorage.setItem(key, serialized);
+                            if (localStorage.getItem(key) !== serialized) throw new Error('資料寫入驗證失敗：' + key);
+                        });
+                        const verifyTeams = JSON.parse(localStorage.getItem('tab_class_teams_29') || 'null');
+                        if (!Array.isArray(verifyTeams) || verifyTeams.length !== parsedTeams.length) throw new Error('學生名單寫入後驗證不符。');
+                        // 重開後顯示實際載入結果，方便辨識匯入是否真的生效。
+                        localStorage.setItem('tab_class_import_report_v1', JSON.stringify({
+                            fileName,
+                            importedAt: new Date().toISOString(),
+                            studentCount: verifyTeams.length,
+                            scoreSum: verifyTeams.reduce((sum, student) => sum + (Number(student.score) || 0), 0),
+                            silverSum: verifyTeams.reduce((sum, student) => sum + (Number(student.silver) || 0), 0),
+                            goldSum: verifyTeams.reduce((sum, student) => sum + (Number(student.gold) || 0), 0),
+                            blackCardSum: verifyTeams.reduce((sum, student) => sum + (Number(student.blackCard) || 0), 0),
+                            keysWritten: entries.length
+                        }));
+                    } catch (writeErr) {
+                        // 回復寫入前的值，避免留下只匯入一半的狀態。
+                        for (const [key, oldValue] of previousValues.entries()) {
+                            try { if (oldValue === null) localStorage.removeItem(key); else localStorage.setItem(key, oldValue); } catch (_) {}
+                        }
+                        throw writeErr;
+                    }
+                    if (input) input.value = '';
+                    alert('備份已寫入並驗證成功，即將重新載入。重新載入後會顯示實際讀到的分數與獎牌總數。');
+                    location.reload();
+                } catch (err) {
+                    console.error('JSON 匯入失敗：', err);
+                    if (input) input.value = '';
+                    alert('匯入失敗：' + (err && err.message ? err.message : '檔案格式不正確') + '\n目前資料沒有被刻意清除。請確認選取的是 JSON 備份檔。');
+                }
             };
             reader.readAsText(file, 'utf-8');
         }
