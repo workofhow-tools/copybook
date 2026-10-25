@@ -79,6 +79,16 @@
         #screenshot-btn:disabled { opacity: .65; cursor: wait; }
         #top-wheel-btn { border:0; border-radius:7px; padding:7px 11px; background:#7e57c2; color:#fff; font-family:inherit; font-size:15px; font-weight:bold; cursor:pointer; white-space:nowrap; }
         .top-wheel-reset-area #wheel-reset-btn { width:auto; height:100%; }
+        .top-data-actions { display:flex; align-items:center; gap:5px; flex-wrap:wrap; }
+        .top-data-btn { border:0; border-radius:7px; padding:7px 8px; color:#fff; font-family:inherit; font-size:13px; font-weight:bold; cursor:pointer; white-space:nowrap; }
+        .top-data-btn.json { background:#546e7a; }
+        .top-data-btn.excel { background:#2e7d32; }
+        .top-data-btn.import { background:#0277bd; }
+        @media (max-width:520px) {
+            .date-time-row { gap:5px; }
+            #date-time { font-size:15px; }
+            #screenshot-btn, #top-wheel-btn, .top-data-btn { padding:6px 7px; font-size:12px; }
+        }
         #new-class-btn { border:0; border-radius:7px; padding:7px 11px; background:#ef6c00; color:#fff; font-family:inherit; font-size:15px; font-weight:bold; cursor:pointer; white-space:nowrap; }
         #board-title-display { margin: 0; color: #333; font-size: 22px; line-height: 1.25; overflow-wrap: anywhere; }
         .board-view-switch { display: flex; gap: 6px; margin-top: 7px; }
@@ -87,6 +97,38 @@
         #group-score-container { flex: 1 1 auto; min-height: 0; overflow-y: auto; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-content: start; gap: 10px; padding: 4px 2px; }
         #stats-board-container { flex: 1 1 auto; min-height: 0; overflow: auto; padding: 4px 2px; }
         #stats-board-container[hidden] { display: none !important; }
+        #seat-board-container { flex: 1 1 auto; min-height: 0; overflow: auto; padding: 5px 2px; -webkit-overflow-scrolling: touch; }
+        #seat-board-container[hidden] { display: none !important; }
+        .seat-board-note { margin: 0 0 6px; font-size: 12px; color: #546e7a; }
+        .seat-board-grid { display: grid; grid-template-columns: repeat(var(--seat-cols, 7), minmax(0, 1fr)); gap: 5px; align-content: start; }
+        .seat-layout-settings { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin:12px 0 4px; padding:10px; border:1px solid #cfd8dc; border-radius:8px; background:#f8fbfc; font-size:13px; }
+        .seat-layout-settings label { display:flex; align-items:center; gap:5px; }
+        .seat-layout-settings input { width:58px; padding:6px; border:1px solid #b0bec5; border-radius:5px; font:inherit; }
+        .seat-layout-settings button { border:0; border-radius:6px; padding:7px 10px; background:#008b9a; color:#fff; font-weight:bold; }
+        .seat-board-actions { display:flex; flex-wrap:wrap; gap:8px; margin:8px 0 4px; }
+        .seat-board-actions button { flex:1 1 150px; min-height:40px; border:0; border-radius:7px; padding:9px 12px; color:#fff; font-family:inherit; font-size:14px; font-weight:bold; touch-action:manipulation; }
+        .seat-board-actions .clear-seats { background:#d84315; }
+        .seat-board-actions .restore-seats { background:#546e7a; }
+        .seat-board-actions .restore-seats:disabled { opacity:.45; }
+        .seat-cell { min-width: 0; min-height: 95px; border: 1px solid #b0bec5; border-radius: 8px; background: #f8fbfc; padding: 4px 3px; display: flex; flex-direction: column; align-items: stretch; gap: 4px; box-sizing: border-box; cursor: pointer; touch-action: manipulation; }
+        .seat-student-pick { width: 100%; min-width: 0; font-family: inherit; font-size: 12px; padding: 5px 2px; border: 1px solid #cfd8dc; border-radius: 5px; background: white; color: #263238; min-height: 32px; }
+        .seat-picker-overlay { position: fixed !important; inset: 0 !important; z-index: 2147483647 !important; pointer-events: auto !important; background: rgba(0,0,0,.48); display: flex; align-items: center; justify-content: center; padding: 4px; box-sizing: border-box; }
+        .seat-picker-dialog { position: relative; z-index: 1; width: min(560px, 100%); height: auto; max-height: 98vh; max-height: 98dvh; display: flex; flex-direction: column; background: #fff; border-radius: 8px; box-shadow: 0 8px 30px rgba(0,0,0,.25); overflow: hidden; }
+        .seat-picker-header { display:flex; flex: 0 0 auto; align-items:center; justify-content:space-between; gap:5px; padding:5px 7px; border-bottom:1px solid #e0e0e0; font-size:12px; font-weight:bold; }
+        .seat-picker-close { border:0; border-radius:5px; padding:4px 8px; background:#607d8b; color:#fff; font-size:12px; min-height:28px; }
+        .seat-picker-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:5px; padding:5px; overflow-y:hidden; min-height:0; align-items:start; }
+        .seat-picker-gender-column { display:flex; flex-direction:column; gap:3px; min-width:0; }
+        .seat-picker-gender-heading { position:static; margin:0; padding:3px 2px; border-radius:4px; background:#e3f2fd; color:#234; font-size:11px; line-height:1.1; font-weight:bold; text-align:center; }
+        .seat-picker-gender-column.girls .seat-picker-gender-heading { background:#fce4ec; }
+        .seat-picker-option { min-height:26px; border:1px solid #cfd8dc; border-radius:4px; background:#f7fbfc; color:#263238; padding:3px 5px; font-family:inherit; font-size:11px; line-height:1.15; text-align:left; overflow-wrap:anywhere; touch-action:manipulation; }
+        .seat-picker-option:active { background:#d9f3f5; }
+        .seat-picker-option.clear { background:#fff3e0; border-color:#ffcc80; font-size:10px; padding:3px 2px; }
+        .seat-cell-score { text-align: center; font-weight: bold; font-size: 15px; color: #ff5722; min-height: 18px; }
+        .seat-cell-actions { display: flex; justify-content: center; gap: 5px; }
+        .seat-cell-actions button { flex: 1; min-width: 0; border: 0; border-radius: 6px; padding: 5px 0; color: white; font-size: 17px; line-height: 1; font-weight: bold; }
+        .seat-cell-actions .minus { background: #f44336; }
+        .seat-cell-actions .plus { background: #4caf50; }
+        @media (max-width: 520px) { .seat-board-grid { gap: 3px; } .seat-cell { min-height: 84px; padding: 3px 2px; gap: 3px; } .seat-student-pick { font-size: 11px; padding: 4px 1px; } .seat-cell-score { font-size: 13px; } .seat-cell-actions { gap: 3px; } .seat-cell-actions button { font-size: 16px; padding: 6px 0; } }
         .stats-columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px; align-items: start; }
         .stats-half { min-width: 0; }
         .stats-half-title { margin: 0 0 4px; padding: 4px; border-radius: 5px; background: #e8f8fa; color: #006064; font-size: 14px; text-align: center; }
@@ -315,7 +357,8 @@
             overflow: visible;
         }
         #side-panel #group-score-container,
-        #side-panel #stats-board-container {
+        #side-panel #stats-board-container,
+        #side-panel #seat-board-container {
             flex: 0 0 auto;
             min-height: auto;
             overflow: visible;
@@ -422,8 +465,13 @@
             <div class="header-main">
                 <div class="date-time-row">
                     <div id="date-time">20261025_AM：09:03</div>
-                    <button id="screenshot-btn" type="button" onclick="saveScreenshot()" data-html2canvas-ignore="true">📸 截圖存檔</button>
-                    <button id="top-wheel-btn" type="button" onclick="openWheel()" data-html2canvas-ignore="true">🎡 課堂抽籤轉盤</button>
+                    <button id="screenshot-btn" type="button" onclick="saveScreenshot()" data-html2canvas-ignore="true">📸 截圖</button>
+                    <button id="top-wheel-btn" type="button" onclick="openWheel()" data-html2canvas-ignore="true">🎡 抽籤</button>
+                    <div class="top-data-actions" data-html2canvas-ignore="true">
+                        <button type="button" class="top-data-btn json" onclick="exportJsonBackup()">匯出 JSON</button>
+                        <button type="button" class="top-data-btn excel" onclick="exportExcelGrades()">匯出 EXCEL</button>
+                        <button type="button" class="top-data-btn import" onclick="document.getElementById('json-import-file').click()">匯入</button>
+                    </div>
                     <div class="wheel-reset-area top-wheel-reset-area" data-html2canvas-ignore="true"><button id="wheel-reset-btn" type="button" onclick="toggleWheelResetMenu()">🔄 重設</button><div id="wheel-reset-menu" hidden><button type="button" onclick="showOldClassResetOptions()">舊班：重新計分</button><div id="old-class-reset-options" hidden><button type="button" onclick="resetPersonalScores()">Ａ 個人分數歸零</button><button type="button" onclick="resetGroupScores()">Ｂ 分組歸零</button></div><button class="danger" type="button" onclick="resetToNewClass()">新班：清空所有記錄</button></div></div>
                 </div>
                 <h3 id="board-title-display">四１課堂計分板</h3>
@@ -431,6 +479,7 @@
                     <button type="button" id="show-personal-board" class="active" onclick="switchBoardView('personal')">👤 個人計分板</button>
                     <button type="button" id="show-group-board" onclick="switchBoardView('groups')">👥 分組計分板</button>
                     <button type="button" id="show-stats-board" onclick="switchBoardView('stats')">📊 個人統計板</button>
+                    <button type="button" id="show-seat-board" onclick="switchBoardView('seats')">🪑 座位表計分</button>
                 </div>
             </div>
             <span class="close-panel" onclick="closePanel()">✕</span>
@@ -438,6 +487,7 @@
         <div class="grid-container" id="list-container"></div>
         <div id="group-score-container" hidden></div>
         <div id="stats-board-container" hidden></div>
+        <div id="seat-board-container" hidden></div>
         <div class="config-actions">
             <button id="edit-roster-btn" type="button" onclick="toggleRosterEditor()">✏️ 修改名單</button>
             <button id="settings-btn" type="button" onclick="toggleSettings()">⚙️ 設定</button>
@@ -672,7 +722,18 @@
             }
             const refRows = [['固定識別碼','顯示姓名','分組','職務','個人分數','團體加分']];
             teams.forEach(t => refRows.push([t.id || '',t.name,memberGroup.get(t.name)||'',roleByStudentId.get(t.id)||'', [Number(t.score)||0,'Number'],[contribution(t),'Number']]));
-            const workbook = `<?xml version="1.0"?><Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet" xmlns:html="http://www.w3.org/TR/REC-html40">${excelSheet('學生總成績',studentRows)}${excelSheet('分組成績',groupRows)}${excelSheet('識別碼參照表',refRows)}</Workbook>`;
+            const seatLayout = getSeatLayout();
+            const seatRows = [];
+            for (let r = 0; r < seatLayout.rows; r++) {
+                seatRows.push(Array.from({length: seatLayout.cols}, (_, c) => {
+                    const idx = r * seatLayout.cols + c;
+                    const id = seatAssignments[idx] || '';
+                    const student = teams.find(t => String(t.id || t.name) === id);
+                    return student ? `${student.name}（${Number(student.score)||0}分）` : '無';
+                }));
+            }
+            const seatSheetRows = [[`座位表（${seatLayout.rows}排 × ${seatLayout.cols}列）`], ...seatRows];
+            const workbook = `<?xml version="1.0"?><Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet" xmlns:html="http://www.w3.org/TR/REC-html40">${excelSheet('學生總成績',studentRows)}${excelSheet('分組成績',groupRows)}${excelSheet('識別碼參照表',refRows)}${excelSheet('座位表',seatSheetRows)}</Workbook>`;
             // Excel 可直接開啟的多工作表 SpreadsheetML 活頁簿（.xls）。
             downloadBlob(new Blob(['\ufeff', workbook], {type:'application/vnd.ms-excel;charset=utf-8'}), exportBaseName() + '.xls');
         }
@@ -858,6 +919,7 @@
                 document.getElementById('list-container').hidden = true;
                 document.getElementById('group-score-container').hidden = true;
                 document.getElementById('stats-board-container').hidden = true;
+                document.getElementById('seat-board-container').hidden = true;
             } else {
                 switchBoardView(currentBoardView);
             }
@@ -1126,6 +1188,7 @@
             renderGroupEditor();
             if (currentBoardView === 'groups') renderGroupScoreBoard();
             if (currentBoardView === 'stats') renderStatsBoard();
+            if (currentBoardView === 'seats') renderSeatBoard();
             alert('分組名單已儲存！');
         }
 
@@ -1567,8 +1630,10 @@
             if (!actualDelta) return;
             saveCurrentState();
             teams[index].score = nextScore;
-            document.getElementById(`score-${index}`).innerText = `${teams[index].score} 分`;
+            const personalScoreElement = document.getElementById(`score-${index}`);
+            if (personalScoreElement) personalScoreElement.innerText = `${teams[index].score} 分`;
             localStorage.setItem('tab_class_teams_29', JSON.stringify(teams));
+            if (currentBoardView === 'seats') renderSeatBoard();
             playScoreSound(actualDelta);
             if (value > 0) {
                 const cb = document.getElementById('celebrate');
@@ -1605,6 +1670,7 @@
             if (!document.getElementById('group-editor').hidden) renderGroupEditor();
             if (currentBoardView === 'groups') renderGroupScoreBoard();
             if (currentBoardView === 'stats') renderStatsBoard();
+            if (currentBoardView === 'seats') renderSeatBoard();
         }
 
         function resetAllScores() {
@@ -1614,6 +1680,7 @@
                 teams.forEach(team => { team.score = 0; });
                 localStorage.setItem('tab_class_teams_29', JSON.stringify(teams));
                 renderList();
+                if (currentBoardView === 'seats') renderSeatBoard();
             }
         }
 
@@ -1623,6 +1690,7 @@
                 previousState = null;
                 localStorage.setItem('tab_class_teams_29', JSON.stringify(teams));
                 renderList();
+                if (currentBoardView === 'seats') renderSeatBoard();
             }
         }
 
@@ -1639,20 +1707,23 @@
         }
 
         function switchBoardView(view) {
-            currentBoardView = ['groups', 'stats'].includes(view) ? view : 'personal';
+            currentBoardView = ['groups', 'stats', 'seats'].includes(view) ? view : 'personal';
             const personal = currentBoardView === 'personal';
             const groups = currentBoardView === 'groups';
             const editingGroups = document.getElementById('side-panel').classList.contains('group-edit-mode');
             document.getElementById('list-container').hidden = editingGroups || !personal;
             document.getElementById('group-score-container').hidden = editingGroups || !groups;
             document.getElementById('stats-board-container').hidden = editingGroups || currentBoardView !== 'stats';
+            document.getElementById('seat-board-container').hidden = editingGroups || currentBoardView !== 'seats';
             // 功能面板在三種計分板都可使用；編輯分組時優先把空間留給分組名單。
             document.getElementById('config-area').hidden = false;
             document.getElementById('show-personal-board').classList.toggle('active', personal);
             document.getElementById('show-group-board').classList.toggle('active', groups);
             document.getElementById('show-stats-board').classList.toggle('active', currentBoardView === 'stats');
+            document.getElementById('show-seat-board').classList.toggle('active', currentBoardView === 'seats');
             if (groups) renderGroupScoreBoard();
             if (currentBoardView === 'stats') renderStatsBoard();
+            if (currentBoardView === 'seats') renderSeatBoard();
         }
 
         function renderGroupScoreBoard() {
@@ -1722,6 +1793,220 @@
                 const cb = document.getElementById('celebrate');
                 cb.style.display = 'block'; setTimeout(() => { cb.style.display = 'none'; }, 600);
             }
+        }
+
+        const SEAT_ASSIGNMENTS_KEY = 'tab_class_seat_assignments_v1';
+        const SEAT_LAYOUT_KEY = 'tab_class_seat_layout_v1';
+        const PREVIOUS_SEAT_ASSIGNMENTS_KEY = 'tab_class_previous_seat_assignments_v1';
+        function getSeatLayout() {
+            try {
+                const saved = JSON.parse(localStorage.getItem(SEAT_LAYOUT_KEY) || '{}');
+                return { rows: Math.max(1, Math.min(15, Number(saved.rows) || 5)), cols: Math.max(1, Math.min(15, Number(saved.cols) || 7)) };
+            } catch (e) { return { rows: 5, cols: 7 }; }
+        }
+        function loadSeatAssignments() {
+            try {
+                const saved = JSON.parse(localStorage.getItem(SEAT_ASSIGNMENTS_KEY) || '[]');
+                const layout = getSeatLayout();
+                return Array.from({ length: layout.rows * layout.cols }, (_, i) => String(saved[i] || ''));
+            } catch (e) { return Array(getSeatLayout().rows * getSeatLayout().cols).fill(''); }
+        }
+        let seatAssignments = loadSeatAssignments();
+        function saveSeatAssignments() {
+            localStorage.setItem(SEAT_ASSIGNMENTS_KEY, JSON.stringify(seatAssignments));
+        }
+        function openSeatStudentPicker(seat) {
+            const old = document.getElementById('seat-student-picker-overlay');
+            if (old) old.remove();
+            const overlay = document.createElement('div');
+            overlay.id = 'seat-student-picker-overlay';
+            overlay.className = 'seat-picker-overlay';
+            overlay.addEventListener('click', event => { if (event.target === overlay) overlay.remove(); });
+            const dialog = document.createElement('div');
+            dialog.className = 'seat-picker-dialog';
+            const header = document.createElement('div');
+            header.className = 'seat-picker-header';
+            const title = document.createElement('span');
+            const layout = getSeatLayout();
+            title.textContent = `選擇學生（第 ${Math.floor(seat / layout.cols) + 1} 排、第 ${(seat % layout.cols) + 1} 列）`;
+            const close = document.createElement('button');
+            close.type = 'button'; close.className = 'seat-picker-close'; close.textContent = '關閉';
+            close.addEventListener('click', () => overlay.remove());
+            header.append(title, close);
+            const list = document.createElement('div');
+            list.className = 'seat-picker-list';
+            const choose = (id) => {
+                seatAssignments[seat] = id;
+                saveSeatAssignments();
+                overlay.remove();
+                renderSeatBoard();
+            };
+            const makeGenderColumn = (label, genderClass) => {
+                const column = document.createElement('div');
+                column.className = `seat-picker-gender-column ${genderClass}`;
+                const heading = document.createElement('div');
+                heading.className = 'seat-picker-gender-heading';
+                heading.textContent = label;
+                column.appendChild(heading);
+                return column;
+            };
+            const boysColumn = makeGenderColumn('男生', 'boys');
+            const girlsColumn = makeGenderColumn('女生', 'girls');
+            // 依「識別碼參照表」第一欄的固定識別碼排序（例如 S001、S002…），
+            // 不依可修改的顯示姓名排序，避免改名後座號順序跑掉。
+            const sortByReferenceId = (a, b) => {
+                const getIdNumber = team => {
+                    const match = String(team.id || '').match(/(\d+)/);
+                    return match ? Number(match[1]) : Number.MAX_SAFE_INTEGER;
+                };
+                const an = getIdNumber(a), bn = getIdNumber(b);
+                if (an !== bn) return an - bn;
+                return String(a.name).localeCompare(String(b.name), 'zh-Hant', { numeric: true });
+            };
+            const empty = document.createElement('button');
+            empty.type = 'button'; empty.className = 'seat-picker-option clear'; empty.textContent = '空白／清除此座位';
+            empty.addEventListener('click', () => choose(''));
+            // 空白／清除固定放在女生欄第一個位置。
+            girlsColumn.appendChild(empty);
+            const boys = teams.filter(team => String(team.gender || '') === '男生').sort(sortByReferenceId);
+            const girls = teams.filter(team => String(team.gender || '') === '女生').sort(sortByReferenceId);
+            const other = teams.filter(team => !['男生', '女生'].includes(String(team.gender || ''))).sort(sortByReferenceId);
+            const addStudentOption = (column, team) => {
+                const option = document.createElement('button');
+                option.type = 'button'; option.className = 'seat-picker-option';
+                option.textContent = team.name;
+                option.addEventListener('click', () => choose(String(team.id || team.name)));
+                column.appendChild(option);
+            };
+            boys.forEach(team => addStudentOption(boysColumn, team));
+            girls.forEach(team => addStudentOption(girlsColumn, team));
+            // 未標示性別的學生放在右側女生欄末端，避免遺漏。
+            other.forEach(team => addStudentOption(girlsColumn, team));
+            list.append(boysColumn, girlsColumn);
+            dialog.append(header, list);
+            overlay.appendChild(dialog);
+            document.body.appendChild(overlay);
+        }
+
+        function renderSeatBoard() {
+            const root = document.getElementById('seat-board-container');
+            if (!root) return;
+            root.innerHTML = '';
+            const note = document.createElement('p');
+            note.className = 'seat-board-note';
+            const layout = getSeatLayout();
+            note.textContent = `${layout.rows} 排 × ${layout.cols} 列；點選座位後會以兩欄名單選擇學生，未安排的座位顯示「無」。分數與個人計分板同步。`;
+            root.appendChild(note);
+            const grid = document.createElement('div');
+            grid.className = 'seat-board-grid';
+            grid.style.setProperty('--seat-cols', layout.cols);
+            seatAssignments = Array.from({length: layout.rows * layout.cols}, (_, i) => String(seatAssignments[i] || ''));
+            for (let seat = 0; seat < layout.rows * layout.cols; seat++) {
+                const cell = document.createElement('div');
+                cell.className = 'seat-cell';
+                // 整個座位格都可點選開啟名單，方便 iPad 觸控；加減分按鈕除外。
+                // iPad 觸控優先使用 pointerup，避免部分內嵌瀏覽器沒有正常派發 click。
+                cell.addEventListener('pointerup', event => {
+                    if (event.target.closest('.seat-cell-actions')) return;
+                    if (event.target.closest('.seat-student-pick')) return;
+                    event.preventDefault();
+                    openSeatStudentPicker(seat);
+                });
+                cell.addEventListener('click', event => {
+                    if (event.target.closest('.seat-cell-actions') || event.target.closest('.seat-student-pick')) return;
+                    // 滑鼠/鍵盤等非觸控操作的備援
+                    if (event.detail === 0 || !('PointerEvent' in window)) openSeatStudentPicker(seat);
+                });
+                const pick = document.createElement('button');
+                pick.type = 'button';
+                pick.className = 'seat-student-pick';
+                pick.setAttribute('aria-label', `選擇第 ${Math.floor(seat / layout.cols) + 1} 排第 ${(seat % layout.cols) + 1} 列座位學生`);
+                const assigned = seatAssignments[seat];
+                const assignedTeam = teams.find(t => String(t.id || t.name) === assigned);
+                if (assigned && assignedTeam) pick.textContent = assignedTeam.name;
+                else { pick.textContent = '無'; seatAssignments[seat] = ''; }
+                pick.addEventListener('pointerup', event => { event.preventDefault(); event.stopPropagation(); openSeatStudentPicker(seat); });
+                pick.addEventListener('click', event => { event.preventDefault(); event.stopPropagation(); if (event.detail === 0 || !('PointerEvent' in window)) openSeatStudentPicker(seat); });
+                const score = document.createElement('div');
+                score.className = 'seat-cell-score';
+                const findStudentIndex = () => teams.findIndex(t => String(t.id || t.name) === seatAssignments[seat]);
+                const studentIndex = findStudentIndex();
+                score.textContent = studentIndex >= 0 ? `${Number(teams[studentIndex].score) || 0} 分` : '—';
+                const actions = document.createElement('div');
+                actions.className = 'seat-cell-actions';
+                const minus = document.createElement('button');
+                minus.type = 'button'; minus.className = 'minus'; minus.textContent = '−'; minus.setAttribute('aria-label', `座位 ${seat + 1} 扣一分`);
+                const plus = document.createElement('button');
+                plus.type = 'button'; plus.className = 'plus'; plus.textContent = '+'; plus.setAttribute('aria-label', `座位 ${seat + 1} 加一分`);
+                minus.disabled = studentIndex < 0; plus.disabled = studentIndex < 0;
+                minus.addEventListener('click', event => { event.stopPropagation(); const i = findStudentIndex(); if (i >= 0) changeScore(i, -1); });
+                plus.addEventListener('click', event => { event.stopPropagation(); const i = findStudentIndex(); if (i >= 0) changeScore(i, 1); });
+                actions.append(minus, plus);
+                cell.append(pick, score, actions);
+                grid.appendChild(cell);
+            }
+            root.appendChild(grid);
+            const settings = document.createElement('div');
+            settings.className = 'seat-layout-settings';
+            const rowsLabel = document.createElement('label'); rowsLabel.textContent = '排數';
+            const rowsInput = document.createElement('input'); rowsInput.type = 'number'; rowsInput.min = '1'; rowsInput.max = '15'; rowsInput.step = '1'; rowsInput.value = String(layout.rows); rowsInput.setAttribute('aria-label','座位表排數');
+            rowsLabel.appendChild(rowsInput);
+            const colsLabel = document.createElement('label'); colsLabel.textContent = '列數';
+            const colsInput = document.createElement('input'); colsInput.type = 'number'; colsInput.min = '1'; colsInput.max = '15'; colsInput.step = '1'; colsInput.value = String(layout.cols); colsInput.setAttribute('aria-label','座位表列數');
+            colsLabel.appendChild(colsInput);
+            const apply = document.createElement('button'); apply.type = 'button'; apply.textContent = '套用座位大小';
+            apply.addEventListener('click', () => {
+                const rows = Math.max(1, Math.min(15, Math.floor(Number(rowsInput.value) || 5)));
+                const cols = Math.max(1, Math.min(15, Math.floor(Number(colsInput.value) || 7)));
+                const needed = rows * cols;
+                if (needed < seatAssignments.length && seatAssignments.slice(needed).some(Boolean) && !confirm('縮小座位表會移除超出新範圍的座位安排，確定要繼續嗎？')) return;
+                seatAssignments = Array.from({length: needed}, (_, i) => String(seatAssignments[i] || ''));
+                localStorage.setItem(SEAT_LAYOUT_KEY, JSON.stringify({rows, cols}));
+                saveSeatAssignments();
+                renderSeatBoard();
+            });
+            settings.append(rowsLabel, colsLabel, apply);
+            const hint = document.createElement('span'); hint.textContent = '可自行輸入排數、列數（1–15），放在座位表下方。';
+            settings.appendChild(hint);
+            root.appendChild(settings);
+            const seatActions = document.createElement('div');
+            seatActions.className = 'seat-board-actions';
+            const clearSeats = document.createElement('button');
+            clearSeats.type = 'button';
+            clearSeats.className = 'clear-seats';
+            clearSeats.textContent = '清空座位表';
+            clearSeats.addEventListener('click', () => {
+                if (!seatAssignments.some(Boolean)) { alert('座位表目前已經是空的。'); return; }
+                if (!confirm('確定要清空所有座位安排嗎？可使用「復原上次座位表」還原。')) return;
+                localStorage.setItem(PREVIOUS_SEAT_ASSIGNMENTS_KEY, JSON.stringify(seatAssignments));
+                seatAssignments = Array(getSeatLayout().rows * getSeatLayout().cols).fill('');
+                saveSeatAssignments();
+                renderSeatBoard();
+            });
+            const restoreSeats = document.createElement('button');
+            restoreSeats.type = 'button';
+            restoreSeats.className = 'restore-seats';
+            restoreSeats.textContent = '復原上次座位表';
+            let previousSeatAssignments = null;
+            try {
+                const savedPrevious = localStorage.getItem(PREVIOUS_SEAT_ASSIGNMENTS_KEY);
+                if (savedPrevious) previousSeatAssignments = JSON.parse(savedPrevious);
+            } catch (e) { previousSeatAssignments = null; }
+            restoreSeats.disabled = !Array.isArray(previousSeatAssignments) || !previousSeatAssignments.some(Boolean);
+            restoreSeats.addEventListener('click', () => {
+                let previous;
+                try { previous = JSON.parse(localStorage.getItem(PREVIOUS_SEAT_ASSIGNMENTS_KEY) || 'null'); } catch (e) { previous = null; }
+                if (!Array.isArray(previous) || !previous.some(Boolean)) { alert('沒有可復原的座位表。'); return; }
+                if (!confirm('要復原上次儲存的座位表嗎？目前的座位安排會暫存為下一次可復原的座位表。')) return;
+                localStorage.setItem(PREVIOUS_SEAT_ASSIGNMENTS_KEY, JSON.stringify(seatAssignments));
+                const count = getSeatLayout().rows * getSeatLayout().cols;
+                seatAssignments = Array.from({length: count}, (_, i) => String(previous[i] || ''));
+                saveSeatAssignments();
+                renderSeatBoard();
+            });
+            seatActions.append(clearSeats, restoreSeats);
+            root.appendChild(seatActions);
+            saveSeatAssignments();
         }
 
         function renderStatsBoard() {
