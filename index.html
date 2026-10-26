@@ -338,6 +338,40 @@ button:hover {
 #avatarPickerGroup .logo-multi-grid > [data-logo-card="logo1"] { order: 12; } /* 鉛筆 */
 #avatarPickerGroup .logo-multi-grid > [data-logo-card="upload1"] { order: 13; }
 #avatarPickerGroup .logo-multi-grid > [data-logo-card="upload2"] { order: 14; }
+
+/* 版本資訊與歷史版本 */
+.version-bar{max-width:1500px;margin:0 auto 18px;background:#fff;border:1px solid #dbe3ec;border-radius:12px;box-shadow:0 2px 8px #00000008;overflow:hidden}
+.version-bar summary{cursor:pointer;list-style:none;padding:9px 14px;font-weight:700;display:flex;align-items:center;justify-content:space-between;gap:12px;background:#f1f5f9;border-bottom:1px solid #dbe3ec;font-size:14px}
+.version-bar summary::-webkit-details-marker{display:none}
+.version-current{color:#334155;font-weight:600;white-space:nowrap}
+.version-toggle-hint{display:inline-block;padding:2px 7px;border:1px solid #94a3b8;border-radius:6px;background:#fff;color:#2563eb;font-size:12px}
+.version-bar[open] .version-toggle-hint{font-size:12px}
+.version-bar:not([open]) .version-toggle-hint::before{content:"＋ 點我展開"}
+.version-bar[open] .version-toggle-hint::before{content:"－ 點我收合"}
+
+.version-bar summary::after{content:""}
+.version-bar[open] summary::after{content:""}
+.version-bar-content{padding:5px 14px 9px;line-height:1.55;font-size:12px}
+.version-bar-content p{margin:2px 0}
+.version-actions{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px}
+.version-actions button{width:auto;margin:0;padding:9px 12px}
+.version-actions button.secondary{background:#e2e8f0;color:#1e293b}
+.version-actions button.secondary:hover{background:#cbd5e1}
+#historyPanel{min-width:0;background:#fff;border-radius:14px;padding:14px;box-shadow:0 2px 8px #00000010}
+#historyPanel h2{margin:0 0 8px;font-size:19px}
+.history-groups{display:flex;flex-direction:column;gap:6px;margin:10px 0}
+.history-group{border:1px solid #dbe3ec;border-radius:8px;overflow:hidden}
+.history-group>summary{cursor:pointer;list-style:none;padding:7px 10px;background:#f1f5f9;font-weight:700;font-size:13px;display:flex;justify-content:space-between;align-items:center}
+.history-group>summary::-webkit-details-marker{display:none}
+.history-group>summary::after{content:"＋";color:#2563eb;font-size:16px}
+.history-group[open]>summary::after{content:"－"}
+.history-group-body{padding:4px 9px 8px}
+.history-entry{border:1px solid #e2e8f0;border-radius:7px;padding:8px 10px;margin:6px 0;background:#fff}
+.history-entry h3{margin:0 0 3px;font-size:13px}
+.history-entry p{margin:3px 0;line-height:1.45;font-size:12px}
+.history-meta{font-size:11px;color:#64748b}
+.history-note{background:#f8fafc;border-radius:7px;padding:7px 9px;color:#64748b;font-size:11px;line-height:1.5}
+@media print{.version-bar,.version-actions,#historyPanel{display:none!important}}
 </style>
 <style>
 /* Collapsible, categorized settings */
@@ -366,9 +400,21 @@ button:hover {
 .settings-group select, .settings-group input:not([type="checkbox"]):not([type="range"]), .settings-group textarea { max-width: 100%; }
 </style></head>
 <body>
+<details class="version-bar no-print" id="versionInfo">
+<summary><span>📌 目前版本資訊（點此展開／收合）</span><span class="version-current">v3.5.1　<span class="version-toggle-hint"></span></span></summary>
+<div class="version-bar-content">
+<p><strong>版本號：</strong>v3.5.1</p>
+<p><strong>更新日期：</strong>2026-10-26</p>
+<p><strong>版本描述：</strong>歷史紀錄依版本號排序，並縮小字體與間距，方便查閱及日後補入舊版本。</p>
+</div>
+</details>
 <div class="layout">
 <section class="panel no-print">
 <h2>✍️ 字帖參數設定</h2>
+<div class="version-actions no-print">
+<button id="showCopybookButton" type="button" class="secondary">✍️ 字帖預覽</button>
+<button id="showHistoryButton" type="button">📚 歷史版本</button>
+</div>
 <div class="title-input-top" style="margin: 0 0 16px; padding: 12px; border: 1px solid #d5dde5; border-radius: 10px; background: #f8fafc;"><label for="copybookTitle">字帖標頭（選填，列印時置中顯示）</label><input id="copybookTitle" placeholder="例如：國語生字練習／第 3 課生字" style="width:100%;box-sizing:border-box" type="text" value="國語複習字帖"/><p class="hint">輸入的標頭會置中顯示在每張紙的上方，留白即可不顯示。</p></div>
 <details class="settings-group"><summary>🔤 自動注音＋手動修改</summary>
 <p class="hint">輸入文字後可自動查詢注音；可用下拉選單切換多音字，也可自行輸入修正。自動結果請先核對，再列印正式字帖。</p>
@@ -510,6 +556,36 @@ button:hover {
 <option value="3">3 排</option>
 </select><p class="hint">勾選後，可選擇每行文字後增加 1、2 或 3 排空白格，方便學生反覆練習。</p></details></section>
 <main id="preview"></main>
+<section id="historyPanel" class="no-print" hidden aria-live="polite">
+<h2>📚 歷史版本</h2>
+<p class="hint" style="font-size:11px;margin:0 0 7px">依版本號由新到舊排列；點開大版本，即可查看該版本群組內的所有紀錄。</p>
+<div class="history-groups">
+<details class="history-group" open>
+<summary>v.3 版本 <span style="font-weight:400;color:#64748b;font-size:11px">2 筆紀錄</span></summary>
+<div class="history-group-body">
+<article class="history-entry">
+<h3>v3.5.1｜歷史版本排序與紀錄精簡</h3>
+<p class="history-meta">更新日期：2026-10-26</p>
+<p>歷史版本依大版本及版本號排序；新增本次修改紀錄，方便日後補入較早版本。</p>
+</article>
+<article class="history-entry">
+<h3>v3.5.0｜新增版本資訊與歷史紀錄</h3>
+<p class="history-meta">更新日期：2026-10-26</p>
+<p>新增頂部可收合的版本資訊，預設收合；新增「歷史版本」檢視，可暫時取代右側字帖預覽，並可切回字帖預覽。</p>
+</article>
+</div>
+</details>
+<details class="history-group">
+<summary>v.2 版本 <span style="font-weight:400;color:#64748b;font-size:11px">尚未整理紀錄</span></summary>
+<div class="history-group-body"><p class="hint" style="font-size:11px;margin:4px 0">目前尚未補入 v2.x 的歷史紀錄。</p></div>
+</details>
+<details class="history-group">
+<summary>v.1 版本 <span style="font-weight:400;color:#64748b;font-size:11px">尚未整理紀錄</span></summary>
+<div class="history-group-body"><p class="hint" style="font-size:11px;margin:4px 0">目前尚未補入 v1.x 的歷史紀錄。</p></div>
+</details>
+</div>
+<div class="history-note">較早版本尚未整理到此清單。之後補入舊紀錄時，請放進對應大版本群組，並依版本號由新到舊排列。</div>
+</section>
 </div>
 <script>
 const textInput = document.getElementById("textInput");
@@ -1166,6 +1242,26 @@ document.querySelectorAll('.logo-minus').forEach(function(btn){btn.addEventListe
         }; reader.readAsDataURL(file);
     });
 });
+// 版本紀錄：在右側字帖預覽與歷史版本之間切換，不影響字帖內容。
+(function setupVersionHistory(){
+    const previewEl = document.getElementById('preview');
+    const historyEl = document.getElementById('historyPanel');
+    const showHistoryBtn = document.getElementById('showHistoryButton');
+    const showCopybookBtn = document.getElementById('showCopybookButton');
+    if (!previewEl || !historyEl || !showHistoryBtn || !showCopybookBtn) return;
+    function showView(view){
+        const historyMode = view === 'history';
+        previewEl.hidden = historyMode;
+        historyEl.hidden = !historyMode;
+        showHistoryBtn.classList.toggle('secondary', historyMode);
+        showCopybookBtn.classList.toggle('secondary', !historyMode);
+        showHistoryBtn.setAttribute('aria-pressed', String(historyMode));
+        showCopybookBtn.setAttribute('aria-pressed', String(!historyMode));
+    }
+    showHistoryBtn.addEventListener('click', function(){ showView('history'); });
+    showCopybookBtn.addEventListener('click', function(){ showView('copybook'); });
+    showView('copybook');
+})();
 refreshLogoControls();
 syncBlankPracticeControls();
 updateDocumentTitle();
