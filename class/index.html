@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>四１課堂計分板（組長副組長版）</title>
+    <title>v5.0.8_20261026-1712_註明版本說明字數限制</title>
     <style>
         :root {
             --primary-color: #4CAF50;
@@ -497,6 +497,38 @@
             display: none;
         }
 
+
+        #version-history-btn { border:0; border-radius:8px; padding:8px 10px; background:#3949ab; color:#fff; font:bold 14px 'Microsoft JhengHei',sans-serif; cursor:pointer; white-space:nowrap; margin-left:5px; }
+        #version-history-panel { flex:1 1 auto; min-width:0; overflow:auto; padding:14px; margin:8px 0; border:1px solid #dce3e6; border-radius:12px; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,.05); }
+        #version-history-panel[hidden] { display:none !important; }
+        #version-history-panel h2 { margin:0 0 8px; color:#263238; font-size:22px; }
+        .version-history-intro,.version-history-note,.version-empty { color:#78909c; font-size:13px; }
+        .version-group { margin:8px 0; border:1px solid #d9e2ef; border-radius:10px; overflow:hidden; }
+        .version-group summary { cursor:pointer; padding:12px; background:#f0f4f9; font-weight:bold; }
+        .version-entry { margin:8px; padding:12px; border:1px solid #dce3ef; border-radius:9px; line-height:1.5; }
+        .version-entry p { margin:5px 0 0; }
+        .version-empty { padding:0 12px 8px; }
+        .version-history-note { padding:9px 12px; background:#f7f9fc; border-radius:8px; }
+        .operation-lock-settings { margin:0 0 14px; padding:12px; border:2px solid #cfd8dc; border-radius:10px; background:#fff; }
+        .operation-lock-heading { display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; font-size:17px; }
+        .lock-status { font-size:14px; font-weight:bold; color:#c62828; }
+        .lock-status.unlocked { color:#2e7d32; }
+        .operation-lock-actions { display:flex; gap:8px; }
+        .operation-lock-actions button { flex:1; border:0; border-radius:8px; padding:10px; font: bold 15px 'Microsoft JhengHei',sans-serif; background:#008b9a; color:#fff; }
+        #operation-lock-btn { background:#c62828; }
+        body.classroom-locked .score-mutation-disabled { opacity:.45; }
+        /* v5.0.3：版本歷史紀錄採緊湊字級，讓單頁顯示更多版本 */
+        #version-history-panel { padding:10px; }
+        #version-history-panel h2 { font-size:18px; margin-bottom:5px; }
+        .version-history-intro,.version-history-note,.version-empty { font-size:11px; line-height:1.35; }
+        .version-group { margin:6px 0; }
+        .version-group summary { padding:7px 9px; font-size:14px; }
+        .version-entry { margin:6px; padding:8px 9px; font-size:13px; line-height:1.4; }
+        .version-entry strong { font-size:14px; }
+        .version-entry p { margin:3px 0 0; }
+        .version-history-note { padding:6px 8px; }
+        @media (max-width:520px) { #version-history-btn { font-size:12px; padding:6px 7px; margin-left:2px; } #version-history-panel { padding:7px; } .version-entry { margin:4px; padding:7px; font-size:12px; } .version-entry strong { font-size:13px; } }
+
 </style>
 </head>
 <body>
@@ -516,7 +548,7 @@
                         <button type="button" class="top-data-btn excel" onclick="exportExcelGrades()">匯出 EXCEL</button>
                         <button type="button" class="top-data-btn import" onclick="document.getElementById('json-import-file').click()">匯入</button>
                     </div>
-                    <div class="wheel-reset-area top-wheel-reset-area" data-html2canvas-ignore="true"><button id="wheel-reset-btn" type="button" onclick="toggleWheelResetMenu()">🔄 重設</button><div id="wheel-reset-menu" hidden><button type="button" onclick="resetWheelToInitial()">🎡 轉盤重設：全部回到初始</button><button type="button" onclick="showOldClassResetOptions()">舊班：重新計分</button><div id="old-class-reset-options" hidden><button type="button" onclick="resetPersonalScores()">Ａ 個人分數歸零</button><button type="button" onclick="resetGroupScores()">Ｂ 分組歸零</button></div><button class="danger" type="button" onclick="resetToNewClass()">新班：清空所有記錄</button></div></div>
+                    <div class="wheel-reset-area top-wheel-reset-area" data-html2canvas-ignore="true"><button id="wheel-reset-btn" type="button" onclick="toggleWheelResetMenu()">🔄 重設</button><button id="version-history-btn" type="button" onclick="toggleVersionHistory()">📚 版本歷史</button><div id="wheel-reset-menu" hidden><button type="button" onclick="resetWheelToInitial()">🎡 轉盤重設：全部回到初始</button><button type="button" onclick="showOldClassResetOptions()">舊班：重新計分</button><div id="old-class-reset-options" hidden><button type="button" onclick="resetPersonalScores()">Ａ 個人分數歸零</button><button type="button" onclick="resetGroupScores()">Ｂ 分組歸零</button></div><button class="danger" type="button" onclick="resetToNewClass()">新班：清空所有記錄</button></div></div>
                 </div>
                 <h3 id="board-title-display">四１課堂計分板</h3>
                 <div class="board-view-switch" role="group" aria-label="切換計分板">
@@ -534,6 +566,21 @@
         <div id="stats-board-container" hidden></div>
         <div id="seat-board-container" hidden></div>
         <div id="wheel-records-board-container" hidden></div>
+        <section id="version-history-panel" hidden aria-label="版本歷史紀錄">
+            <h2>📚 版本歷史紀錄</h2>
+            <p class="version-history-intro">依版本號由新到舊排列；展開版本可查看修改紀錄。</p>
+            <details open class="version-group"><summary>v5 版本</summary>
+                <article class="version-entry"><strong>v5.0.8｜註明版本說明字數限制</strong><p>更新日期：2026-10-26 17:12</p><p>版本說明須精簡，不超過35字。</p></article>
+                <article class="version-entry"><strong>v5.0.6｜精簡救援密碼版本說明</strong><p>更新日期：2026-10-26 17:09</p><p>精簡救援密碼說明，保留原有解鎖與重設功能。</p></article>
+                <article class="version-entry"><strong>v5.0.5｜調整救援密碼說明</strong><p>更新日期：2026-10-26 17:05</p><p>依照使用者要求，移除版本說明中「救援密碼直接寫在程式中」的文字敘述；程式內原有的救援密碼設定與解鎖功能保留不變，仍可在忘記一般密碼時使用救援密碼，並可重新設定一般老師密碼。</p></article>
+                <article class="version-entry"><strong>v5.0.3｜縮小版本歷史字體並補充版本說明</strong><p>更新日期：2026-10-26 17:01</p><p>依使用回饋進一步縮小版本歷史標題、日期、修改說明與紀錄間距，讓同一畫面能呈現更多版本內容；其他計分板及功能按鈕字體維持不變。新增本次版本說明，並保留既有版本紀錄。</p></article>
+                <article class="version-entry"><strong>v5.0.2｜新增通用救援密碼</strong><p>更新日期：2026-10-26 16:50</p><p>新增「一般密碼」與「救援密碼」兩個解鎖入口；忘記一般密碼時，可使用救援密碼解鎖並重新設定一般老師密碼。縮小版本歷史文字與間距，增加單頁可閱讀的紀錄量。</p></article>
+                <article class="version-entry"><strong>v5.0.0｜新增課堂操作鎖定與版本歷史</strong><p>更新日期：2026-10-26 16:22</p><p>新增老師密碼解鎖；預設鎖定個人、分組、座位表計分與資料設定，抽籤轉盤仍可使用。新增版本歷史切換面板，並統一版本紀錄日期時間格式。</p></article>
+            </details>
+            <details class="version-group"><summary>v4 版本</summary><p class="version-empty">舊版紀錄尚未整理；不回溯推定原始修改時間。</p></details>
+            <details class="version-group"><summary>v3 版本</summary><p class="version-empty">舊版紀錄尚未整理；不回溯推定原始修改時間。</p></details>
+            <p class="version-history-note">後續版本請沿用版本紀錄規則（含時分），並以實際修改時間為準。</p>
+        </section>
         <div class="config-actions">
             <button id="edit-roster-btn" type="button" onclick="toggleRosterEditor()">✏️ 修改名單</button>
             <button id="settings-btn" type="button" onclick="toggleSettings()">⚙️ 設定</button>
@@ -549,6 +596,16 @@
                 </div>
             </div>
             <div id="settings-panel" hidden>
+                <section id="operation-lock-settings" class="operation-lock-settings">
+                    <div class="operation-lock-heading"><strong>🔐 課堂操作鎖定</strong><span id="operation-lock-status" class="lock-status">🔒 鎖定中</span></div>
+                    <p class="settings-hint">鎖定時，分數、名單、分組、座位表及所有設定均不可修改；抽籤轉盤仍可使用。</p>
+                    <div class="operation-unlock-actions" id="operation-unlock-actions"><button type="button" id="operation-unlock-btn" onclick="unlockClassroom()">🔒 一般密碼</button><button type="button" id="operation-rescue-btn" onclick="unlockWithRescuePassword()">🗝️ 救援密碼</button><button type="button" id="operation-lock-btn" onclick="lockClassroom()" hidden>🔒 立即鎖定</button></div>
+                    <div id="operation-password-change" hidden>
+                        <label class="settings-field" for="new-operation-password">修改老師密碼（4～6 位數字）</label>
+                        <input id="new-operation-password" type="password" inputmode="numeric" pattern="[0-9]{4,6}" maxlength="6" placeholder="輸入新的 4～6 位數字密碼" autocomplete="new-password">
+                        <button class="settings-save" type="button" onclick="changeOperationPassword()">儲存新密碼</button>
+                    </div>
+                </section>
                 <label for="board-title" style="display:block;font-weight:bold;margin-bottom:6px;">修改計分板名稱</label>
                 <input id="board-title" type="text" value="🏫 課堂個人計分板 (29人版)" aria-label="計分板標題，可自行輸入" placeholder="請輸入計分板標題">
                 <button class="settings-save" type="button" onclick="saveBoardTitle()">儲存名稱</button>
@@ -2860,6 +2917,107 @@
         });
         window.addEventListener('pagehide', flushClassroomData);
         window.addEventListener('beforeunload', flushClassroomData);
+
+        // v5.0.0：課堂操作鎖定與版本歷史。sessionStorage 讓重新整理保留狀態，關閉分頁後預設重新鎖定。
+        const OP_LOCK_KEY = 'tab_class_operation_lock_password_v1';
+        const OP_UNLOCK_SESSION_KEY = 'tab_class_operation_unlocked_session_v1';
+        let classroomUnlocked = sessionStorage.getItem(OP_UNLOCK_SESSION_KEY) === '1';
+        let rescuedThisSession = false;
+        function isWheelTarget(target) { return !!(target && target.closest && target.closest('#wheel-overlay')); }
+        function updateClassroomLockUI() {
+            document.body.classList.toggle('classroom-locked', !classroomUnlocked);
+            const status = document.getElementById('operation-lock-status');
+            const unlockBtn = document.getElementById('operation-unlock-btn');
+            const lockBtn = document.getElementById('operation-lock-btn');
+            const rescueBtn = document.getElementById('operation-rescue-btn');
+            const passwordChange = document.getElementById('operation-password-change');
+            if (status) { status.textContent = classroomUnlocked ? '🔓 已解鎖' : '🔒 鎖定中'; status.classList.toggle('unlocked', classroomUnlocked); }
+            if (unlockBtn) unlockBtn.hidden = classroomUnlocked;
+            if (rescueBtn) rescueBtn.hidden = classroomUnlocked;
+            if (lockBtn) lockBtn.hidden = !classroomUnlocked;
+            if (passwordChange) passwordChange.hidden = !classroomUnlocked;
+            // 初次進入一律鎖定；僅同一分頁的重新整理會保留解鎖狀態。
+        }
+        function unlockClassroom() {
+            let savedPassword = localStorage.getItem(OP_LOCK_KEY);
+            if (!savedPassword) {
+                const first = prompt('首次使用：請設定一般老師密碼（4～6 位數字）。');
+                if (first === null) return;
+                if (!/^\d{4,6}$/.test(first)) { alert('密碼必須是 4～6 位數字。'); return; }
+                const again = prompt('請再次輸入相同密碼確認。');
+                if (again !== first) { alert('兩次密碼不一致，請重新設定。'); return; }
+                localStorage.setItem(OP_LOCK_KEY, first);
+                savedPassword = first;
+                // 首次設定成功即完成一般密碼驗證，直接解鎖。
+            } else {
+                const entered = prompt('請輸入一般老師密碼（4～6 位數字）以解鎖。');
+                if (entered === null) return;
+                if (entered !== savedPassword) { alert('一般密碼錯誤，計分板仍維持鎖定。若忘記密碼，請使用「救援密碼」。'); return; }
+            }
+            classroomUnlocked = true;
+            sessionStorage.setItem(OP_UNLOCK_SESSION_KEY, '1');
+            updateClassroomLockUI();
+            alert('一般密碼驗證成功，已解鎖課堂操作。');
+        }
+        function unlockWithRescuePassword() {
+            const MASTER_RESCUE_PASSWORD = '0710'; // 通用救援密碼：依老師要求直接寫在 HTML 程式中。
+            const entered = prompt('請輸入救援密碼。');
+            if (entered === null) return;
+            if (entered !== MASTER_RESCUE_PASSWORD) { alert('救援密碼錯誤，計分板仍維持鎖定。'); return; }
+            classroomUnlocked = true;
+            rescuedThisSession = true;
+            sessionStorage.setItem(OP_UNLOCK_SESSION_KEY, '1');
+            updateClassroomLockUI();
+            alert('救援密碼正確，已解鎖。你可以在下方直接設定新的一般老師密碼。');
+        }
+        function lockClassroom() {
+            classroomUnlocked = false;
+            sessionStorage.removeItem(OP_UNLOCK_SESSION_KEY);
+            updateClassroomLockUI();
+            alert('已鎖定課堂操作。抽籤轉盤仍可使用。');
+        }
+        function changeOperationPassword() {
+            if (!classroomUnlocked) return;
+            if (!rescuedThisSession) {
+                const oldPassword = prompt('請輸入目前的老師密碼。');
+                if (oldPassword !== localStorage.getItem(OP_LOCK_KEY)) { alert('目前密碼錯誤。'); return; }
+            }
+            const next = document.getElementById('new-operation-password').value.trim();
+            if (!/^\d{4,6}$/.test(next)) { alert('新密碼必須是 4～6 位數字。'); return; }
+            localStorage.setItem(OP_LOCK_KEY, next);
+            rescuedThisSession = false;
+            document.getElementById('new-operation-password').value = '';
+            alert('一般老師密碼已更新。');
+        }
+        function toggleVersionHistory() {
+            const history = document.getElementById('version-history-panel');
+            const showHistory = history.hidden;
+            history.hidden = !showHistory;
+            ['list-container','group-score-container','stats-board-container','seat-board-container','wheel-records-board-container'].forEach(id => {
+                const el = document.getElementById(id); if (el) el.hidden = showHistory ? true : false;
+            });
+            if (!showHistory) switchBoardView(currentBoardView);
+            document.getElementById('version-history-btn').textContent = showHistory ? '↩️ 返回計分板' : '📚 版本歷史';
+        }
+        // 鎖定時封鎖所有會改動資料的點擊／輸入；保留瀏覽、開關面板、截圖、抽籤與鎖定控制。
+        document.addEventListener('click', function(event) {
+            if (classroomUnlocked || isWheelTarget(event.target)) return;
+            const allowed = event.target.closest('#toggle-btn, .close-panel, #screenshot-btn, #top-wheel-btn, #spin-btn, #version-history-btn, #show-personal-board, #show-group-board, #show-stats-board, #show-seat-board, #show-wheel-records-board, #settings-btn, #edit-roster-btn, #identity-table-btn, #operation-unlock-btn, #operation-rescue-btn, #operation-lock-btn');
+            if (allowed) return;
+            event.preventDefault(); event.stopPropagation(); event.stopImmediatePropagation();
+        }, true);
+        document.addEventListener('beforeinput', function(event) {
+            if (!classroomUnlocked && !isWheelTarget(event.target) && !event.target.closest('#operation-password-change')) {
+                event.preventDefault(); event.stopImmediatePropagation();
+            }
+        }, true);
+        document.addEventListener('change', function(event) {
+            if (!classroomUnlocked && !isWheelTarget(event.target)) {
+                event.preventDefault(); event.stopImmediatePropagation();
+            }
+        }, true);
+        updateClassroomLockUI();
+
     </script>
 </body>
 </html>
