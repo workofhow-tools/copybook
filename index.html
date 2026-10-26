@@ -171,29 +171,49 @@ button:hover {
     overflow: visible;
 }
 
-.grid-jiu::before,
-.grid-jiu::after {
+.char-box[class*="grid-"]::before,
+.char-box[class*="grid-"]::after {
     content: "";
     position: absolute;
     pointer-events: none;
+    box-sizing: border-box;
 }
 
+/* 1 井字格：保留原有內部虛線配置 */
 .grid-jiu::before {
-    top: 0;
-    bottom: 0;
-    left: 33.333%;
-    right: 33.333%;
+    top: 0; bottom: 0; left: 33.333%; right: 33.333%;
     border-left: 0.2mm dashed #94a3b8;
     border-right: 0.2mm dashed #94a3b8;
 }
-
 .grid-jiu::after {
-    left: 0;
-    right: 0;
-    top: 33.333%;
-    bottom: 33.333%;
+    left: 0; right: 0; top: 33.333%; bottom: 33.333%;
     border-top: 0.2mm dashed #94a3b8;
     border-bottom: 0.2mm dashed #94a3b8;
+}
+
+/* 2 回字格：內縮一圈虛線方框 */
+.grid-hui::before {
+    inset: 25%;
+    border: 0.2mm dashed #94a3b8;
+}
+
+/* 3 米字格：中心十字及兩條對角線全部使用虛線 */
+.grid-mi::before { display: none; }
+.grid-mi::after {
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Cg fill='none' stroke='%2394a3b8' stroke-width='0.7' stroke-dasharray='3 2'%3E%3Cpath d='M50 0V100 M0 50H100 M0 0L100 100 M100 0L0 100'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: 100% 100%;
+}
+/* 4 田字格：中央一橫一直，虛線 */
+.grid-tian::before {
+    top: 0; bottom: 0; left: 50%; border-left: 0.2mm dashed #94a3b8;
+}
+.grid-tian::after {
+    left: 0; right: 0; top: 50%; border-top: 0.2mm dashed #94a3b8;
+}
+/* 5 虛線橫線格：只顯示中央橫向輔助線 */
+.grid-horizontal::before {
+    left: 0; right: 0; top: 50%; border-top: 0.2mm dashed #94a3b8;
 }
 
 .stroke-number {
@@ -434,8 +454,8 @@ button:hover {
             🖨️ 列印／另存 PDF
         </button>
 <details class="settings-group"><summary>📄 版面與排列</summary><label>頁面邊界（公分）</label><div class="opacity-row">
-<div style="flex:1"><label for="marginTop" style="margin-top:0;font-weight:normal">上</label><input id="marginTop" max="5" min="0" step="0.1" type="number" value="1.5"/></div>
-<div style="flex:1"><label for="marginBottom" style="margin-top:0;font-weight:normal">下</label><input id="marginBottom" max="5" min="0" step="0.1" type="number" value="1.5"/></div>
+<div style="flex:1"><label for="marginTop" style="margin-top:0;font-weight:normal">上</label><input id="marginTop" max="5" min="0" step="0.1" type="number" value="2"/></div>
+<div style="flex:1"><label for="marginBottom" style="margin-top:0;font-weight:normal">下</label><input id="marginBottom" max="5" min="0" step="0.1" type="number" value="1"/></div>
 </div><div class="opacity-row">
 <div style="flex:1"><label for="marginLeft" style="margin-top:0;font-weight:normal">左</label><input id="marginLeft" max="5" min="0" step="0.1" type="number" value="1.5"/></div>
 <div style="flex:1"><label for="marginRight" style="margin-top:0;font-weight:normal">右</label><input id="marginRight" max="5" min="0" step="0.1" type="number" value="1.5"/></div>
@@ -443,8 +463,12 @@ button:hover {
 <div style="flex:1"><label for="horizontalAlign" style="margin-top:0;font-weight:normal">水平位置</label><select id="horizontalAlign"><option value="left">靠左</option><option selected="" value="center">置中</option><option value="right">靠右</option></select></div>
 <div style="flex:1"><label for="verticalAlign" style="margin-top:0;font-weight:normal">垂直位置</label><select id="verticalAlign"><option value="top">靠上</option><option selected="" value="center">置中</option><option value="bottom">靠下</option></select></div>
 </div><p class="hint">邊界會限制字帖可使用的範圍；水平與垂直位置可分別設定。列印時請在列印視窗選擇 A4、縮放 100%，並關閉瀏覽器額外頁首頁尾。</p><label for="gridStyle">格子款式</label><select id="gridStyle">
-<option value="grid-jiu">九宮格（井字虛線）</option>
-<option value="none">無虛線（僅外框）</option>
+<option value="grid-jiu">1 井字格（內部虛線）</option>
+<option value="grid-hui">2 虛線回字格</option>
+<option value="grid-mi">3 虛線米字格</option>
+<option value="grid-tian">4 虛線田字格</option>
+<option value="grid-horizontal">5 虛線橫線格</option>
+<option value="none">6 無虛線（僅外框）</option>
 </select><label>每頁格子數量</label><div class="opacity-row">
 <div style="flex:1">
 <label for="rowCount" style="margin-top:0;font-weight:normal">行數（橫排的行／直排的字數高度）</label>
@@ -726,8 +750,8 @@ function createPage(pageUnits, mode, font, grid, opacity, rows, cols, boxSizeMod
         box.className = "char-box";
         if (addZhuyinGrid && mode === "horizontal") box.style.alignSelf = "end";
 
-        if (grid === "grid-jiu") {
-            box.classList.add("grid-jiu");
+        if (typeof grid === "string" && grid.startsWith("grid-")) {
+            box.classList.add(grid);
         }
 
         let char = "";
@@ -839,7 +863,7 @@ function createPage(pageUnits, mode, font, grid, opacity, rows, cols, boxSizeMod
         const avatarImg = document.createElement("img");
         avatarImg.src = logo.src;
         avatarImg.alt = logo.title || "字帖 LOGO";
-        avatarImg.style.cssText = "width:8mm;height:8mm;object-fit:contain;vertical-align:middle;margin-right:1.2mm;flex:0 0 auto";
+        avatarImg.style.cssText = "width:16mm;height:16mm;object-fit:contain;vertical-align:middle;margin-right:1.2mm;flex:0 0 auto";
         studentInfo.appendChild(avatarImg);
     });
     const studentInfoText = document.createElement("span");
@@ -1090,6 +1114,8 @@ document.getElementById("printButton").addEventListener("click", function () {
 
 // 多 LOGO 選取：每個圖案可加減數量，總數最多 5 個。
 const logoCounts = {avatarAI:1, user:0, logo1:0, logo2:0, logo3:0, ai:0, logo4:0, logo5:0, logo6:0, logo7:0, logo8:0, logo9:0, logo10:0, upload1:0, upload2:0};
+// 列印 LOGO 順序依使用者按「＋」的先後排列；預設頭像先列入。
+const logoSelectionOrder = ["avatarAI"];
 const uploadedLogoSources = {upload1:null, upload2:null};
 const logoTitles = {avatarAI:"我製作的漫畫頭像", user:"原有帽子頭像", logo1:"鉛筆", logo2:"鋼筆", logo3:"心平氣和", ai:"用心寫字", logo4:"坐姿端正", logo5:"執筆正確", logo6:"一筆一畫", logo7:"橫平豎直", logo8:"字跡工整", logo9:"專心書寫", logo10:"持之以恆", upload1:"自行上傳 1", upload2:"自行上傳 2"};
 function getLogoTotal(){ return Object.values(logoCounts).reduce((a,b)=>a+b,0); }
@@ -1102,9 +1128,9 @@ function getLogoSource(key){
 }
 function getSelectedLogos(){
     const list=[];
-    Object.keys(logoCounts).forEach(function(key){
+    logoSelectionOrder.forEach(function(key){
         const src=getLogoSource(key);
-        if(src){ for(let i=0;i<logoCounts[key] && list.length<5;i++) list.push({src:src,title:logoTitles[key]}); }
+        if(src){ for(let i=0;i<(logoCounts[key]||0) && list.length<5;i++) list.push({src:src,title:logoTitles[key]}); }
     });
     return list;
 }
@@ -1123,9 +1149,10 @@ document.querySelectorAll('.logo-plus').forEach(function(btn){btn.addEventListen
     const key=this.dataset.key;
     if(getLogoTotal()>=5){document.getElementById('logoLimitHint').textContent='最多放 5 個 LOGO，請先減少一個。';return;}
     if((key==='upload1'||key==='upload2')&&!uploadedLogoSources[key]){document.getElementById('logoLimitHint').textContent='請先選擇要上傳的圖片，再按「＋」。';return;}
+    if(logoCounts[key]===0){ logoSelectionOrder.push(key); }
     logoCounts[key]++; refreshLogoControls(); generateCopybook();
 });});
-document.querySelectorAll('.logo-minus').forEach(function(btn){btn.addEventListener('click',function(){const key=this.dataset.key;if(logoCounts[key]>0){logoCounts[key]--;refreshLogoControls();generateCopybook();}});});
+document.querySelectorAll('.logo-minus').forEach(function(btn){btn.addEventListener('click',function(){const key=this.dataset.key;if(logoCounts[key]>0){logoCounts[key]--;if(logoCounts[key]===0){const idx=logoSelectionOrder.indexOf(key);if(idx!==-1)logoSelectionOrder.splice(idx,1);}refreshLogoControls();generateCopybook();}});});
 ['upload1','upload2'].forEach(function(key){
     const input=document.getElementById('file-'+key);
     input.addEventListener('change',function(){
