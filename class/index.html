@@ -545,6 +545,7 @@
         .marquee-phrase { border:1px solid #b2dfdb; background:#e0f7fa; color:#006064; border-radius:18px; padding:8px 12px; cursor:pointer; font: bold 14px 'Microsoft JhengHei',sans-serif; }
         .custom-marquee-phrase { background:#fff0d9; border-color:#f0c27b; color:#8a4b08; position:relative; padding-right:30px; }
         .custom-phrase-delete { position:absolute; top:-5px; right:-4px; width:20px; height:20px; padding:0; border:1px solid #d32f2f; border-radius:50%; background:#fff; color:#d32f2f; font:bold 14px/18px Arial,sans-serif; cursor:pointer; box-shadow:0 1px 3px #0002; }
+        .custom-phrase-edit { position:absolute; top:-5px; right:19px; width:20px; height:20px; padding:0; border:1px solid #1976d2; border-radius:50%; background:#fff; color:#1976d2; font:bold 12px/18px Arial,sans-serif; cursor:pointer; box-shadow:0 1px 3px #0002; }
         .marquee-phrase-add-row { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin:8px 0; }
         #marquee-phrase-name { flex:1 1 100px; min-width:100px; max-width:220px; box-sizing:border-box; padding:9px 10px; border:1px solid #b0bec5; border-radius:7px; font:15px 'Microsoft JhengHei',sans-serif; }
         #marquee-phrase-content { flex:2 1 300px; min-width:200px; box-sizing:border-box; padding:9px 10px; border:1px solid #b0bec5; border-radius:7px; font:15px 'Microsoft JhengHei',sans-serif; }
@@ -564,16 +565,15 @@
             <div class="header-main">
                 <div class="date-time-row">
                     <div id="date-time">19:45</div>
-                    <button id="screenshot-btn" type="button" onclick="saveScreenshot()" data-html2canvas-ignore="true">📸 截圖</button>
-                    <button id="top-wheel-btn" type="button" onclick="openWheel()" data-html2canvas-ignore="true">🎡 抽籤</button>
-                    <div class="top-data-actions" data-html2canvas-ignore="true">
+                    <button id="screenshot-btn" type="button" onclick="saveScreenshot()" data-html2canvas-ignore="true" title="截圖">📸</button>
+                    <button id="top-wheel-btn" type="button" onclick="openWheel()" data-html2canvas-ignore="true" title="抽籤">🎡</button>
+                    <button id="marquee-toggle-btn" type="button" onclick="toggleMarqueePanel()" data-html2canvas-ignore="true" title="跑馬燈">📣</button><button id="marquee-visibility-btn" type="button" onclick="toggleMarqueeVisibility()" data-html2canvas-ignore="true" style="border:0;border-radius:7px;padding:7px 10px;background:#607d8b;color:#fff;font:bold 14px 'Microsoft JhengHei',sans-serif;cursor:pointer;white-space:nowrap" title="隱藏跑馬燈">🙈 (隱藏)</button><div class="wheel-reset-area top-wheel-reset-area" data-html2canvas-ignore="true"><button id="wheel-reset-btn" type="button" onclick="toggleWheelResetMenu()" title="重設">🔄</button><button id="version-history-btn" type="button" onclick="toggleVersionHistory()" title="版本歷史">📚</button><div id="wheel-reset-menu" hidden><button type="button" onclick="resetWheelToInitial()">🎡 轉盤重設：全部回到初始</button><button type="button" onclick="showOldClassResetOptions()">舊班：重新計分</button><div id="old-class-reset-options" hidden><button type="button" onclick="resetPersonalScores()">Ａ 個人分數歸零</button><button type="button" onclick="resetGroupScores()">Ｂ 分組歸零</button></div><button class="danger" type="button" onclick="resetToNewClass()">新班：清空所有記錄</button></div></div><div class="top-data-actions" data-html2canvas-ignore="true">
                         <button type="button" class="top-data-btn json" onclick="exportJsonBackup()">匯出 JS</button>
                         <button type="button" class="top-data-btn excel" onclick="exportExcelGrades()">匯出 EXCEL</button>
                         <button type="button" class="top-data-btn import" onclick="document.getElementById('json-import-file').click()">匯入</button>
                     </div>
-                    <button id="marquee-toggle-btn" type="button" onclick="toggleMarqueePanel()" data-html2canvas-ignore="true">📣 跑馬燈</button><button id="marquee-visibility-btn" type="button" onclick="toggleMarqueeVisibility()" data-html2canvas-ignore="true" style="border:0;border-radius:7px;padding:7px 10px;background:#607d8b;color:#fff;font:bold 14px 'Microsoft JhengHei',sans-serif;cursor:pointer;white-space:nowrap">🙈 隱藏跑馬燈</button><div class="wheel-reset-area top-wheel-reset-area" data-html2canvas-ignore="true"><button id="wheel-reset-btn" type="button" onclick="toggleWheelResetMenu()">🔄 重設</button><button id="version-history-btn" type="button" onclick="toggleVersionHistory()">📚 版本歷史</button><div id="wheel-reset-menu" hidden><button type="button" onclick="resetWheelToInitial()">🎡 轉盤重設：全部回到初始</button><button type="button" onclick="showOldClassResetOptions()">舊班：重新計分</button><div id="old-class-reset-options" hidden><button type="button" onclick="resetPersonalScores()">Ａ 個人分數歸零</button><button type="button" onclick="resetGroupScores()">Ｂ 分組歸零</button></div><button class="danger" type="button" onclick="resetToNewClass()">新班：清空所有記錄</button></div></div>
                 </div>
-                <div style="display:flex;align-items:center;gap:14px;min-width:0;margin:0 0 4px"><h3 id="board-title-display" style="flex:0 0 auto;margin:0">四１課堂計分板</h3><span id="current-version-label" style="flex:0 0 auto;font-size:12px;color:#008c95;background:#e0f7fa;border:1px solid #b2ebf2;border-radius:12px;padding:3px 8px;font-weight:bold">目前版本 v5.3.6</span><div id="class-marquee" aria-label="課堂跑馬燈"><span id="class-marquee-track">歡迎上課！準備好了嗎？</span></div></div>
+                <div style="display:flex;align-items:center;gap:14px;min-width:0;margin:0 0 4px"><h3 id="board-title-display" style="flex:0 0 auto;margin:0">四１課堂計分板</h3><span id="current-version-label" style="flex:0 0 auto;font-size:12px;color:#008c95;background:#e0f7fa;border:1px solid #b2ebf2;border-radius:12px;padding:3px 8px;font-weight:bold">目前版本 v5.3.14</span><div id="class-marquee" aria-label="課堂跑馬燈"><span id="class-marquee-track">歡迎上課！準備好了嗎？</span></div></div>
                 <div class="board-view-switch" role="group" aria-label="切換計分板">
                     <button type="button" id="show-personal-board" class="active" onclick="switchBoardView('personal')">👤 個人計分板</button>
                     <button type="button" id="show-seat-board" onclick="switchBoardView('seats')">🪑 座位表計分</button>
@@ -594,7 +594,7 @@
             <p class="version-history-intro">點選固定詞條可帶入文字，也可以自行輸入；按「開始播放」後，文字會在標題旁持續跑動。</p>
             <div class="marquee-input-row"><input id="marquee-custom-text" type="text" maxlength="120" placeholder="輸入自訂跑馬燈文字，例如：今天上課要專心喔！" aria-label="自訂跑馬燈文字"><button type="button" class="marquee-action" onclick="startClassMarquee()">▶ 開始播放</button><button type="button" class="marquee-action" style="background:#607d8b" onclick="stopClassMarquee()">■ 停止</button></div>
             <div class="marquee-phrase-add-row"><button type="button" class="marquee-action" style="background:#7b4bb7" onclick="playRandomClassQuote()">🎲 隨機佳句</button><input id="marquee-phrase-name" type="text" maxlength="40" placeholder="詞條名稱，例如：下課整理" aria-label="詞條名稱"><input id="marquee-phrase-content" type="text" maxlength="120" placeholder="詞條內容，例如：請整理桌面並帶齊物品。" aria-label="詞條內容"><button id="save-custom-marquee-phrase-btn" type="button" class="marquee-action" onclick="saveCustomMarqueePhrase()">＋ 新增詞條</button></div>
-            <p class="version-history-intro">輸入名稱與內容即可新增；點選自訂詞條播放，按詞條右上角「×」刪除，雙擊詞條可編輯。</p>
+            <p class="version-history-intro">輸入名稱與內容即可新增；點選詞條播放，按「✏」直接修改，按「×」刪除。</p>
             <h3 style="font-size:15px;margin:12px 0 8px">內建詞條（點選即可播放）</h3>
             <div class="marquee-phrases">
                 <button class="marquee-phrase" onclick="chooseMarqueePhrase('上課囉！請準備好課本與文具。')">📚 上課準備</button>
@@ -612,7 +612,15 @@
             <div id="custom-marquee-phrases" class="marquee-phrases" aria-live="polite"></div>
         </section>
         <section id="version-history-panel" hidden aria-label="版本歷史紀錄">
-            <p class="version-history-intro" style="font-weight:bold;color:#008c95">目前版本：v5.3.6｜改善 iPad 抽籤恭喜語音</p>
+            
+            <article class="version-entry"><strong>v5.3.14｜抽籤設定改用水平滑桿</strong><p>更新日期：2026-10-27 00:11</p><p>連抽次數、抽籤方式與範圍改用滑桿，預設為抽1次、不重複、全班。</p></article>
+            <article class="version-entry"><strong>v5.3.13｜集體加減分改用水平滑桿</strong><p>更新日期：2026-10-27 00:11</p><p>男女生集體加減分改用 1 至 10 分水平滑桿，拖動即可選擇分數。</p></article>
+            <article class="version-entry"><strong>v5.3.12｜抽籤僅保留圖示並調整匯出入位置</strong><p>更新日期：2026-10-26 23:20</p><p>抽籤按鈕固定顯示圖示，匯出 JS、匯出 EXCEL 與匯入移至上排右側。</p></article>
+            <article class="version-entry"><strong>v5.3.11｜保留隱藏跑馬燈圖示</strong><p>更新日期：2026-10-26 23:20</p><p>隱藏與顯示跑馬燈按鈕保留圖示，文字精簡為括號提示。</p></article>
+            <article class="version-entry"><strong>v5.3.10｜新增男女生集體減分按鈕</strong><p>更新日期：2026-10-26 23:20</p><p>男女生區共用 1 至 10 分選單，可集體加分或減分，分數最低為 0。</p></article>
+            <article class="version-entry"><strong>v5.3.9｜調整獎牌預設與上排按鈕並新增性別集體加分</strong><p>更新日期：2026-10-26 23:20</p><p>預設 50 分換銀、5 銀換金、5 金換黑卡；上排改以圖示呈現，新增男女生集體加分。</p></article>
+            <article class="version-entry"><strong>v5.3.8｜新增自訂詞條鉛筆修改按鈕</strong><p>更新日期：2026-10-26 23:20</p><p>每個自訂詞條加上鉛筆按鈕，可直接修改名稱與內容。</p></article>
+            <article class="version-entry"><strong>v5.3.7｜移除版本歷史重複標示</strong><p>更新日期：2026-10-26 23:20</p><p>移除版本歷史上方重複的目前版本文字，保留上排標示。</p></article>
             <article class="version-entry"><strong>v5.3.6｜改善 iPad 抽籤恭喜語音</strong><p>更新日期：2026-10-26 23:15</p><p>抽籤開始前預備語音引擎，並改善中文語音選擇與播放恢復。</p></article>
             <article class="version-entry"><strong>v5.3.5｜修正手動詞條被隨機佳句中斷</strong><p>更新日期：2026-10-26 23:08</p><p>點選內建或自訂詞條時，會停止佳句輪播，避免文字被隨機佳句搶走。</p></article>
             <article class="version-entry"><strong>v5.3.4｜縮短詞條名稱欄並加寬內容欄</strong><p>更新日期：2026-10-26 22:56</p><p>詞條名稱欄縮至約三分之一，將更多橫向空間留給詞條內容。</p></article>
@@ -749,21 +757,17 @@
                 <button id="spin-btn" onclick="toggleSpinWheel()">START｜開始抽籤</button>
                 <button type="button" id="wheel-settings-toggle" onclick="toggleWheelSettings()" style="width:100%;padding:10px;border:0;border-radius:8px;background:#e8eaf6;color:#303f75;font-weight:bold;font-size:16px;">⚙️ 抽籤設定 ＋</button>
                 <div id="wheel-settings-panel" hidden style="width:100%;box-sizing:border-box;padding:10px;border:1px solid #d7dbea;border-radius:9px;background:#fafaff;gap:8px;flex-direction:column;">
-                    <label for="wheel-draw-count" style="font-weight:bold;text-align:left;">連抽次數</label>
-                    <select id="wheel-draw-count" style="width:100%;box-sizing:border-box;padding:9px;border:1px solid #bbb;border-radius:8px;font:inherit;">
-                        <option value="1" selected>抽 1 次</option>
-                        <option value="2">連抽 2 次</option><option value="3">連抽 3 次</option><option value="4">連抽 4 次</option><option value="5">連抽 5 次</option>
-                        <option value="6">連抽 6 次</option><option value="7">連抽 7 次</option><option value="8">連抽 8 次</option><option value="9">連抽 9 次</option><option value="10">連抽 10 次</option>
-                        <option value="11">連抽 11 次</option><option value="12">連抽 12 次</option><option value="13">連抽 13 次</option><option value="14">連抽 14 次</option><option value="15">連抽 15 次</option>
-                    </select>
-                    <label for="wheel-draw-mode" style="font-weight:bold;text-align:left;">抽籤方式</label>
-                    <select id="wheel-draw-mode" onchange="changeWheelDrawMode()" style="width:100%;box-sizing:border-box;padding:9px;border:1px solid #bbb;border-radius:8px;font:inherit;">
-                        <option value="remove">抽中後移除（本輪不重複）</option><option value="keep">抽中後保留（可重複抽）</option>
-                    </select>
-                    <label for="wheel-draw-scope" style="font-weight:bold;text-align:left;">抽籤範圍</label>
-                    <select id="wheel-draw-scope" onchange="changeWheelDrawScope()" style="width:100%;box-sizing:border-box;padding:9px;border:1px solid #bbb;border-radius:8px;font:inherit;">
-                        <option value="all" selected>全班</option><option value="male">男生</option><option value="female">女生</option>
-                    </select>
+                    <label for="wheel-draw-count" style="font-weight:bold;text-align:left;">連抽次數：<output id="wheel-draw-count-value" for="wheel-draw-count">抽 1 次</output></label>
+                    <input id="wheel-draw-count" type="range" min="1" max="15" step="1" value="1" oninput="document.getElementById('wheel-draw-count-value').textContent=this.value==='1'?'抽 1 次':'連抽 '+this.value+' 次'" style="width:100%;accent-color:#3949ab;min-height:32px;touch-action:pan-x;">
+                    <div style="display:flex;justify-content:space-between;font-size:12px;color:#666;margin-top:-5px;"><span>1 次</span><span>15 次</span></div>
+                    <label for="wheel-draw-mode-slider" style="font-weight:bold;text-align:left;">抽籤方式：<output id="wheel-draw-mode-value">抽中後移除（本輪不重複）</output></label>
+                    <input id="wheel-draw-mode-slider" type="range" min="0" max="1" step="1" value="0" oninput="syncWheelModeSlider()" style="width:100%;accent-color:#3949ab;min-height:32px;touch-action:pan-x;">
+                    <div style="display:flex;justify-content:space-between;font-size:12px;color:#666;margin-top:-5px;"><span>抽中後移除</span><span>抽中後保留</span></div>
+                    <select id="wheel-draw-mode" onchange="changeWheelDrawMode()" hidden aria-hidden="true"><option value="remove" selected>抽中後移除（本輪不重複）</option><option value="keep">抽中後保留（可重複抽）</option></select>
+                    <label for="wheel-draw-scope-slider" style="font-weight:bold;text-align:left;">抽籤範圍：<output id="wheel-draw-scope-value">全班</output></label>
+                    <input id="wheel-draw-scope-slider" type="range" min="0" max="2" step="1" value="0" oninput="syncWheelScopeSlider()" style="width:100%;accent-color:#008c95;min-height:32px;touch-action:pan-x;">
+                    <div style="display:flex;justify-content:space-between;font-size:12px;color:#666;margin-top:-5px;"><span>全班</span><span>男生</span><span>女生</span></div>
+                    <select id="wheel-draw-scope" onchange="changeWheelDrawScope()" hidden aria-hidden="true"><option value="all" selected>全班</option><option value="male">男生</option><option value="female">女生</option></select>
                 </div>
                 <div id="wheel-result" aria-live="polite">準備好了嗎？</div>
                 <p id="wheel-hint">抽中後移除：本輪抽過的學生不再出現；全部抽完會自動開始新一輪。</p>
@@ -1292,7 +1296,7 @@
             document.getElementById('show-group-board').textContent = getSavedLabel('groups');
             document.getElementById('show-stats-board').textContent = getSavedLabel('stats');
             document.getElementById('edit-roster-btn').textContent = getSavedLabel('editRoster');
-            document.getElementById('top-wheel-btn').textContent = getSavedLabel('wheel');
+            document.getElementById('top-wheel-btn').textContent = '🎡';
             document.getElementById('settings-btn').textContent = getSavedLabel('settings');
             document.getElementById('edit-students-btn').textContent = getSavedLabel('editStudents');
             document.getElementById('edit-groups-btn').textContent = getSavedLabel('editGroups');
@@ -1803,6 +1807,7 @@
             try { localStorage.setItem('tab_class_wheel_draw_mode_v1', 'remove'); } catch (e) {}
             const modeSelect = document.getElementById('wheel-draw-mode');
             if (modeSelect) modeSelect.value = 'remove';
+            syncWheelSliderDisplays();
             wheelDrawnIds.clear(); wheelWinnerHistory = []; wheelRotation = 0;
             const canvas = document.getElementById('wheel-canvas');
             canvas.style.transition = 'none'; canvas.style.transform = 'rotate(0deg)';
@@ -1824,6 +1829,35 @@
             const btn = document.getElementById('wheel-settings-toggle');
             panel.hidden = !panel.hidden; panel.style.display = panel.hidden ? 'none' : 'flex';
             btn.textContent = panel.hidden ? '⚙️ 抽籤設定 ＋' : '⚙️ 抽籤設定 −';
+        }
+        function syncWheelModeSlider() {
+            const slider = document.getElementById('wheel-draw-mode-slider');
+            const select = document.getElementById('wheel-draw-mode');
+            const value = slider && slider.value === '1' ? 'keep' : 'remove';
+            if (select) select.value = value;
+            const out = document.getElementById('wheel-draw-mode-value');
+            if (out) out.textContent = value === 'keep' ? '抽中後保留（可重複抽）' : '抽中後移除（本輪不重複）';
+            changeWheelDrawMode();
+        }
+        function syncWheelScopeSlider() {
+            const slider = document.getElementById('wheel-draw-scope-slider');
+            const select = document.getElementById('wheel-draw-scope');
+            const value = slider ? (['all','male','female'][Number(slider.value)] || 'all') : 'all';
+            if (select) select.value = value;
+            const out = document.getElementById('wheel-draw-scope-value');
+            if (out) out.textContent = ({all:'全班',male:'男生',female:'女生'})[value];
+            changeWheelDrawScope();
+        }
+        function syncWheelSliderDisplays() {
+            const count = document.getElementById('wheel-draw-count');
+            const countOut = document.getElementById('wheel-draw-count-value');
+            if (count && countOut) countOut.textContent = count.value === '1' ? '抽 1 次' : '連抽 ' + count.value + ' 次';
+            const mode = document.getElementById('wheel-draw-mode');
+            const modeSlider = document.getElementById('wheel-draw-mode-slider');
+            if (mode && modeSlider) { modeSlider.value = mode.value === 'keep' ? '1' : '0'; document.getElementById('wheel-draw-mode-value').textContent = mode.value === 'keep' ? '抽中後保留（可重複抽）' : '抽中後移除（本輪不重複）'; }
+            const scope = document.getElementById('wheel-draw-scope');
+            const scopeSlider = document.getElementById('wheel-draw-scope-slider');
+            if (scope && scopeSlider) { scopeSlider.value = ({all:'0',male:'1',female:'2'})[scope.value] || '0'; document.getElementById('wheel-draw-scope-value').textContent = ({all:'全班',male:'男生',female:'女生'})[scope.value] || '全班'; }
         }
         function changeWheelDrawScope() {
             wheelDrawScope = document.getElementById('wheel-draw-scope').value;
@@ -1850,6 +1884,7 @@
             const modeSelect = document.getElementById('wheel-draw-mode');
             if (modeSelect) modeSelect.value = wheelDrawMode;
             const scopeSelect = document.getElementById('wheel-draw-scope'); if (scopeSelect) scopeSelect.value = wheelDrawScope;
+            syncWheelSliderDisplays();
             drawWheel();
             document.getElementById('wheel-result').textContent = '準備好了嗎？';
         }
@@ -2134,7 +2169,26 @@
                 wrapper.className = 'student-section';
                 const heading = document.createElement('div');
                 heading.className = 'section-heading';
-                heading.textContent = section.title;
+                if (section.title === '男生區' || section.title === '女生區') {
+                    heading.style.display = 'flex'; heading.style.alignItems = 'center'; heading.style.justifyContent = 'space-between'; heading.style.flexWrap = 'wrap'; heading.style.gap = '8px';
+                    const label = document.createElement('span'); label.textContent = section.title; heading.appendChild(label);
+                    const controls = document.createElement('span'); controls.className = 'bulk-score-controls';
+                    controls.style.cssText = 'display:inline-flex;align-items:center;gap:5px;font-size:14px;font-weight:normal';
+                    const genderName = section.title === '男生區' ? '男生' : '女生';
+                    const sliderWrap = document.createElement('span'); sliderWrap.style.cssText = 'display:inline-flex;align-items:center;gap:6px;min-width:155px;max-width:260px;flex:1 1 155px';
+                    const select = document.createElement('input'); select.type='range'; select.min='1'; select.max='10'; select.step='1'; select.value='5'; select.id = section.title === '男生區' ? 'bulk-boys-points' : 'bulk-girls-points'; select.setAttribute('aria-label', section.title + '集體加減分數');
+                    select.style.cssText = 'width:100%;min-width:75px;accent-color:#008b9a;cursor:pointer;touch-action:pan-x';
+                    const valueLabel = document.createElement('strong'); valueLabel.textContent='5分'; valueLabel.style.cssText='min-width:30px;text-align:center;font-size:14px;color:#263238;white-space:nowrap';
+                    select.addEventListener('input', () => { valueLabel.textContent=select.value+'分'; });
+                    sliderWrap.append(select,valueLabel);
+                    const addBtn = document.createElement('button'); addBtn.type='button'; addBtn.textContent='＋ 集體加分'; addBtn.title='只替' + genderName + '加分';
+                    addBtn.style.cssText = 'font-size:14px;padding:5px 9px;border:0;border-radius:6px;background:#287c45;color:white;cursor:pointer';
+                    addBtn.onclick = () => bulkGenderScore(genderName, Number(select.value));
+                    const minusBtn = document.createElement('button'); minusBtn.type='button'; minusBtn.textContent='－ 集體減分'; minusBtn.title='只替' + genderName + '減分';
+                    minusBtn.style.cssText = 'font-size:14px;padding:5px 9px;border:0;border-radius:6px;background:#b54747;color:white;cursor:pointer';
+                    minusBtn.onclick = () => bulkGenderScore(genderName, -Number(select.value));
+                    controls.append(sliderWrap,addBtn,minusBtn); heading.appendChild(controls);
+                } else { heading.textContent = section.title; }
                 wrapper.appendChild(heading);
                 const grid = document.createElement('div');
                 grid.className = 'student-grid ' + section.className;
@@ -2363,6 +2417,32 @@
                 badge.textContent = String(Math.max(0, Math.floor(count)));
                 badge.hidden = !(count > 0);
             });
+        }
+
+        function bulkGenderScore(gender, points) {
+            const targets = teams.map((team, index) => ({team, index})).filter(item => String(item.team.gender || '') === gender);
+            const action = points >= 0 ? '加' : '減';
+            const amount = Math.abs(points);
+            if (!targets.length) { alert('目前沒有可' + action + '分的' + gender + '。'); return; }
+            if (!confirm('確定替全部 ' + gender + ' 共 ' + targets.length + ' 人，每人' + action + ' ' + amount + ' 分嗎？' + (points < 0 ? '\n個人分數最低為 0 分。' : ''))) return;
+            saveCurrentState();
+            targets.forEach(({team}) => {
+                const oldScore = Number(team.score) || 0;
+                team.score = Math.max(0, oldScore + points);
+                const actualDelta = team.score - oldScore;
+                team.personalAccumulated = Math.max(0, Math.round(((Number(team.personalAccumulated ?? oldScore) || 0) + actualDelta) * 100) / 100);
+                processStudentMedals(team);
+            });
+            renderList();
+            saveTeamsAndMedals();
+            persistGroupData();
+            if (currentBoardView === 'stats') renderStatsBoard();
+            if (currentBoardView === 'seats') renderSeatBoard();
+            if (currentBoardView === 'wheelRecords') renderWheelRecordsBoard();
+            playScoreSound(points);
+            const cb = document.getElementById('celebrate');
+            if (cb) { cb.style.display = 'block'; setTimeout(() => { cb.style.display = 'none'; }, 600); }
+            updateUndoButtonState();
         }
 
         function changeScore(index, value) {
@@ -2797,9 +2877,9 @@
             let saved = {};
             try { saved = JSON.parse(localStorage.getItem(MEDAL_SETTINGS_KEY) || '{}') || {}; } catch (e) {}
             return {
-                silverPoints: Math.min(100, Math.max(5, Math.round((Number(saved.silverPoints) || 20) / 5) * 5)),
+                silverPoints: Math.min(100, Math.max(5, Math.round((Number(saved.silverPoints) || 50) / 5) * 5)),
                 goldSilver: Math.min(30, Math.max(1, Number(saved.goldSilver) || 5)),
-                blackGold: Math.min(20, Math.max(1, Number(saved.blackGold) || 3))
+                blackGold: Math.min(20, Math.max(1, Number(saved.blackGold) || 5))
             };
         }
         function setMedalSetting(key, value) {
@@ -3287,10 +3367,18 @@
                 pill.type = 'button';
                 pill.className = 'marquee-phrase custom-marquee-phrase';
                 pill.textContent = phrase.name;
-                pill.title = '點選播放；雙擊編輯。內容：' + phrase.content;
-                pill.setAttribute('aria-label', phrase.name + '，點選播放，雙擊編輯');
+                pill.title = '點選播放。內容：' + phrase.content;
+                pill.setAttribute('aria-label', phrase.name + '，點選播放');
                 pill.onclick = () => chooseMarqueePhrase(phrase.content);
                 pill.ondblclick = (event) => { event.preventDefault(); editCustomMarqueePhrase(index); };
+                const editBtn = document.createElement('button');
+                editBtn.type = 'button';
+                editBtn.className = 'custom-phrase-edit';
+                editBtn.textContent = '✏';
+                editBtn.title = '修改此詞條';
+                editBtn.setAttribute('aria-label', '修改詞條：' + phrase.name);
+                editBtn.onclick = (event) => { event.stopPropagation(); event.preventDefault(); editCustomMarqueePhrase(index); };
+                pill.appendChild(editBtn);
                 const deleteBtn = document.createElement('button');
                 deleteBtn.type = 'button';
                 deleteBtn.className = 'custom-phrase-delete';
@@ -3312,7 +3400,7 @@
             try { localStorage.setItem(CUSTOM_MARQUEE_PHRASES_KEY, JSON.stringify(phrases)); }
             catch (e) { alert('無法儲存詞條，請確認瀏覽器儲存空間設定。'); return; }
             nameInput.value = ''; contentInput.value = '';
-            const button = document.getElementById('save-custom-marquee-phrase-btn'); if (button) button.textContent='＋ 新增詞條';
+            const button = document.getElementById('save-custom-marquee-phrase-btn'); if (button) { button.textContent='＋ 新增詞條'; button.onclick=()=>saveCustomMarqueePhrase(); }
             renderCustomMarqueePhrases();
         }
         let editingCustomMarqueePhraseIndex = null;
@@ -3322,7 +3410,7 @@
             document.getElementById('marquee-phrase-content').value = phrase.content;
             editingCustomMarqueePhraseIndex = index;
             const button = document.getElementById('save-custom-marquee-phrase-btn');
-            if (button) { button.textContent='💾 儲存修改'; button.onclick=()=>{ const i=editingCustomMarqueePhraseIndex; editingCustomMarqueePhraseIndex=null; saveCustomMarqueePhrase(i); }; }
+            if (button) { button.textContent='💾 儲存修改'; button.onclick=()=>{ const i=editingCustomMarqueePhraseIndex; saveCustomMarqueePhrase(i); editingCustomMarqueePhraseIndex=null; }; }
             document.getElementById('marquee-phrase-name').focus();
         }
         function deleteCustomMarqueePhrase(index) {
@@ -3341,7 +3429,7 @@
             const marquee = document.getElementById('class-marquee');
             marquee.hidden = false;
             const visibilityBtn = document.getElementById('marquee-visibility-btn');
-            if (visibilityBtn) visibilityBtn.textContent = '🙈 隱藏跑馬燈';
+            if (visibilityBtn) visibilityBtn.textContent = '🙈 (隱藏)';
             track.style.animation = 'none';
             void track.offsetWidth;
             track.style.animation = '';
@@ -3375,10 +3463,10 @@
             if (willHide) {
                 stopQuoteRotation();
                 marquee.hidden = true;
-                if (button) button.textContent = '👁 顯示跑馬燈';
+                if (button) button.textContent = '👁️ (顯示)';
             } else {
                 marquee.hidden = false;
-                if (button) button.textContent = '🙈 隱藏跑馬燈';
+                if (button) button.textContent = '🙈 (隱藏)';
             }
         }
         function toggleMarqueePanel() {
