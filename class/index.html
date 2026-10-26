@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>v5.0.8_20261026-1712_註明版本說明字數限制</title>
+    <title>v5.1.0_20261026-1729_修正尚晟抽籤語音</title>
     <style>
         :root {
             --primary-color: #4CAF50;
@@ -570,6 +570,8 @@
             <h2>📚 版本歷史紀錄</h2>
             <p class="version-history-intro">依版本號由新到舊排列；展開版本可查看修改紀錄。</p>
             <details open class="version-group"><summary>v5 版本</summary>
+                <article class="version-entry"><strong>v5.1.1｜新增連抽次數選單</strong><p>更新日期：2026-10-26 17:33</p><p>新增1至15次連抽選單，預設抽1次。</p></article>
+                <article class="version-entry"><strong>v5.1.0｜修正尚晟抽籤語音</strong><p>更新日期：2026-10-26 17:29</p><p>抽籤語音將「晟」改讀ㄔㄥˊ，畫面姓名不變。</p></article>
                 <article class="version-entry"><strong>v5.0.8｜註明版本說明字數限制</strong><p>更新日期：2026-10-26 17:12</p><p>版本說明須精簡，不超過35字。</p></article>
                 <article class="version-entry"><strong>v5.0.6｜精簡救援密碼版本說明</strong><p>更新日期：2026-10-26 17:09</p><p>精簡救援密碼說明，保留原有解鎖與重設功能。</p></article>
                 <article class="version-entry"><strong>v5.0.5｜調整救援密碼說明</strong><p>更新日期：2026-10-26 17:05</p><p>依照使用者要求，移除版本說明中「救援密碼直接寫在程式中」的文字敘述；程式內原有的救援密碼設定與解鎖功能保留不變，仍可在忘記一般密碼時使用救援密碼，並可重新設定一般老師密碼。</p></article>
@@ -681,6 +683,13 @@
             <div class="wheel-stage"><div class="wheel-pointer"></div><canvas id="wheel-canvas" width="600" height="600"></canvas></div>
             <div class="wheel-controls">
                 <button id="spin-btn" onclick="spinWheel()">開始抽籤</button>
+                <label for="wheel-draw-count" style="font-weight:bold;text-align:left;">連抽次數</label>
+                <select id="wheel-draw-count" style="width:100%;box-sizing:border-box;padding:9px;border:1px solid #bbb;border-radius:8px;font:inherit;">
+                    <option value="1" selected>抽 1 次</option>
+                    <option value="2">連抽 2 次</option><option value="3">連抽 3 次</option><option value="4">連抽 4 次</option><option value="5">連抽 5 次</option>
+                    <option value="6">連抽 6 次</option><option value="7">連抽 7 次</option><option value="8">連抽 8 次</option><option value="9">連抽 9 次</option><option value="10">連抽 10 次</option>
+                    <option value="11">連抽 11 次</option><option value="12">連抽 12 次</option><option value="13">連抽 13 次</option><option value="14">連抽 14 次</option><option value="15">連抽 15 次</option>
+                </select>
                 <label for="wheel-draw-mode" style="font-weight:bold;text-align:left;">抽籤方式</label>
                 <select id="wheel-draw-mode" onchange="changeWheelDrawMode()" style="width:100%;box-sizing:border-box;padding:9px;border:1px solid #bbb;border-radius:8px;font:inherit;">
                     <option value="remove">抽中後移除（本輪不重複）</option>
@@ -1634,6 +1643,7 @@
 
         let wheelRotation = 0;
         let wheelSpinning = false;
+        let wheelBatchRemaining = 0;
         let wheelDrawMode = localStorage.getItem('tab_class_wheel_draw_mode_v1') === 'keep' ? 'keep' : 'remove';
         let wheelDrawnIds = new Set();
         let wheelWinnerHistory = [];
@@ -1785,7 +1795,10 @@
             });
             ctx.beginPath(); ctx.arc(300,300,38,0,Math.PI*2); ctx.fillStyle='#ffffff'; ctx.fill(); ctx.strokeStyle='#777'; ctx.lineWidth=3; ctx.stroke();
         }
-        function spinWheel() {
+        function spinWheel(isBatchContinuation = false) {
+            if (!isBatchContinuation) {
+                wheelBatchRemaining = Math.max(1, Math.min(15, parseInt(document.getElementById('wheel-draw-count')?.value || '1', 10) || 1));
+            }
             const entries = getWheelEntries();
             if (wheelSpinning || !entries.length) {
                 if (!wheelSpinning && wheelDrawMode === 'remove' && teams.length && !entries.length) {
@@ -1793,7 +1806,8 @@
                     const canvas = document.getElementById('wheel-canvas');
                     canvas.style.transition = 'none'; canvas.style.transform = 'rotate(0deg)';
                     drawWheel();
-                    document.getElementById('wheel-result').textContent = '🎉 上一輪已抽完，已自動開始新一輪！請再抽一次。';
+                    document.getElementById('wheel-result').textContent = '🎉 上一輪已抽完，已自動開始新一輪！繼續連抽。';
+                    if (wheelBatchRemaining > 0) window.setTimeout(() => spinWheel(true), 500);
                 }
                 return;
             }
@@ -1806,7 +1820,7 @@
             wheelSpinning = true;
             const canvas = document.getElementById('wheel-canvas');
             const button = document.getElementById('spin-btn');
-            button.disabled = true; button.textContent = '抽籤中…';
+            button.disabled = true; button.textContent = wheelBatchRemaining > 1 ? `連抽中…（剩 ${wheelBatchRemaining} 次）` : '抽籤中…';
             document.getElementById('wheel-result').textContent = '轉盤旋轉中……';
             canvas.style.transition = 'transform 4.5s cubic-bezier(0.12, 0.75, 0.12, 1)';
             canvas.style.transform = `rotate(${wheelRotation}deg)`;
@@ -1817,7 +1831,7 @@
                 document.getElementById('wheel-result').textContent = `🎉 抽中：${winnerName}`;
                 wheelWinnerHistory.push(winnerName); renderWheelWinnerHistory();
                 { const topic = document.getElementById('wheel-topic').value.trim(); if (topic) { wheelTopicRecords.push({topic, order: wheelTopicRecords.filter(r => r.topic === topic).length + 1, name: winnerName, at: new Date().toISOString()}); saveWheelTopicRecords(); } }
-                button.disabled = false; button.textContent = '再抽一次'; wheelSpinning = false;
+                wheelSpinning = false;
                 if (wheelDrawMode === 'remove') {
                     wheelDrawnIds.add(String(winner.id || winner.name));
                     wheelRotation = 0;
@@ -1825,6 +1839,14 @@
                     drawWheel();
                 }
                 announceWheelWinner(winnerName);
+                wheelBatchRemaining = Math.max(0, wheelBatchRemaining - 1);
+                if (wheelBatchRemaining > 0) {
+                    button.disabled = true;
+                    button.textContent = `連抽中…（剩 ${wheelBatchRemaining} 次）`;
+                    window.setTimeout(() => spinWheel(true), 650);
+                } else {
+                    button.disabled = false; button.textContent = '再抽一次';
+                }
             }, 4600);
         }
         // V40：抽籤停止後，優先使用繁體中文女聲播報，再接 1.5 秒觀眾歡呼。
@@ -1839,7 +1861,9 @@
             }
             // 中止前一次尚未完成的播報，避免連續抽籤時語音互相重疊。
             try { synth.cancel(); } catch (e) {}
-            const utterance = new SpeechSynthesisUtterance(`恭喜你，${name}！`);
+            // v5.1.0：只修正抽籤語音中的「尚晟」讀音；畫面姓名與紀錄仍使用原名。
+            const spokenName = String(name).replace(/尚晟/g, '尚成');
+            const utterance = new SpeechSynthesisUtterance(`恭喜你，${spokenName}！`);
             utterance.lang = 'zh-TW';
             utterance.rate = 0.95;
             utterance.pitch = 1.12;
