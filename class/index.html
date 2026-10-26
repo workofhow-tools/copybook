@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>v5.1.0_20261026-1729_修正尚晟抽籤語音</title>
+    <title>v5.3.2_20261026-2203_移除指定作者並提升詞條管理入口</title>
     <style>
         :root {
             --primary-color: #4CAF50;
@@ -136,8 +136,8 @@
         .seat-board-actions .clear-seats { background:#d84315; }
         .seat-board-actions .restore-seats { background:#546e7a; }
         .seat-board-actions .restore-seats:disabled { opacity:.45; }
-        .seat-cell { min-width: 0; min-height: 95px; border: 1px solid #b0bec5; border-radius: 8px; background: #f8fbfc; padding: 4px 3px; display: flex; flex-direction: column; align-items: stretch; gap: 4px; box-sizing: border-box; cursor: pointer; touch-action: manipulation; }
-        .seat-student-pick { width: 100%; min-width: 0; font-family: inherit; font-size: 12px; padding: 5px 2px; border: 1px solid #cfd8dc; border-radius: 5px; background: white; color: #263238; min-height: 32px; }
+        .seat-cell { min-width: 0; min-height: 62px; border: 1px solid #b0bec5; border-radius: 8px; background: #f8fbfc; padding: 2px 2px; display: flex; flex-direction: column; align-items: stretch; gap: 2px; box-sizing: border-box; cursor: pointer; touch-action: manipulation; }
+        .seat-student-pick { width: 100%; min-width: 0; font-family: inherit; font-size: 11px; padding: 2px 1px; border: 1px solid #cfd8dc; border-radius: 4px; background: white; color: #263238; min-height: 24px; }
         .seat-picker-overlay { position: fixed !important; inset: 0 !important; z-index: 2147483647 !important; pointer-events: auto !important; background: rgba(0,0,0,.48); display: flex; align-items: center; justify-content: center; padding: 4px; box-sizing: border-box; }
         .seat-picker-dialog { position: relative; z-index: 1; width: min(560px, 100%); height: auto; max-height: 98vh; max-height: 98dvh; display: flex; flex-direction: column; background: #fff; border-radius: 8px; box-shadow: 0 8px 30px rgba(0,0,0,.25); overflow: hidden; }
         .seat-picker-header { display:flex; flex: 0 0 auto; align-items:center; justify-content:space-between; gap:5px; padding:5px 7px; border-bottom:1px solid #e0e0e0; font-size:12px; font-weight:bold; }
@@ -149,8 +149,8 @@
         .seat-picker-option { min-height:26px; border:1px solid #cfd8dc; border-radius:4px; background:#f7fbfc; color:#263238; padding:3px 5px; font-family:inherit; font-size:11px; line-height:1.15; text-align:left; overflow-wrap:anywhere; touch-action:manipulation; }
         .seat-picker-option:active { background:#d9f3f5; }
         .seat-picker-option.clear { background:#fff3e0; border-color:#ffcc80; font-size:10px; padding:3px 2px; }
-        .seat-cell-score { text-align: center; font-weight: bold; font-size: 15px; color: #ff5722; min-height: 18px; }
-        .seat-cell-medals { display:flex; justify-content:center; align-items:center; gap:3px; min-height:20px; }
+        .seat-cell-score { text-align: center; font-weight: bold; font-size: 13px; line-height: 1.1; color: #ff5722; min-height: 14px; }
+        .seat-cell-medals { display:flex; justify-content:center; align-items:center; gap:2px; min-height:16px; }
         .seat-cell-medals .team-medal { width:18px; height:18px; min-width:18px; font-size:9px; }
         .seat-cell-medals .team-medal.black { width:18px; min-width:18px; }
         .seat-cell-actions { display: flex; justify-content: center; gap: 5px; }
@@ -529,6 +529,29 @@
         .version-history-note { padding:6px 8px; }
         @media (max-width:520px) { #version-history-btn { font-size:12px; padding:6px 7px; margin-left:2px; } #version-history-panel { padding:7px; } .version-entry { margin:4px; padding:7px; font-size:12px; } .version-entry strong { font-size:13px; } }
 
+        #marquee-toggle-btn { border:0; border-radius:7px; padding:7px 10px; background:#008b9a; color:#fff; font:bold 14px 'Microsoft JhengHei',sans-serif; cursor:pointer; white-space:nowrap; }
+        #class-marquee { display:flex; align-items:center; min-width:0; flex:1 1 300px; height:34px; box-sizing:border-box; overflow:hidden; border:2px solid #f44336; background:#fff; border-radius:3px; }
+        #class-marquee[hidden] { display:none !important; }
+        #class-marquee-track { display:inline-block; padding-left:100%; white-space:nowrap; font-size:22px; line-height:1.3; font-weight:bold; color:#d84315; animation:classMarqueeScroll 18s linear infinite; }
+        #class-marquee-track.paused { animation-play-state:paused; }
+        @keyframes classMarqueeScroll { from { transform:translateX(0); } to { transform:translateX(-100%); } }
+        #marquee-panel { flex:1 1 auto; min-width:0; overflow:auto; padding:12px; margin:8px 0; border:1px solid #dce3e6; border-radius:12px; background:#fff; }
+        #marquee-panel[hidden] { display:none !important; }
+        #marquee-panel h2 { margin:0 0 8px; font-size:18px; }
+        .marquee-input-row { display:flex; flex-wrap:wrap; gap:8px; margin:8px 0; }
+        #marquee-custom-text { flex:1 1 280px; min-width:0; padding:10px; border:1px solid #b0bec5; border-radius:8px; font:16px 'Microsoft JhengHei',sans-serif; }
+        .marquee-action { border:0; border-radius:7px; padding:9px 12px; color:white; background:#008b9a; font-weight:bold; cursor:pointer; }
+        .marquee-phrases { display:flex; flex-wrap:wrap; gap:8px; }
+        .marquee-phrase { border:1px solid #b2dfdb; background:#e0f7fa; color:#006064; border-radius:18px; padding:8px 12px; cursor:pointer; font: bold 14px 'Microsoft JhengHei',sans-serif; }
+        .custom-marquee-phrase { background:#fff0d9; border-color:#f0c27b; color:#8a4b08; position:relative; padding-right:30px; }
+        .custom-phrase-delete { position:absolute; top:-5px; right:-4px; width:20px; height:20px; padding:0; border:1px solid #d32f2f; border-radius:50%; background:#fff; color:#d32f2f; font:bold 14px/18px Arial,sans-serif; cursor:pointer; box-shadow:0 1px 3px #0002; }
+        .marquee-phrase-add-row { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin:8px 0; }
+        #marquee-phrase-name { flex:1 1 100px; min-width:100px; max-width:220px; box-sizing:border-box; padding:9px 10px; border:1px solid #b0bec5; border-radius:7px; font:15px 'Microsoft JhengHei',sans-serif; }
+        #marquee-phrase-content { flex:2 1 300px; min-width:200px; box-sizing:border-box; padding:9px 10px; border:1px solid #b0bec5; border-radius:7px; font:15px 'Microsoft JhengHei',sans-serif; }
+        @media (max-width:700px) { .marquee-phrase-add-row { align-items:stretch; } #marquee-phrase-name, #marquee-phrase-content { flex-basis:100%; max-width:none; } }
+        @media (max-width:520px) { #marquee-toggle-btn { font-size:12px; padding:6px 7px; } #class-marquee { height:29px; flex-basis:100%; } #class-marquee-track { font-size:18px; } }
+
+
 </style>
 </head>
 <body>
@@ -548,14 +571,14 @@
                         <button type="button" class="top-data-btn excel" onclick="exportExcelGrades()">匯出 EXCEL</button>
                         <button type="button" class="top-data-btn import" onclick="document.getElementById('json-import-file').click()">匯入</button>
                     </div>
-                    <div class="wheel-reset-area top-wheel-reset-area" data-html2canvas-ignore="true"><button id="wheel-reset-btn" type="button" onclick="toggleWheelResetMenu()">🔄 重設</button><button id="version-history-btn" type="button" onclick="toggleVersionHistory()">📚 版本歷史</button><div id="wheel-reset-menu" hidden><button type="button" onclick="resetWheelToInitial()">🎡 轉盤重設：全部回到初始</button><button type="button" onclick="showOldClassResetOptions()">舊班：重新計分</button><div id="old-class-reset-options" hidden><button type="button" onclick="resetPersonalScores()">Ａ 個人分數歸零</button><button type="button" onclick="resetGroupScores()">Ｂ 分組歸零</button></div><button class="danger" type="button" onclick="resetToNewClass()">新班：清空所有記錄</button></div></div>
+                    <button id="marquee-toggle-btn" type="button" onclick="toggleMarqueePanel()" data-html2canvas-ignore="true">📣 跑馬燈</button><button id="marquee-visibility-btn" type="button" onclick="toggleMarqueeVisibility()" data-html2canvas-ignore="true" style="border:0;border-radius:7px;padding:7px 10px;background:#607d8b;color:#fff;font:bold 14px 'Microsoft JhengHei',sans-serif;cursor:pointer;white-space:nowrap">🙈 隱藏跑馬燈</button><div class="wheel-reset-area top-wheel-reset-area" data-html2canvas-ignore="true"><button id="wheel-reset-btn" type="button" onclick="toggleWheelResetMenu()">🔄 重設</button><button id="version-history-btn" type="button" onclick="toggleVersionHistory()">📚 版本歷史</button><div id="wheel-reset-menu" hidden><button type="button" onclick="resetWheelToInitial()">🎡 轉盤重設：全部回到初始</button><button type="button" onclick="showOldClassResetOptions()">舊班：重新計分</button><div id="old-class-reset-options" hidden><button type="button" onclick="resetPersonalScores()">Ａ 個人分數歸零</button><button type="button" onclick="resetGroupScores()">Ｂ 分組歸零</button></div><button class="danger" type="button" onclick="resetToNewClass()">新班：清空所有記錄</button></div></div>
                 </div>
-                <h3 id="board-title-display">四１課堂計分板</h3>
+                <div style="display:flex;align-items:center;gap:14px;min-width:0;margin:0 0 4px"><h3 id="board-title-display" style="flex:0 0 auto;margin:0">四１課堂計分板</h3><span id="current-version-label" style="flex:0 0 auto;font-size:12px;color:#008c95;background:#e0f7fa;border:1px solid #b2ebf2;border-radius:12px;padding:3px 8px;font-weight:bold">目前版本 v5.3.6</span><div id="class-marquee" aria-label="課堂跑馬燈"><span id="class-marquee-track">歡迎上課！準備好了嗎？</span></div></div>
                 <div class="board-view-switch" role="group" aria-label="切換計分板">
                     <button type="button" id="show-personal-board" class="active" onclick="switchBoardView('personal')">👤 個人計分板</button>
+                    <button type="button" id="show-seat-board" onclick="switchBoardView('seats')">🪑 座位表計分</button>
                     <button type="button" id="show-group-board" onclick="switchBoardView('groups')">👥 分組計分板</button>
                     <button type="button" id="show-stats-board" onclick="switchBoardView('stats')">📊 個人統計板</button>
-                    <button type="button" id="show-seat-board" onclick="switchBoardView('seats')">🪑 座位表計分</button>
                     <button type="button" id="show-wheel-records-board" onclick="switchBoardView('wheelRecords')">🎡 抽籤紀錄</button>
                 </div>
             </div>
@@ -566,10 +589,51 @@
         <div id="stats-board-container" hidden></div>
         <div id="seat-board-container" hidden></div>
         <div id="wheel-records-board-container" hidden></div>
+        <section id="marquee-panel" hidden aria-label="跑馬燈詞條設定">
+            <h2>📣 跑馬燈詞條</h2>
+            <p class="version-history-intro">點選固定詞條可帶入文字，也可以自行輸入；按「開始播放」後，文字會在標題旁持續跑動。</p>
+            <div class="marquee-input-row"><input id="marquee-custom-text" type="text" maxlength="120" placeholder="輸入自訂跑馬燈文字，例如：今天上課要專心喔！" aria-label="自訂跑馬燈文字"><button type="button" class="marquee-action" onclick="startClassMarquee()">▶ 開始播放</button><button type="button" class="marquee-action" style="background:#607d8b" onclick="stopClassMarquee()">■ 停止</button></div>
+            <div class="marquee-phrase-add-row"><button type="button" class="marquee-action" style="background:#7b4bb7" onclick="playRandomClassQuote()">🎲 隨機佳句</button><input id="marquee-phrase-name" type="text" maxlength="40" placeholder="詞條名稱，例如：下課整理" aria-label="詞條名稱"><input id="marquee-phrase-content" type="text" maxlength="120" placeholder="詞條內容，例如：請整理桌面並帶齊物品。" aria-label="詞條內容"><button id="save-custom-marquee-phrase-btn" type="button" class="marquee-action" onclick="saveCustomMarqueePhrase()">＋ 新增詞條</button></div>
+            <p class="version-history-intro">輸入名稱與內容即可新增；點選自訂詞條播放，按詞條右上角「×」刪除，雙擊詞條可編輯。</p>
+            <h3 style="font-size:15px;margin:12px 0 8px">內建詞條（點選即可播放）</h3>
+            <div class="marquee-phrases">
+                <button class="marquee-phrase" onclick="chooseMarqueePhrase('上課囉！請準備好課本與文具。')">📚 上課準備</button>
+                <button class="marquee-phrase" onclick="chooseMarqueePhrase('請專心聆聽，輪到你時再發言。')">👂 專心聆聽</button>
+                <button class="marquee-phrase" onclick="chooseMarqueePhrase('舉手發言，尊重每一位同學。')">🙋 舉手發言</button>
+                <button class="marquee-phrase" onclick="chooseMarqueePhrase('小組合作，互相幫忙，一起完成任務！')">🤝 小組合作</button>
+                <button class="marquee-phrase" onclick="chooseMarqueePhrase('表現很棒！繼續保持，讓自己更進步！')">🌟 鼓勵加油</button>
+                <button class="marquee-phrase" onclick="chooseMarqueePhrase('下課前請整理桌面與個人物品。')">🧹 整理環境</button>
+                <button class="marquee-phrase" onclick="chooseMarqueePhrase('請記得完成作業，並檢查後再交。')">✏️ 作業提醒</button>
+                <button class="marquee-phrase" onclick="chooseMarqueePhrase('尊重差異、友善相處，不嘲笑也不傷害別人。')">💛 友善相處</button>
+                <button class="marquee-phrase" onclick="chooseMarqueePhrase('今天的努力，會成為明天的進步！')">🚀 努力進步</button>
+                <button class="marquee-phrase" onclick="chooseMarqueePhrase('請保持安靜，準備聽老師說明。')">🤫 安靜聆聽</button>
+            </div>
+            <h3 style="font-size:15px;margin:12px 0 8px">我的詞條（不同底色，點選即可播放）</h3>
+            <div id="custom-marquee-phrases" class="marquee-phrases" aria-live="polite"></div>
+        </section>
         <section id="version-history-panel" hidden aria-label="版本歷史紀錄">
+            <p class="version-history-intro" style="font-weight:bold;color:#008c95">目前版本：v5.3.6｜改善 iPad 抽籤恭喜語音</p>
+            <article class="version-entry"><strong>v5.3.6｜改善 iPad 抽籤恭喜語音</strong><p>更新日期：2026-10-26 23:15</p><p>抽籤開始前預備語音引擎，並改善中文語音選擇與播放恢復。</p></article>
+            <article class="version-entry"><strong>v5.3.5｜修正手動詞條被隨機佳句中斷</strong><p>更新日期：2026-10-26 23:08</p><p>點選內建或自訂詞條時，會停止佳句輪播，避免文字被隨機佳句搶走。</p></article>
+            <article class="version-entry"><strong>v5.3.4｜縮短詞條名稱欄並加寬內容欄</strong><p>更新日期：2026-10-26 22:56</p><p>詞條名稱欄縮至約三分之一，將更多橫向空間留給詞條內容。</p></article>
+            <article class="version-entry"><strong>v5.3.3｜詞條新增欄位前移並加入刪除按鈕</strong><p>更新日期：2026-10-26 22:03</p><p>新增詞條欄位移至隨機佳句旁，自訂詞條增加明顯的確認刪除按鈕。</p></article>
+            <article class="version-entry"><strong>v5.3.2｜移除指定作者並提升詞條管理入口</strong><p>更新日期：2026-10-26 22:03</p><p>移除指定作者隨機功能，將新增／管理詞條按鈕移至佳句操作區。</p></article>
+            <article class="version-entry"><strong>v5.3.1｜修正版本排序並標示目前版本</strong><p>更新日期：2026-10-26 22:03</p><p>修正版本號排序，並在版本歷史中清楚標示目前使用版本。</p></article>
+            <article class="version-entry"><strong>v5.3.0｜佳句五句循環與隱藏跑馬燈</strong><p>更新日期：2026-10-26 22:03</p><p>兩種隨機各抽五句輪播，新增完全隱藏跑馬燈功能。</p></article>
+            <article class="version-entry"><strong>v5.2.9｜佳句整合與作者自訂輸入</strong><p>更新日期：2026-10-26 22:03</p><p>佳句整合至隨機清單，作者欄改為自行輸入，佳句以洗牌循環方式抽取。</p></article>
+            <article class="version-entry"><strong>v5.2.8｜新增指定作者隨機佳句</strong><p>更新日期：2026-10-26 22:03</p><p>可自行輸入作者名稱，隨機播放該作者佳句。</p></article>
+            <article class="version-entry"><strong>v5.2.7｜新增隨機佳句播放</strong><p>更新日期：2026-10-26 22:03</p><p>新增隨機佳句按鈕，格式為佳句與作者，點擊即可播放。</p></article>
+            <article class="version-entry"><strong>v5.2.6｜自訂詞條按鈕化並置於內建詞條後</strong><p>更新日期：2026-10-26 22:03</p><p>自訂詞條改用不同底色的名稱按鈕，排列於內建詞條之後。</p></article>
+            <article class="version-entry"><strong>v5.2.5｜可自訂跑馬燈詞條</strong><p>更新日期：2026-10-26 20:57</p><p>新增詞條名稱與內容管理，可新增、編輯、刪除並保存自訂詞條。</p></article>
             <h2>📚 版本歷史紀錄</h2>
             <p class="version-history-intro">依版本號由新到舊排列；展開版本可查看修改紀錄。</p>
             <details open class="version-group"><summary>v5 版本</summary>
+                <article class="version-entry"><strong>v5.2.4｜新增課堂跑馬燈與詞條選單</strong><p>更新日期：2026-10-26 20:57</p><p>標題旁新增跑馬燈，可自訂文字或選用固定詞條。</p></article>
+                <article class="version-entry"><strong>v5.2.3｜縮短座位計分格高度</strong><p>更新日期：2026-10-26 21:37</p><p>縮小座位格、選單與分數區高度，方便同時查看五排。</p></article>
+                <article class="version-entry"><strong>v5.2.2｜調整座位表順序並同步獎牌</strong><p>更新日期：2026-10-26 21:07</p><p>座位表移至個人計分板後；清空或還原獎牌時同步更新個人計分板。</p></article>
+                <article class="version-entry"><strong>v5.2.1｜抽籤設定整合與即時停止</strong><p>更新日期：2026-10-26 20:57</p><p>停止鍵立即中止；整合連抽、抽法與性別範圍設定，預設解鎖。</p></article>
+                <article class="version-entry"><strong>v5.1.8｜顯示剩餘連抽次數並於人數歸零停止</strong><p>更新日期：2026-10-26 09:54</p><p>停止鍵顯示剩餘連抽次數；可抽人數歸零即停止。</p></article>
+                <article class="version-entry"><strong>v5.1.5｜抽籤開始停止切換與人數限制</strong><p>更新日期：2026-10-26 17:44</p><p>抽籤鍵改為開始／停止切換，連抽次數不得超過班級人數。</p></article>
                 <article class="version-entry"><strong>v5.1.1｜新增連抽次數選單</strong><p>更新日期：2026-10-26 17:33</p><p>新增1至15次連抽選單，預設抽1次。</p></article>
                 <article class="version-entry"><strong>v5.1.0｜修正尚晟抽籤語音</strong><p>更新日期：2026-10-26 17:29</p><p>抽籤語音將「晟」改讀ㄔㄥˊ，畫面姓名不變。</p></article>
                 <article class="version-entry"><strong>v5.0.8｜註明版本說明字數限制</strong><p>更新日期：2026-10-26 17:12</p><p>版本說明須精簡，不超過35字。</p></article>
@@ -682,19 +746,25 @@
             <div class="wheel-top"><h2>🎡 課堂抽籤轉盤</h2><button class="wheel-close" onclick="closeWheel()" aria-label="關閉轉盤">×</button></div>
             <div class="wheel-stage"><div class="wheel-pointer"></div><canvas id="wheel-canvas" width="600" height="600"></canvas></div>
             <div class="wheel-controls">
-                <button id="spin-btn" onclick="spinWheel()">開始抽籤</button>
-                <label for="wheel-draw-count" style="font-weight:bold;text-align:left;">連抽次數</label>
-                <select id="wheel-draw-count" style="width:100%;box-sizing:border-box;padding:9px;border:1px solid #bbb;border-radius:8px;font:inherit;">
-                    <option value="1" selected>抽 1 次</option>
-                    <option value="2">連抽 2 次</option><option value="3">連抽 3 次</option><option value="4">連抽 4 次</option><option value="5">連抽 5 次</option>
-                    <option value="6">連抽 6 次</option><option value="7">連抽 7 次</option><option value="8">連抽 8 次</option><option value="9">連抽 9 次</option><option value="10">連抽 10 次</option>
-                    <option value="11">連抽 11 次</option><option value="12">連抽 12 次</option><option value="13">連抽 13 次</option><option value="14">連抽 14 次</option><option value="15">連抽 15 次</option>
-                </select>
-                <label for="wheel-draw-mode" style="font-weight:bold;text-align:left;">抽籤方式</label>
-                <select id="wheel-draw-mode" onchange="changeWheelDrawMode()" style="width:100%;box-sizing:border-box;padding:9px;border:1px solid #bbb;border-radius:8px;font:inherit;">
-                    <option value="remove">抽中後移除（本輪不重複）</option>
-                    <option value="keep">抽中後保留（可重複抽）</option>
-                </select>
+                <button id="spin-btn" onclick="toggleSpinWheel()">START｜開始抽籤</button>
+                <button type="button" id="wheel-settings-toggle" onclick="toggleWheelSettings()" style="width:100%;padding:10px;border:0;border-radius:8px;background:#e8eaf6;color:#303f75;font-weight:bold;font-size:16px;">⚙️ 抽籤設定 ＋</button>
+                <div id="wheel-settings-panel" hidden style="width:100%;box-sizing:border-box;padding:10px;border:1px solid #d7dbea;border-radius:9px;background:#fafaff;gap:8px;flex-direction:column;">
+                    <label for="wheel-draw-count" style="font-weight:bold;text-align:left;">連抽次數</label>
+                    <select id="wheel-draw-count" style="width:100%;box-sizing:border-box;padding:9px;border:1px solid #bbb;border-radius:8px;font:inherit;">
+                        <option value="1" selected>抽 1 次</option>
+                        <option value="2">連抽 2 次</option><option value="3">連抽 3 次</option><option value="4">連抽 4 次</option><option value="5">連抽 5 次</option>
+                        <option value="6">連抽 6 次</option><option value="7">連抽 7 次</option><option value="8">連抽 8 次</option><option value="9">連抽 9 次</option><option value="10">連抽 10 次</option>
+                        <option value="11">連抽 11 次</option><option value="12">連抽 12 次</option><option value="13">連抽 13 次</option><option value="14">連抽 14 次</option><option value="15">連抽 15 次</option>
+                    </select>
+                    <label for="wheel-draw-mode" style="font-weight:bold;text-align:left;">抽籤方式</label>
+                    <select id="wheel-draw-mode" onchange="changeWheelDrawMode()" style="width:100%;box-sizing:border-box;padding:9px;border:1px solid #bbb;border-radius:8px;font:inherit;">
+                        <option value="remove">抽中後移除（本輪不重複）</option><option value="keep">抽中後保留（可重複抽）</option>
+                    </select>
+                    <label for="wheel-draw-scope" style="font-weight:bold;text-align:left;">抽籤範圍</label>
+                    <select id="wheel-draw-scope" onchange="changeWheelDrawScope()" style="width:100%;box-sizing:border-box;padding:9px;border:1px solid #bbb;border-radius:8px;font:inherit;">
+                        <option value="all" selected>全班</option><option value="male">男生</option><option value="female">女生</option>
+                    </select>
+                </div>
                 <div id="wheel-result" aria-live="polite">準備好了嗎？</div>
                 <p id="wheel-hint">抽中後移除：本輪抽過的學生不再出現；全部抽完會自動開始新一輪。</p>
                 <section id="wheel-winner-history-panel" style="text-align:left;border:1px solid #e0e0e0;border-radius:9px;padding:9px;max-height:200px;overflow:auto;width:100%;box-sizing:border-box;">
@@ -1644,7 +1714,11 @@
         let wheelRotation = 0;
         let wheelSpinning = false;
         let wheelBatchRemaining = 0;
+        let wheelSpinTimer = null;
+        let wheelBatchTimer = null;
+        let wheelStopRequested = false;
         let wheelDrawMode = localStorage.getItem('tab_class_wheel_draw_mode_v1') === 'keep' ? 'keep' : 'remove';
+        let wheelDrawScope = ['male','female'].includes(localStorage.getItem('tab_class_wheel_draw_scope_v1')) ? localStorage.getItem('tab_class_wheel_draw_scope_v1') : 'all';
         let wheelDrawnIds = new Set();
         let wheelWinnerHistory = [];
         let wheelTopicRecords = [];
@@ -1742,7 +1816,21 @@
         renderWheelTopicRecords();
         renderWheelRecordsBoard();
         function getWheelEntries() {
-            return wheelDrawMode === 'keep' ? [...teams] : teams.filter(t => !wheelDrawnIds.has(String(t.id || t.name)));
+            const scoped = teams.filter(t => wheelDrawScope === 'all' || (wheelDrawScope === 'male' ? String(t.gender || '') === '男生' : String(t.gender || '') === '女生'));
+            return wheelDrawMode === 'keep' ? scoped : scoped.filter(t => !wheelDrawnIds.has(String(t.id || t.name)));
+        }
+        function toggleWheelSettings() {
+            const panel = document.getElementById('wheel-settings-panel');
+            const btn = document.getElementById('wheel-settings-toggle');
+            panel.hidden = !panel.hidden; panel.style.display = panel.hidden ? 'none' : 'flex';
+            btn.textContent = panel.hidden ? '⚙️ 抽籤設定 ＋' : '⚙️ 抽籤設定 −';
+        }
+        function changeWheelDrawScope() {
+            wheelDrawScope = document.getElementById('wheel-draw-scope').value;
+            try { localStorage.setItem('tab_class_wheel_draw_scope_v1', wheelDrawScope); } catch(e) {}
+            wheelDrawnIds.clear(); wheelRotation = 0;
+            const canvas = document.getElementById('wheel-canvas'); canvas.style.transition = 'none'; canvas.style.transform = 'rotate(0deg)';
+            drawWheel();
         }
         function changeWheelDrawMode() {
             wheelDrawMode = document.getElementById('wheel-draw-mode').value === 'keep' ? 'keep' : 'remove';
@@ -1761,12 +1849,50 @@
             document.getElementById('wheel-overlay').classList.add('open');
             const modeSelect = document.getElementById('wheel-draw-mode');
             if (modeSelect) modeSelect.value = wheelDrawMode;
+            const scopeSelect = document.getElementById('wheel-draw-scope'); if (scopeSelect) scopeSelect.value = wheelDrawScope;
             drawWheel();
             document.getElementById('wheel-result').textContent = '準備好了嗎？';
         }
         function closeWheel() {
             if (wheelSpinning) return;
             document.getElementById('wheel-overlay').classList.remove('open');
+        }
+        function toggleSpinWheel() {
+            if (wheelSpinning) {
+                stopSpinWheel();
+                return;
+            }
+            const requested = Math.max(1, Math.min(15, parseInt(document.getElementById('wheel-draw-count')?.value || '1', 10) || 1));
+            const classSize = Array.isArray(teams) ? teams.length : 0;
+            if (requested > classSize) {
+                wheelBatchRemaining = 0;
+                document.getElementById('wheel-result').textContent = `⚠️ 連抽 ${requested} 次超過班級人數 ${classSize} 人，已停止。`;
+                return;
+            }
+            // iPad/iOS Safari：在使用者直接點擊時預備語音引擎，避免抽籤結束後才首次啟動而被限制。
+            prepareWheelSpeech();
+            wheelStopRequested = false;
+            spinWheel();
+        }
+        function stopSpinWheel() {
+            wheelStopRequested = true;
+            wheelBatchRemaining = 0;
+            if (wheelSpinTimer !== null) { clearTimeout(wheelSpinTimer); wheelSpinTimer = null; }
+            if (wheelBatchTimer !== null) { clearTimeout(wheelBatchTimer); wheelBatchTimer = null; }
+            const canvas = document.getElementById('wheel-canvas');
+            if (canvas) {
+                const transform = getComputedStyle(canvas).transform;
+                canvas.style.transition = 'none';
+                if (transform && transform !== 'none') canvas.style.transform = transform;
+                void canvas.offsetWidth;
+            }
+            try { if (typeof stopWheelSound === 'function') stopWheelSound(); } catch(e) {}
+            wheelSpinning = false;
+            const button = document.getElementById('spin-btn');
+            button.disabled = false;
+            button.textContent = 'START｜開始抽籤';
+            document.getElementById('wheel-result').textContent = '⏹️ 已停止抽籤。';
+            try { if (window.speechSynthesis) window.speechSynthesis.cancel(); } catch (e) {}
         }
         function drawWheel() {
             const canvas = document.getElementById('wheel-canvas');
@@ -1798,17 +1924,25 @@
         function spinWheel(isBatchContinuation = false) {
             if (!isBatchContinuation) {
                 wheelBatchRemaining = Math.max(1, Math.min(15, parseInt(document.getElementById('wheel-draw-count')?.value || '1', 10) || 1));
-            }
-            const entries = getWheelEntries();
-            if (wheelSpinning || !entries.length) {
-                if (!wheelSpinning && wheelDrawMode === 'remove' && teams.length && !entries.length) {
-                    wheelDrawnIds.clear(); wheelRotation = 0;
-                    const canvas = document.getElementById('wheel-canvas');
-                    canvas.style.transition = 'none'; canvas.style.transform = 'rotate(0deg)';
-                    drawWheel();
-                    document.getElementById('wheel-result').textContent = '🎉 上一輪已抽完，已自動開始新一輪！繼續連抽。';
-                    if (wheelBatchRemaining > 0) window.setTimeout(() => spinWheel(true), 500);
+                const classSize = Array.isArray(teams) ? teams.length : 0;
+                if (wheelBatchRemaining > classSize) {
+                    wheelBatchRemaining = 0;
+                    document.getElementById('wheel-result').textContent = `⚠️ 連抽次數不得大於班級人數（${classSize} 人），已停止。`;
+                    return;
                 }
+            }
+            if (wheelStopRequested) return;
+            const entries = getWheelEntries();
+            if (wheelSpinning) return;
+            if (!entries.length) {
+                wheelBatchRemaining = 0;
+                wheelSpinning = false;
+                const button = document.getElementById('spin-btn');
+                button.disabled = false; button.textContent = 'START｜開始抽籤';
+                document.getElementById('wheel-result').textContent = teams.length
+                    ? '🎉 可抽人數已歸零，連抽已停止。'
+                    : '目前沒有學生名單，抽籤已停止。';
+                drawWheel();
                 return;
             }
             const winnerIndex = Math.floor(Math.random() * entries.length);
@@ -1820,12 +1954,14 @@
             wheelSpinning = true;
             const canvas = document.getElementById('wheel-canvas');
             const button = document.getElementById('spin-btn');
-            button.disabled = true; button.textContent = wheelBatchRemaining > 1 ? `連抽中…（剩 ${wheelBatchRemaining} 次）` : '抽籤中…';
+            button.disabled = false; button.textContent = `STOP｜還有 ${wheelBatchRemaining} 次`;
             document.getElementById('wheel-result').textContent = '轉盤旋轉中……';
             canvas.style.transition = 'transform 4.5s cubic-bezier(0.12, 0.75, 0.12, 1)';
             canvas.style.transform = `rotate(${wheelRotation}deg)`;
             startWheelSound(4600);
-            window.setTimeout(() => {
+            wheelSpinTimer = window.setTimeout(() => {
+                wheelSpinTimer = null;
+                if (wheelStopRequested) { wheelSpinning = false; return; }
                 const winner = entries[winnerIndex];
                 const winnerName = String(winner.name || '').trim();
                 document.getElementById('wheel-result').textContent = `🎉 抽中：${winnerName}`;
@@ -1840,16 +1976,30 @@
                 }
                 announceWheelWinner(winnerName);
                 wheelBatchRemaining = Math.max(0, wheelBatchRemaining - 1);
-                if (wheelBatchRemaining > 0) {
-                    button.disabled = true;
-                    button.textContent = `連抽中…（剩 ${wheelBatchRemaining} 次）`;
-                    window.setTimeout(() => spinWheel(true), 650);
+                if (wheelBatchRemaining > 0 && !wheelStopRequested) {
+                    button.disabled = false;
+                    button.textContent = `STOP｜還有 ${wheelBatchRemaining} 次`;
+                    wheelBatchTimer = window.setTimeout(() => { wheelBatchTimer = null; if (!wheelStopRequested) spinWheel(true); }, 650);
                 } else {
-                    button.disabled = false; button.textContent = '再抽一次';
+                    button.disabled = false; button.textContent = 'START｜開始抽籤';
                 }
             }, 4600);
         }
-        // V40：抽籤停止後，優先使用繁體中文女聲播報，再接 1.5 秒觀眾歡呼。
+        // v5.3.6：預先啟動 iOS/Safari 語音引擎，避免抽籤結束後才首次呼叫被限制。
+        function prepareWheelSpeech() {
+            try {
+                const synth = window.speechSynthesis;
+                if (!synth || typeof SpeechSynthesisUtterance === 'undefined') return;
+                synth.getVoices();
+                synth.resume();
+                const warmup = new SpeechSynthesisUtterance('');
+                warmup.lang = 'zh-TW';
+                warmup.volume = 0;
+                synth.speak(warmup);
+                synth.cancel();
+                synth.resume();
+            } catch (e) {}
+        }
         let wheelAnnouncementToken = 0;
         function announceWheelWinner(name) {
             if (!name) return;
@@ -1859,23 +2009,36 @@
                 playWheelWinnerCheer();
                 return;
             }
-            // 中止前一次尚未完成的播報，避免連續抽籤時語音互相重疊。
-            try { synth.cancel(); } catch (e) {}
-            // v5.1.0：只修正抽籤語音中的「尚晟」讀音；畫面姓名與紀錄仍使用原名。
+            try { synth.cancel(); synth.resume(); } catch (e) {}
             const spokenName = String(name).replace(/尚晟/g, '尚成');
             const utterance = new SpeechSynthesisUtterance(`恭喜你，${spokenName}！`);
             utterance.lang = 'zh-TW';
-            utterance.rate = 0.95;
-            utterance.pitch = 1.12;
-            const voices = synth.getVoices ? synth.getVoices() : [];
-            const chineseVoices = voices.filter(v => /^zh(-|_)(TW|Hant)/i.test(v.lang || '') || /繁體|台灣|臺灣|Taiwan/i.test(v.name || ''));
-            const femaleHint = /female|女|雅婷|婷|美|xiaoxiao|huihui|tingting/i;
-            const preferred = chineseVoices.find(v => femaleHint.test(v.name || '')) || chineseVoices.find(v => /zh-TW/i.test(v.lang || ''));
-            if (preferred) utterance.voice = preferred;
+            utterance.rate = 0.92;
+            utterance.pitch = 1.05;
+            utterance.volume = 1;
+            const chooseVoice = () => {
+                const voices = synth.getVoices ? synth.getVoices() : [];
+                const chineseVoices = voices.filter(v => /^zh([-_](TW|Hant|HK|CN))?/i.test(v.lang || '') || /繁體|台灣|臺灣|中文|Chinese|Taiwan/i.test(v.name || ''));
+                const preferred = chineseVoices.find(v => /zh[-_]TW/i.test(v.lang || '')) || chineseVoices.find(v => /繁體|台灣|臺灣|Taiwan/i.test(v.name || '')) || chineseVoices[0];
+                if (preferred) utterance.voice = preferred;
+            };
+            chooseVoice();
             utterance.onend = () => { if (token === wheelAnnouncementToken) playWheelWinnerCheer(); };
             utterance.onerror = () => { if (token === wheelAnnouncementToken) playWheelWinnerCheer(); };
-            try { synth.speak(utterance); }
-            catch (e) { playWheelWinnerCheer(); }
+            try {
+                synth.resume();
+                synth.speak(utterance);
+                // iOS 有時在 voices 尚未載入時忽略第一次播報；短暫檢查後，若佇列仍未啟動則重試一次。
+                window.setTimeout(() => {
+                    if (token !== wheelAnnouncementToken) return;
+                    try {
+                        if (synth.paused) synth.resume();
+                        if (!synth.speaking && !synth.pending) {
+                            chooseVoice(); synth.speak(utterance);
+                        }
+                    } catch (e) {}
+                }, 350);
+            } catch (e) { playWheelWinnerCheer(); }
         }
         function playWheelWinnerCheer() {
             const ctx = getClassroomAudioContext();
@@ -2773,7 +2936,9 @@
                 teams.forEach(team => { team.silver = 0; team.gold = 0; team.blackCard = 0; });
                 saveTeamsAndMedals();
                 persistGroupData();
+                renderList();
                 renderStatsBoard();
+                if (typeof renderSeatBoard === 'function') renderSeatBoard();
             });
             cardActions.appendChild(clearAllCards);
             const restoreCardsButton = document.createElement('button');
@@ -2791,7 +2956,9 @@
                 });
                 saveTeamsAndMedals();
                 persistGroupData();
+                renderList();
                 renderStatsBoard();
+                if (typeof renderSeatBoard === 'function') renderSeatBoard();
                 alert('已還原上次獎牌。');
             });
             cardActions.appendChild(restoreCardsButton);
@@ -2945,7 +3112,8 @@
         // v5.0.0：課堂操作鎖定與版本歷史。sessionStorage 讓重新整理保留狀態，關閉分頁後預設重新鎖定。
         const OP_LOCK_KEY = 'tab_class_operation_lock_password_v1';
         const OP_UNLOCK_SESSION_KEY = 'tab_class_operation_unlocked_session_v1';
-        let classroomUnlocked = sessionStorage.getItem(OP_UNLOCK_SESSION_KEY) === '1';
+        let classroomUnlocked = true;
+        sessionStorage.setItem(OP_UNLOCK_SESSION_KEY, '1');
         let rescuedThisSession = false;
         function isWheelTarget(target) { return !!(target && target.closest && target.closest('#wheel-overlay')); }
         function updateClassroomLockUI() {
@@ -2960,7 +3128,7 @@
             if (rescueBtn) rescueBtn.hidden = classroomUnlocked;
             if (lockBtn) lockBtn.hidden = !classroomUnlocked;
             if (passwordChange) passwordChange.hidden = !classroomUnlocked;
-            // 初次進入一律鎖定；僅同一分頁的重新整理會保留解鎖狀態。
+            // v5.2.1：依使用者要求，開啟頁面預設解鎖；老師仍可手動鎖定。
         }
         function unlockClassroom() {
             let savedPassword = localStorage.getItem(OP_LOCK_KEY);
@@ -3013,10 +3181,224 @@
             document.getElementById('new-operation-password').value = '';
             alert('一般老師密碼已更新。');
         }
+        const CLASS_RANDOM_QUOTES = [
+            {text:"每個人都擁有夢想，但千萬別讓它變成空想！", author:"江秀真"},
+            {text:"理想、希望和意志可以說是決定一生榮枯的最重要因素。", author:"蔣夢麟《西潮》"},
+            {text:"知之者不如好之者，好之者不如樂之者。", author:"《論語》"},
+            {text:"三人行，必有我師焉。", author:"《論語》"},
+            {text:"只要持續地努力，不懈地奮鬥，就沒有征服不了的事。", author:"塞內加"},
+            {text:"傑出的人必有目標，其他的人只有願望。", author:"華盛頓・歐文"},
+            {text:"真正的智慧就是知道自己一無所知。", author:"蘇格拉底（常見譯文）"},
+            {text:"植物靠栽培長大，人類靠教育成人。", author:"盧梭（常見譯文）"},
+            {text:"教育的目的在於能讓青年人畢生進行自我教育。", author:"羅伯・胡欽斯"},
+            {text:"教育是富人的裝飾品，窮人的避難所。", author:"亞里斯多德（常見中譯）"},
+            {text:"今天比昨天多努力一點，明天就能多前進一步。", author:"班級勉勵語"},
+            {text:"犯錯不是失敗，願意修正就是成長。", author:"班級勉勵語"},
+            {text:"先聽懂別人的想法，再讓別人聽見你的想法。", author:"班級勉勵語"},
+            {text:"真正的合作，不是每個人做一樣的事，而是一起完成目標。", author:"班級勉勵語"},
+            {text:"善良不是軟弱，而是有力量仍願意尊重別人。", author:"班級勉勵語"},
+            {text:"每一次舉手，都是勇敢表達自己的開始。", author:"班級勉勵語"},
+            {text:"不怕問題難，只怕還沒試就先放棄。", author:"班級勉勵語"},
+            {text:"把今天該做的事做好，就是朝夢想前進。", author:"班級勉勵語"},
+            {text:"尊重不同的聲音，班級就能聽見更多智慧。", author:"班級勉勵語"},
+            {text:"真正的進步，是比昨天的自己更好一點。", author:"班級勉勵語"},
+            {text:"一句鼓勵，可能成為別人繼續努力的力量。", author:"班級勉勵語"},
+            {text:"有想法要勇敢說，有錯誤要勇敢改。", author:"班級勉勵語"},
+            {text:"學會感謝，也記得把善意傳出去。", author:"班級勉勵語"},
+            {text:"先把小事做好，才能一步步完成大目標。", author:"班級勉勵語"},
+            {text:"每個人都有自己的步調，持續前進就值得肯定。", author:"班級勉勵語"},
+            {text:"樂觀是通往成就的信念；沒有希望，什麼也做不成。", author:"海倫・凱勒"},
+            {text:"教育最重要的成果是寬容。", author:"海倫・凱勒"},
+            {text:"世界充滿苦難，也充滿克服苦難的方法。", author:"海倫・凱勒"},
+            {text:"當我手捧一本喜愛的書，我的限制便消失了，心靈也獲得自由。", author:"海倫・凱勒"},
+            {text:"我們努力讓別人的生活更明亮，自己才會真正快樂。", author:"海倫・凱勒"},
+            {text:"世界上最好、最美的事物，不能只靠眼睛看見，也不能只靠雙手觸摸；要用心去感受。", author:"海倫・凱勒（改寫）"}
+        ];
+        let lastRandomQuoteIndex = -1;
+        let lastAuthorQuoteIndex = -1;
+        let quoteCyclePool = [];
+        let quoteCycleKey = '';
+        function getNextQuoteIndex(pool, key) {
+            if (quoteCycleKey !== key || quoteCyclePool.length === 0) {
+                quoteCycleKey = key;
+                quoteCyclePool = pool.map((_, i) => i);
+                for (let i = quoteCyclePool.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [quoteCyclePool[i], quoteCyclePool[j]] = [quoteCyclePool[j], quoteCyclePool[i]];
+                }
+            }
+            if (quoteCyclePool.length === 0) return -1;
+            return quoteCyclePool.pop();
+        }
+        let quoteRotationTimer = null;
+        let quoteRotationQueue = [];
+        let quoteRotationPosition = 0;
+        function stopQuoteRotation() {
+            if (quoteRotationTimer) { clearInterval(quoteRotationTimer); quoteRotationTimer = null; }
+            quoteRotationQueue = [];
+            quoteRotationPosition = 0;
+        }
+        function shuffleQuoteItems(items) {
+            const copy = items.slice();
+            for (let i = copy.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [copy[i], copy[j]] = [copy[j], copy[i]];
+            }
+            return copy;
+        }
+        function startQuoteRotation(items) {
+            stopQuoteRotation();
+            if (!items.length) { alert('目前沒有符合條件的佳句。'); return; }
+            quoteRotationQueue = shuffleQuoteItems(items).slice(0, 5);
+            quoteRotationPosition = 0;
+            const showCurrent = () => {
+                if (!quoteRotationQueue.length) return;
+                const item = quoteRotationQueue[quoteRotationPosition];
+                chooseMarqueePhrase(item.text + ' － ' + item.author, true);
+                quoteRotationPosition = (quoteRotationPosition + 1) % quoteRotationQueue.length;
+            };
+            showCurrent();
+            quoteRotationTimer = setInterval(showCurrent, 9000);
+        }
+        function playRandomClassQuote() {
+            startQuoteRotation(CLASS_RANDOM_QUOTES);
+        }
+        function playRandomQuoteByAuthor() {
+            const input = document.getElementById('quote-author-input');
+            const author = input ? input.value.trim() : '';
+            if (!author) { alert('請先輸入作者名字。'); if (input) input.focus(); return; }
+            const quotes = CLASS_RANDOM_QUOTES.filter(q => q.author.replace(/（改寫）/g, '').trim().toLocaleLowerCase().includes(author.toLocaleLowerCase()) || author.toLocaleLowerCase().includes(q.author.replace(/（改寫）/g, '').trim().toLocaleLowerCase()));
+            if (!quotes.length) { alert('目前佳句清單中找不到這位作者的佳句。你可以先把該作者佳句新增到佳句清單中。'); return; }
+            startQuoteRotation(quotes);
+        }
+        const CUSTOM_MARQUEE_PHRASES_KEY = 'classCustomMarqueePhrases_v1';
+        function getCustomMarqueePhrases() {
+            try { const parsed = JSON.parse(localStorage.getItem(CUSTOM_MARQUEE_PHRASES_KEY) || '[]'); return Array.isArray(parsed) ? parsed : []; }
+            catch (e) { return []; }
+        }
+        function renderCustomMarqueePhrases() {
+            const container = document.getElementById('custom-marquee-phrases');
+            if (!container) return;
+            const phrases = getCustomMarqueePhrases();
+            container.innerHTML = '';
+            if (!phrases.length) { container.innerHTML = '<span style="color:#78909c;font-size:13px">尚未新增自訂詞條。</span>'; return; }
+            phrases.forEach((phrase, index) => {
+                const pill = document.createElement('button');
+                pill.type = 'button';
+                pill.className = 'marquee-phrase custom-marquee-phrase';
+                pill.textContent = phrase.name;
+                pill.title = '點選播放；雙擊編輯。內容：' + phrase.content;
+                pill.setAttribute('aria-label', phrase.name + '，點選播放，雙擊編輯');
+                pill.onclick = () => chooseMarqueePhrase(phrase.content);
+                pill.ondblclick = (event) => { event.preventDefault(); editCustomMarqueePhrase(index); };
+                const deleteBtn = document.createElement('button');
+                deleteBtn.type = 'button';
+                deleteBtn.className = 'custom-phrase-delete';
+                deleteBtn.textContent = '×';
+                deleteBtn.title = '刪除此詞條';
+                deleteBtn.setAttribute('aria-label', '刪除詞條：' + phrase.name);
+                deleteBtn.onclick = (event) => { event.stopPropagation(); deleteCustomMarqueePhrase(index); };
+                pill.appendChild(deleteBtn);
+                container.appendChild(pill);
+            });
+        }
+        function saveCustomMarqueePhrase(editIndex = null) {
+            const nameInput = document.getElementById('marquee-phrase-name');
+            const contentInput = document.getElementById('marquee-phrase-content');
+            const name = nameInput.value.trim(); const content = contentInput.value.trim();
+            if (!name || !content) { alert('請同時填寫「詞條名稱」和「詞條內容」。'); (!name ? nameInput : contentInput).focus(); return; }
+            const phrases = getCustomMarqueePhrases();
+            if (editIndex === null) phrases.push({name, content}); else phrases[editIndex] = {name, content};
+            try { localStorage.setItem(CUSTOM_MARQUEE_PHRASES_KEY, JSON.stringify(phrases)); }
+            catch (e) { alert('無法儲存詞條，請確認瀏覽器儲存空間設定。'); return; }
+            nameInput.value = ''; contentInput.value = '';
+            const button = document.getElementById('save-custom-marquee-phrase-btn'); if (button) button.textContent='＋ 新增詞條';
+            renderCustomMarqueePhrases();
+        }
+        let editingCustomMarqueePhraseIndex = null;
+        function editCustomMarqueePhrase(index) {
+            const phrase = getCustomMarqueePhrases()[index]; if (!phrase) return;
+            document.getElementById('marquee-phrase-name').value = phrase.name;
+            document.getElementById('marquee-phrase-content').value = phrase.content;
+            editingCustomMarqueePhraseIndex = index;
+            const button = document.getElementById('save-custom-marquee-phrase-btn');
+            if (button) { button.textContent='💾 儲存修改'; button.onclick=()=>{ const i=editingCustomMarqueePhraseIndex; editingCustomMarqueePhraseIndex=null; saveCustomMarqueePhrase(i); }; }
+            document.getElementById('marquee-phrase-name').focus();
+        }
+        function deleteCustomMarqueePhrase(index) {
+            const phrases = getCustomMarqueePhrases(); if (!phrases[index]) return;
+            if (!confirm('確定刪除詞條「' + phrases[index].name + '」？')) return;
+            phrases.splice(index, 1); localStorage.setItem(CUSTOM_MARQUEE_PHRASES_KEY, JSON.stringify(phrases)); renderCustomMarqueePhrases();
+        }
+
+        function chooseMarqueePhrase(text, fromQuoteRotation = false) {
+            if (!fromQuoteRotation) stopQuoteRotation();
+            const input = document.getElementById('marquee-custom-text');
+            input.value = text;
+            const track = document.getElementById('class-marquee-track');
+            track.textContent = text;
+            track.classList.remove('paused');
+            const marquee = document.getElementById('class-marquee');
+            marquee.hidden = false;
+            const visibilityBtn = document.getElementById('marquee-visibility-btn');
+            if (visibilityBtn) visibilityBtn.textContent = '🙈 隱藏跑馬燈';
+            track.style.animation = 'none';
+            void track.offsetWidth;
+            track.style.animation = '';
+            try { localStorage.setItem('classMarqueeText', text); } catch (e) {}
+        }
+        function startClassMarquee() {
+            stopQuoteRotation();
+            const input = document.getElementById('marquee-custom-text');
+            const text = (input.value || '').trim();
+            if (!text) { alert('請先輸入或選擇一則跑馬燈詞條。'); input.focus(); return; }
+            const track = document.getElementById('class-marquee-track');
+            track.textContent = text;
+            track.classList.remove('paused');
+            const marquee = document.getElementById('class-marquee');
+            marquee.hidden = false;
+            track.style.animation = 'none';
+            void track.offsetWidth;
+            track.style.animation = '';
+            try { localStorage.setItem('classMarqueeText', text); } catch (e) {}
+        }
+        function stopClassMarquee() {
+            stopQuoteRotation();
+            const track = document.getElementById('class-marquee-track');
+            track.classList.add('paused');
+            track.style.transform = 'translateX(0)';
+        }
+        function toggleMarqueeVisibility() {
+            const marquee = document.getElementById('class-marquee');
+            const button = document.getElementById('marquee-visibility-btn');
+            const willHide = !marquee.hidden;
+            if (willHide) {
+                stopQuoteRotation();
+                marquee.hidden = true;
+                if (button) button.textContent = '👁 顯示跑馬燈';
+            } else {
+                marquee.hidden = false;
+                if (button) button.textContent = '🙈 隱藏跑馬燈';
+            }
+        }
+        function toggleMarqueePanel() {
+            const panel = document.getElementById('marquee-panel');
+            const show = panel.hidden;
+            panel.hidden = !show;
+            ['list-container','group-score-container','stats-board-container','seat-board-container','wheel-records-board-container','version-history-panel'].forEach(id => {
+                const el = document.getElementById(id); if (el) el.hidden = show;
+            });
+            if (!show) switchBoardView(currentBoardView);
+            document.getElementById('marquee-toggle-btn').textContent = show ? '↩️ 返回計分板' : '📣 跑馬燈';
+            const historyBtn = document.getElementById('version-history-btn');
+            if (historyBtn) historyBtn.textContent = '📚 版本歷史';
+        }
         function toggleVersionHistory() {
             const history = document.getElementById('version-history-panel');
             const showHistory = history.hidden;
             history.hidden = !showHistory;
+            const marqueePanel = document.getElementById('marquee-panel'); if (marqueePanel) marqueePanel.hidden = true;
+            const marqueeBtn = document.getElementById('marquee-toggle-btn'); if (marqueeBtn) marqueeBtn.textContent = '📣 跑馬燈';
             ['list-container','group-score-container','stats-board-container','seat-board-container','wheel-records-board-container'].forEach(id => {
                 const el = document.getElementById(id); if (el) el.hidden = showHistory ? true : false;
             });
@@ -3042,6 +3424,7 @@
         }, true);
         updateClassroomLockUI();
 
-    </script>
+            document.addEventListener('DOMContentLoaded', renderCustomMarqueePhrases);
+</script>
 </body>
 </html>
