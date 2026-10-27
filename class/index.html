@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>v5.3.2_20261026-2203_移除指定作者並提升詞條管理入口</title>
+    <title>v6.0.3｜401計分板</title>
     <style>
         :root {
             --primary-color: #4CAF50;
@@ -73,13 +73,17 @@
             border-bottom: 2px solid #eee; padding-bottom: 7px; margin-bottom: 7px; flex-shrink: 0; gap: 10px;
         }
         .header-main { display: flex; flex-direction: column; gap: 4px; min-width: 0; flex: 1; }
-        .date-time-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .date-time-row { display: flex; align-items: center; gap: 8px; flex-wrap: nowrap; white-space: nowrap; min-width: 0; overflow-x: auto; overflow-y: visible; }
+        #daily-info-box { display:flex; align-items:center; justify-content:center; gap:8px; flex:1 1 260px; min-width:220px; height:40px; padding:0 12px; box-sizing:border-box; border:1px solid #d9e7eb; border-radius:10px; background:linear-gradient(90deg,#f2fbfc,#fff); color:#24545b; font-size:16px; overflow:hidden; white-space:nowrap; }
+        #daily-info-icon { flex:0 0 auto; font-size:20px; }
+        #daily-info-text { overflow:hidden; text-overflow:ellipsis; }
+
         #date-time { color: #007c91; font-size: 18px; font-weight: bold; line-height: 1.2; }
         #screenshot-btn { border: 0; border-radius: 7px; padding: 7px 11px; background: #4caf50; color: white; font-family: inherit; font-size: 15px; font-weight: bold; cursor: pointer; white-space: nowrap; }
         #screenshot-btn:disabled { opacity: .65; cursor: wait; }
         #top-wheel-btn { border:0; border-radius:7px; padding:7px 11px; background:#7e57c2; color:#fff; font-family:inherit; font-size:15px; font-weight:bold; cursor:pointer; white-space:nowrap; }
         .top-wheel-reset-area #wheel-reset-btn { width:auto; height:100%; }
-        .top-data-actions { display:flex; align-items:center; gap:5px; flex-wrap:wrap; }
+        .top-data-actions { display:flex; align-items:center; gap:5px; flex-wrap:nowrap; flex-shrink:0; }
         .top-data-btn { border:0; border-radius:7px; padding:7px 8px; color:#fff; font-family:inherit; font-size:13px; font-weight:bold; cursor:pointer; white-space:nowrap; }
         .top-data-btn.json { background:#546e7a; }
         .top-data-btn.excel { background:#2e7d32; }
@@ -244,6 +248,14 @@
         .action-btns button {
             width: 32px; height: 32px; min-width: 32px; padding: 0; border-radius: 50%; border: none; font-size: 20px; line-height: 32px; font-weight: bold; color: white; cursor: pointer;
         }
+        /* v5.3.32：縮小加減按鈕，放大學生姓名與分數 */
+        .team-name { font-size: 19px; }
+        .team-score { font-size: 18px; }
+        .action-btns { gap: 5px; }
+        .action-btns button {
+            width: 25px; height: 25px; min-width: 25px;
+            font-size: 16px; line-height: 25px;
+        }
         .btn-plus { background-color: var(--primary-color); }
         .btn-minus { background-color: var(--danger-color); }
 
@@ -311,6 +323,8 @@
         @media (max-width: 420px) { #group-members-editor { grid-template-columns: 1fr; } }
         .wheel-reset-area { position:relative; width:100%; margin:0; }
         .top-wheel-reset-area { width:auto; flex:0 0 auto; }
+        /* Reset 選單固定定位，避免被上方工具列或側面板裁切 */
+        #wheel-reset-menu { position:fixed !important; right:auto; top:auto; z-index:2147483647 !important; max-height:calc(100vh - 24px); overflow-y:auto; box-sizing:border-box; }
         #wheel-reset-btn { width:100%; }
         #wheel-reset-btn { border:0; border-radius:8px; padding:8px 10px; background:#607d8b; color:#fff; font: bold 14px 'Microsoft JhengHei',sans-serif; cursor:pointer; white-space:nowrap; }
         #wheel-reset-menu { position:absolute; right:0; top:calc(100% + 6px); z-index:200010; width:min(280px, 78vw); padding:10px; background:#fff; border:1px solid #cfd8dc; border-radius:10px; box-shadow:0 5px 18px rgba(0,0,0,.2); text-align:left; }
@@ -553,6 +567,23 @@
         @media (max-width:520px) { #marquee-toggle-btn { font-size:12px; padding:6px 7px; } #class-marquee { height:29px; flex-basis:100%; } #class-marquee-track { font-size:18px; } }
 
 
+
+        /* v6.0.3 作業日期與統計資料同列；已繳交卡片以綠色明確區分 */
+        .hw-topline{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;margin:8px 0 18px}
+        .hw-homework-title{display:flex;align-items:baseline;gap:18px;flex-wrap:wrap;min-width:220px}
+        .hw-homework-title h2{font-size:clamp(24px,3vw,34px);margin:0;font-weight:700}
+        .hw-homework-title span{color:#64748b;font-size:16px}
+        .hw-summary{display:flex;align-items:stretch;justify-content:flex-end;gap:10px;flex-wrap:wrap;margin:0}
+        .hw-stat{display:flex;align-items:baseline;gap:6px;padding:8px 12px;border-radius:10px;background:#f8fafc;border:1px solid #e2e8f0;white-space:nowrap}
+        .hw-stat strong{font-size:clamp(20px,2vw,27px);line-height:1.1;color:#334155}
+        .hw-stat span{font-size:14px;color:#475569}
+        .hw-stat-done strong,.hw-stat-done span{color:#15803d}
+        .hw-stat-pending strong,.hw-stat-pending span{color:#c2410c}
+        .hw-stat-rate strong{color:#0f766e}
+        .hw-student.submitted{background:#f0fdf4!important;border:1.5px solid #16a34a!important;color:#166534!important;box-shadow:inset 0 0 0 1px rgba(22,163,74,.08)}
+        .hw-student.submitted .hw-student-name,.hw-student.submitted .hw-status-icon,.hw-student.submitted .hw-status-text{color:#15803d!important}
+        .hw-student.pending{background:#fffaf0!important;border:1.5px solid #f59e0b!important}
+        @media(max-width:760px){.hw-topline{align-items:flex-start}.hw-summary{justify-content:flex-start;gap:6px}.hw-stat{padding:6px 8px}.hw-stat span{font-size:12px}.hw-homework-title{gap:8px}}
 </style>
 </head>
 <body>
@@ -567,19 +598,27 @@
                     <div id="date-time">19:45</div>
                     <button id="screenshot-btn" type="button" onclick="saveScreenshot()" data-html2canvas-ignore="true" title="截圖">📸</button>
                     <button id="top-wheel-btn" type="button" onclick="openWheel()" data-html2canvas-ignore="true" title="抽籤">🎡</button>
-                    <button id="marquee-toggle-btn" type="button" onclick="toggleMarqueePanel()" data-html2canvas-ignore="true" title="跑馬燈">📣</button><button id="marquee-visibility-btn" type="button" onclick="toggleMarqueeVisibility()" data-html2canvas-ignore="true" style="border:0;border-radius:7px;padding:7px 10px;background:#607d8b;color:#fff;font:bold 14px 'Microsoft JhengHei',sans-serif;cursor:pointer;white-space:nowrap" title="隱藏跑馬燈">🙈 (隱藏)</button><div class="wheel-reset-area top-wheel-reset-area" data-html2canvas-ignore="true"><button id="wheel-reset-btn" type="button" onclick="toggleWheelResetMenu()" title="重設">🔄</button><button id="version-history-btn" type="button" onclick="toggleVersionHistory()" title="版本歷史">📚</button><div id="wheel-reset-menu" hidden><button type="button" onclick="resetWheelToInitial()">🎡 轉盤重設：全部回到初始</button><button type="button" onclick="showOldClassResetOptions()">舊班：重新計分</button><div id="old-class-reset-options" hidden><button type="button" onclick="resetPersonalScores()">Ａ 個人分數歸零</button><button type="button" onclick="resetGroupScores()">Ｂ 分組歸零</button></div><button class="danger" type="button" onclick="resetToNewClass()">新班：清空所有記錄</button></div></div><div class="top-data-actions" data-html2canvas-ignore="true">
-                        <button type="button" class="top-data-btn json" onclick="exportJsonBackup()">匯出 JS</button>
-                        <button type="button" class="top-data-btn excel" onclick="exportExcelGrades()">匯出 EXCEL</button>
-                        <button type="button" class="top-data-btn import" onclick="document.getElementById('json-import-file').click()">匯入</button>
+                    <button id="marquee-toggle-btn" type="button" onclick="toggleMarqueePanel()" data-html2canvas-ignore="true" title="跑馬燈">📣</button><button id="sound-mode-btn" type="button" onclick="cycleSoundMode()" data-html2canvas-ignore="true" title="音效模式：原有歡呼聲" aria-label="切換音效模式">🎉</button><button id="marquee-visibility-btn" type="button" onclick="toggleMarqueeVisibility()" data-html2canvas-ignore="true" style="border:0;border-radius:7px;padding:7px 10px;background:#607d8b;color:#fff;font:bold 14px 'Microsoft JhengHei',sans-serif;cursor:pointer;white-space:nowrap" title="切換跑馬燈顯示／隱藏" aria-label="切換跑馬燈顯示／隱藏">🙈</button><div class="wheel-reset-area top-wheel-reset-area" data-html2canvas-ignore="true"><button id="wheel-reset-btn" type="button" onclick="toggleWheelResetMenu()" title="重設">🔄</button><button id="version-history-btn" type="button" onclick="toggleVersionHistory()" title="版本歷史">📚</button><div id="wheel-reset-menu" hidden>
+<button type="button" onclick="resetOldClassAllScores()">舊班重新計分：清空所有分數、獎牌等；名字和分組保留。</button>
+<button class="danger" type="button" onclick="resetToNewClass()">新班重設：分數、獎牌等；名字和分組全部清空。</button>
+<button type="button" onclick="exitResetMenu()">Exit：取消重設</button>
+</div></div><div class="top-data-actions" data-html2canvas-ignore="true">
+                        <button type="button" class="top-data-btn json" onclick="exportJsonBackup()" title="匯出 JSON 備份" aria-label="匯出 JSON 備份">📤</button>
+                        <button type="button" class="top-data-btn excel" onclick="exportExcelGrades()" title="匯出 Excel 成績" aria-label="匯出 Excel 成績">📊</button>
+                        <button type="button" class="top-data-btn import" onclick="document.getElementById('json-import-file').click()" title="匯入 JSON 備份" aria-label="匯入 JSON 備份">📥</button>
                     </div>
+                    <div id="class-marquee" aria-label="課堂跑馬燈"><span id="class-marquee-track">每一天都是進步的好機會！準備好課本、收好小物品，帶著認真的心，一起成為更棒的自己！</span></div>
                 </div>
-                <div style="display:flex;align-items:center;gap:14px;min-width:0;margin:0 0 4px"><h3 id="board-title-display" style="flex:0 0 auto;margin:0">四１課堂計分板</h3><span id="current-version-label" style="flex:0 0 auto;font-size:12px;color:#008c95;background:#e0f7fa;border:1px solid #b2ebf2;border-radius:12px;padding:3px 8px;font-weight:bold">目前版本 v5.3.14</span><div id="class-marquee" aria-label="課堂跑馬燈"><span id="class-marquee-track">歡迎上課！準備好了嗎？</span></div></div>
+                <div style="display:flex;align-items:center;gap:14px;min-width:0;margin:0 0 4px"><h3 id="board-title-display" style="flex:0 0 auto;margin:0">四１課堂計分板</h3><span id="current-version-label" style="flex:0 0 auto;font-size:12px;color:#008c95;background:#e0f7fa;border:1px solid #b2ebf2;border-radius:12px;padding:3px 8px;font-weight:bold">v6.0.0</span><div id="daily-info-box" role="status" aria-live="polite" title="節日、天氣與每日英文">
+                        <span id="daily-info-icon">📅</span><span id="daily-info-text">每日資訊載入中…</span>
+                    </div></div>
                 <div class="board-view-switch" role="group" aria-label="切換計分板">
                     <button type="button" id="show-personal-board" class="active" onclick="switchBoardView('personal')">👤 個人計分板</button>
                     <button type="button" id="show-seat-board" onclick="switchBoardView('seats')">🪑 座位表計分</button>
                     <button type="button" id="show-group-board" onclick="switchBoardView('groups')">👥 分組計分板</button>
                     <button type="button" id="show-stats-board" onclick="switchBoardView('stats')">📊 個人統計板</button>
                     <button type="button" id="show-wheel-records-board" onclick="switchBoardView('wheelRecords')">🎡 抽籤紀錄</button>
+                    <button type="button" id="show-homework-board" onclick="switchBoardView('homework')">📚 作業繳交</button>
                 </div>
             </div>
             <span class="close-panel" onclick="closePanel()">✕</span>
@@ -589,15 +628,16 @@
         <div id="stats-board-container" hidden></div>
         <div id="seat-board-container" hidden></div>
         <div id="wheel-records-board-container" hidden></div>
+        <div id="homework-board-container" hidden aria-label="作業繳交記錄"></div>
         <section id="marquee-panel" hidden aria-label="跑馬燈詞條設定">
             <h2>📣 跑馬燈詞條</h2>
             <p class="version-history-intro">點選固定詞條可帶入文字，也可以自行輸入；按「開始播放」後，文字會在標題旁持續跑動。</p>
             <div class="marquee-input-row"><input id="marquee-custom-text" type="text" maxlength="120" placeholder="輸入自訂跑馬燈文字，例如：今天上課要專心喔！" aria-label="自訂跑馬燈文字"><button type="button" class="marquee-action" onclick="startClassMarquee()">▶ 開始播放</button><button type="button" class="marquee-action" style="background:#607d8b" onclick="stopClassMarquee()">■ 停止</button></div>
-            <div class="marquee-phrase-add-row"><button type="button" class="marquee-action" style="background:#7b4bb7" onclick="playRandomClassQuote()">🎲 隨機佳句</button><input id="marquee-phrase-name" type="text" maxlength="40" placeholder="詞條名稱，例如：下課整理" aria-label="詞條名稱"><input id="marquee-phrase-content" type="text" maxlength="120" placeholder="詞條內容，例如：請整理桌面並帶齊物品。" aria-label="詞條內容"><button id="save-custom-marquee-phrase-btn" type="button" class="marquee-action" onclick="saveCustomMarqueePhrase()">＋ 新增詞條</button></div>
+            <div class="marquee-phrase-add-row"><button type="button" class="marquee-action" style="background:#7b4bb7" onclick="refreshDailyQuote(); playRandomClassQuote()" title="重新抽取每日諺語、人生佳句、英文佳句或格言">🎲 重抽每日佳句</button><input id="marquee-phrase-name" type="text" maxlength="40" placeholder="詞條名稱，例如：下課整理" aria-label="詞條名稱"><input id="marquee-phrase-content" type="text" maxlength="120" placeholder="詞條內容，例如：請整理桌面並帶齊物品。" aria-label="詞條內容"><button id="save-custom-marquee-phrase-btn" type="button" class="marquee-action" onclick="saveCustomMarqueePhrase()">＋ 新增詞條</button></div>
             <p class="version-history-intro">輸入名稱與內容即可新增；點選詞條播放，按「✏」直接修改，按「×」刪除。</p>
             <h3 style="font-size:15px;margin:12px 0 8px">內建詞條（點選即可播放）</h3>
             <div class="marquee-phrases">
-                <button class="marquee-phrase" onclick="chooseMarqueePhrase('上課囉！請準備好課本與文具。')">📚 上課準備</button>
+                <button class="marquee-phrase" onclick="chooseMarqueePhrase('上課囉！請準備好課本與文具。其它東西都收起來。坐姿端正，手背後面，就可以加１分。')">📚 上課準備</button>
                 <button class="marquee-phrase" onclick="chooseMarqueePhrase('請專心聆聽，輪到你時再發言。')">👂 專心聆聽</button>
                 <button class="marquee-phrase" onclick="chooseMarqueePhrase('舉手發言，尊重每一位同學。')">🙋 舉手發言</button>
                 <button class="marquee-phrase" onclick="chooseMarqueePhrase('小組合作，互相幫忙，一起完成任務！')">🤝 小組合作</button>
@@ -612,7 +652,51 @@
             <div id="custom-marquee-phrases" class="marquee-phrases" aria-live="polite"></div>
         </section>
         <section id="version-history-panel" hidden aria-label="版本歷史紀錄">
+            <article class="version-entry"><strong>v6.0.3｜調整作業日期與統計列並強化已繳交顏色</strong><p>更新日期：2026-10-27 22:45</p><p>作業日期與全班人數、已繳交、尚未登記、繳交率改為同一列呈現；已繳交學生卡片以綠色底色、邊框與文字明顯標示。</p></article>
+            <article class="version-entry"><strong>v6.0.3｜修正作業繳交頁面空白</strong><p>更新日期：2026-10-27 22:19</p><p>修正切換至「作業繳交」時未呼叫 renderHomeworkBoard() 的問題；現在進入頁面會顯示建立作業提示或既有作業卡片。</p></article>
+            <article class="version-entry"><strong>v6.0.0｜新增獨立作業繳交記錄（第一版草稿）</strong><p>更新日期：2026-10-27 21:58</p><p>新增獨立作業繳交畫面、男女生區域卡片、作業建立與切換、繳交確認、未交統計及設定內的學生／老師模式。作業資料使用本機儲存並納入 tab_class_ 前綴備份設計；此版供初步試用與討論。</p></article>
+            <article class="version-entry"><strong>v5.3.55｜強化 JSON 完整備份與匯入復原</strong><p>更新日期：2026-10-27 21:29</p><p>補入目前跑馬燈文字備份；明確納入非 tab_class_ 的應用資料；擴大匯入失敗回復範圍，避免寫入後驗證或畫面套用失敗時留下半套資料。</p></article>
+            <article class="version-entry"><strong>v5.3.54｜確認座位表語音並統一減分級距</strong><p>更新日期：2026-10-27 21:09</p><p>座位表加減分沿用個人計分語音模式；個人、分組與座位表每次減分均為１分。</p></article>
+            <article class="version-entry"><strong>v5.3.53｜工作計分語音與減分級距調整</strong><p>更新日期：2026-10-27 21:07</p><p>加減分播報沿用全域語音模式；個人、分組及座位表的減分按鈕統一每次減１分。</p></article>
+            <article class="version-entry"><strong>v5.3.52｜新增全域音效模式切換</strong><p>更新日期：2026-10-27 20:52</p><p>新增原有歡呼聲、姓名分數播報、全部關閉三種模式；關閉時抽籤亦靜音。</p></article>
+            <article class="version-entry"><strong>v5.3.51｜更新歡迎跑馬燈預設內容</strong><p>更新日期：2026-10-27 20:37</p><p>預設歡迎語改為鼓勵學生準備上課、認真學習並持續進步。</p></article>
+            <article class="version-entry"><strong>v5.3.49｜恢復每日資訊長條英文顯示</strong><p>更新日期：2026-10-27 20:11</p><p>每日資訊長條恢復節日、天氣、每日英文輪播；佳句重抽留在跑馬燈功能，不再取代英文。</p></article>
+            <article class="version-entry"><strong>v5.3.48｜每日諺語佳句自動更新與手動重抽</strong><p>更新日期：2026-10-27 20:05</p><p>每日資訊輪播新增諺語、人生佳句、四年級英文與格言；每日固定一句，按鈕可手動重抽並保留當日選擇。</p></article>
+            <article class="version-entry"><strong>v5.3.47｜交換跑馬燈與每日資訊長條位置</strong><p>更新日期：2026-10-27 20:20</p><p>跑馬燈移至最上方工具列長條位置；節日、天氣與每日英文移至標題列原跑馬燈位置。</p></article>
+            <article class="version-entry"><strong>v5.3.46｜重設選單改為舊班、新班、Exit</strong><p>更新日期：2026-10-27 20:10</p><p>移除轉盤重設；舊班清分數與獎牌但保留名單分組，新班清空班級資料，Exit 關閉選單。</p></article>
+            <article class="version-entry"><strong>v5.3.45｜修正重設選單定位與遮擋</strong><p>更新日期：2026-10-27 20:00</p><p>重設選單移至頁面主層顯示，強制固定定位並限制視窗內高度，避免跑到頁面右上角或被工具列遮住。</p></article>
+            <article class="version-entry"><strong>v5.3.44｜修正重設選單被遮擋</strong><p>更新日期：2026-10-27 19:50</p><p>重設選單改用固定定位並依按鈕位置顯示，避免被頂部工具列或面板裁切。</p></article>
+            <article class="version-entry"><strong>v5.3.43｜修正工具列點擊後文字回復圖示</strong><p>更新日期：2026-10-27 19:40</p><p>修正切換跑馬燈或版本歷史時，按鈕文字又變回中文的問題，固定只顯示圖示。</p></article>
+            <article class="version-entry"><strong>v5.3.42｜頂部工具列改為純圖示</strong><p>更新日期：2026-10-27 19:30</p><p>頂部跑馬燈、顯示切換與版本歷史按鈕固定只顯示圖示，點擊後不再出現中文文字。</p></article>
+            <article class="version-entry"><strong>v5.3.41｜開始抽籤自動收合設定</strong><p>更新日期：2026-10-27 19:20</p><p>設定完成按下 START 後，自動收合抽籤設定面板，方便查看轉盤與抽籤結果。</p></article>
+            <article class="version-entry"><strong>v5.3.40｜Start 縮短並將 Reset 移至右側</strong><p>更新日期：2026-10-27 19:10</p><p>抽籤主按鈕縮短為 START，Reset 移到其右側並排顯示。</p></article>
+            <article class="version-entry"><strong>v5.3.39｜抽籤轉盤新增 Reset 重設</strong><p>更新日期：2026-10-27 19:00</p><p>抽籤頁右上新增 Reset，可清除抽籤紀錄與主題、恢復預設抽籤設定，不影響學生名單及分數。</p></article>
+            <article class="version-entry"><strong>v5.3.38｜日期時間改為英文格式</strong><p>更新日期：2026-10-27 18:55</p><p>左上角改為月／日、英文星期縮寫及 24 小時制時間，例如 10/27 TUE 18:50。</p></article>
+            <article class="version-entry"><strong>v5.3.37｜新增節日天氣英文每日一句</strong><p>更新日期：2026-10-27 18:50</p><p>右上角輪播台灣／西洋節日提醒、台北即時天氣及國小四年級每日英文句子。</p></article>
+            <article class="version-entry"><strong>v5.3.36｜時間加入月日並簡化版本標示</strong><p>更新日期：2026-10-27 18:40</p><p>左上角時間增加月日與星期；頁首版本標示移除「目前版本」四字。</p></article>
+            <article class="version-entry"><strong>v5.3.35｜頂列不換行並改用圖示按鈕</strong><p>更新日期：2026-10-27 18:30</p><p>窄畫面頂列維持單行可橫向捲動；跑馬燈顯示切換及 JSON、Excel 匯出與匯入改為圖示按鈕。</p></article>
+            <article class="version-entry"><strong>v5.3.34｜同步修正瀏覽器分頁版本</strong><p>更新日期：2026-10-27 18:20</p><p>修正瀏覽器分頁標題仍顯示 v5.3.27 的問題，與檔名及頁首版本同步。</p></article>
+            <article class="version-entry"><strong>v5.3.33｜修正目前版本標示</strong><p>更新日期：2026-10-27 18:15</p><p>修正頁首目前版本仍顯示舊版的問題，與實際檔案版本一致。</p></article>
+            <article class="version-entry"><strong>v5.3.32｜縮小加減按鈕放大姓名分數</strong><p>更新日期：2026-10-27 18:10</p><p>個人計分板的加減按鈕縮小，學生姓名與分數放大，方便辨識。</p></article>
+            <article class="version-entry"><strong>v5.3.31｜調整座位表說明與排列用語</strong><p>更新日期：2026-10-27 18:00</p><p>移除座位表上方說明，改放於下方設定區；統一使用直向為排、橫向為列。</p></article>
+            <article class="version-entry"><strong>v5.3.30｜匯入提示 1 秒淡出</strong><p>更新日期：2026-10-27 17:36</p><p>匯入成功提示改為 1 秒後淡出，保留 0.3 秒淡出動畫。</p></article>
+
+            <article class="version-entry"><strong>v5.3.29｜縮短提示並允許選擇匯出位置</strong><p>更新日期：2026-10-27 17:30</p><p>匯入提示 3 秒後淡出；JSON 與 Excel 匯出可選擇儲存資料夾。</p></article>
+            <article class="version-entry"><strong>v5.3.28｜匯入完成自動展開計分板</strong><p>更新日期：2026-10-27 17:28</p><p>匯入完成後自動展開計分板，避免畫面停留在空白區。</p></article>
             
+            <article class="version-entry"><strong>v5.3.27｜修正匯入提示停留與遮擋</strong><p>更新日期：2026-10-27 17:23</p><p>匯入結果提示 6 秒後自動消失，且不阻擋畫面操作。</p></article>
+            <article class="version-entry"><strong>v5.3.26｜移除匯入後第二個提示視窗</strong><p>更新日期：2026-10-27 17:19</p><p>匯入只保留一次確認，成功結果改為頁面提示。</p></article>
+            <article class="version-entry"><strong>v5.3.25｜匯入後立即套用並顯示結果</strong><p>更新日期：2026-10-27 17:42</p><p>匯入後立即更新學生畫面，並提示實際寫入人數與分數合計。</p></article>
+            <article class="version-entry"><strong>v5.3.24｜修正鎖定狀態匯入無反應</strong><p>更新日期：2026-10-27 17:14</p><p>鎖定時允許匯入按鈕、檔案選取與確認視窗正常操作。</p></article>
+            <article class="version-entry"><strong>v5.3.23｜修正男女集體加分滑桿</strong><p>更新日期：2026-10-27 16:32</p><p>男女滑桿預設 1 分，各自記住位置，加減分後不互相重設。</p></article>
+            <article class="version-entry"><strong>v5.3.22｜修正匯入確認視窗層級</strong><p>更新日期：2026-10-27 16:50</p><p>提高匯入確認視窗層級，避免被其他固定面板或遮罩遮住。</p></article>
+            <article class="version-entry"><strong>v5.3.21｜簡化匯入並驗證詞條還原</strong><p>更新日期：2026-10-27 16:32</p><p>移除重複待套用流程，匯入後驗證詞條並顯示還原結果。</p></article>
+            <article class="version-entry"><strong>v5.3.20｜修正匯入後詞條顯示</strong><p>更新日期：2026-10-27 10:18</p><p>加強載入時機與匯入結果提示，重新確認自訂詞條是否顯示。</p></article>
+            <article class="version-entry"><strong>v5.3.19｜修正版本標示與詞條備份流程</strong><p>更新日期：2026-10-27 10:10</p><p>更新畫面版本號，匯出時直接讀取自訂詞條儲存值並驗證。</p></article>
+            <article class="version-entry"><strong>v5.3.18｜完整檢查自訂詞條匯出匯入</strong><p>更新日期：2026-10-27 10:07</p><p>統一詞條匯出、匯入、寫入驗證與重載套用，並記錄匯入詞條數。</p></article>
+            <article class="version-entry"><strong>v5.3.17｜修正自訂詞條匯入套用</strong><p>更新日期：2026-10-27 10:01</p><p>重新載入時一併套用自訂詞條，避免匯入後詞條未還原。</p></article>
+            <article class="version-entry"><strong>v5.3.16｜匯入確認整合為單一視窗</strong><p>更新日期：2026-10-27 09:53</p><p>匯入只顯示一次確認視窗，預設焦點為取消，提供取消與確定按鈕。</p></article>
+            <article class="version-entry"><strong>v5.3.15｜修正自製詞條匯出匯入</strong><p>更新日期：2026-10-27 09:05</p><p>自製跑馬燈詞條納入 JSON 備份與匯入，修正還原後詞條不顯示。</p></article>
             <article class="version-entry"><strong>v5.3.14｜抽籤設定改用水平滑桿</strong><p>更新日期：2026-10-27 00:11</p><p>連抽次數、抽籤方式與範圍改用滑桿，預設為抽1次、不重複、全班。</p></article>
             <article class="version-entry"><strong>v5.3.13｜集體加減分改用水平滑桿</strong><p>更新日期：2026-10-27 00:11</p><p>男女生集體加減分改用 1 至 10 分水平滑桿，拖動即可選擇分數。</p></article>
             <article class="version-entry"><strong>v5.3.12｜抽籤僅保留圖示並調整匯出入位置</strong><p>更新日期：2026-10-26 23:20</p><p>抽籤按鈕固定顯示圖示，匯出 JS、匯出 EXCEL 與匯入移至上排右側。</p></article>
@@ -634,6 +718,12 @@
             <article class="version-entry"><strong>v5.2.6｜自訂詞條按鈕化並置於內建詞條後</strong><p>更新日期：2026-10-26 22:03</p><p>自訂詞條改用不同底色的名稱按鈕，排列於內建詞條之後。</p></article>
             <article class="version-entry"><strong>v5.2.5｜可自訂跑馬燈詞條</strong><p>更新日期：2026-10-26 20:57</p><p>新增詞條名稱與內容管理，可新增、編輯、刪除並保存自訂詞條。</p></article>
             <h2>📚 版本歷史紀錄</h2>
+            <article class="version-entry"><strong>v5.3.54｜確認座位表語音並統一減分級距</strong><p>更新日期：2026-10-27 21:09</p><p>座位表加減分沿用個人計分語音模式；個人、分組與座位表每次減分均為１分。</p></article>
+            <article class="version-entry"><strong>v5.3.53｜工作計分語音與減分級距調整</strong><p>更新日期：2026-10-27 21:07</p><p>加減分播報沿用全域語音模式；個人、分組及座位表的減分按鈕統一每次減１分。</p></article>
+            <article class="version-entry"><strong>v5.3.52｜新增全域音效模式切換</strong><p>更新日期：2026-10-27 20:52</p><p>新增原有歡呼聲、姓名分數播報、全部關閉三種模式；關閉時抽籤亦靜音。</p></article>
+            <article class="version-entry"><strong>v5.3.51｜更新歡迎跑馬燈預設內容</strong><p>更新日期：2026-10-27 20:37</p><p>預設歡迎語改為鼓勵學生準備上課、認真學習並持續進步。</p></article>
+            <article class="version-entry"><strong>v5.3.50｜更新上課準備跑馬燈內容</strong><p>更新日期：2026-10-27 20:25</p><p>新增收好其他物品、坐姿端正及手背後面可加１分的提醒。</p></article>
+            
             <p class="version-history-intro">依版本號由新到舊排列；展開版本可查看修改紀錄。</p>
             <details open class="version-group"><summary>v5 版本</summary>
                 <article class="version-entry"><strong>v5.2.4｜新增課堂跑馬燈與詞條選單</strong><p>更新日期：2026-10-26 20:57</p><p>標題旁新增跑馬燈，可自訂文字或選用固定詞條。</p></article>
@@ -670,6 +760,13 @@
                 </div>
             </div>
             <div id="settings-panel" hidden>
+                <div class="settings-section-title">📚 作業繳交權限</div>
+                <p class="settings-hint">學生模式用於學生登記；老師模式可新增作業、修正任何學生紀錄。此模式切換不設密碼，主要用於避免日常誤觸。</p>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 14px;">
+                    <button type="button" id="homework-student-mode-setting" class="settings-save" onclick="setHomeworkMode('student')">👩‍🎓 學生模式</button>
+                    <button type="button" id="homework-teacher-mode-setting" class="settings-save" onclick="setHomeworkMode('teacher')">🧑‍🏫 老師模式</button>
+                </div>
+                
                 <section id="operation-lock-settings" class="operation-lock-settings">
                     <div class="operation-lock-heading"><strong>🔐 課堂操作鎖定</strong><span id="operation-lock-status" class="lock-status">🔒 鎖定中</span></div>
                     <p class="settings-hint">鎖定時，分數、名單、分組、座位表及所有設定均不可修改；抽籤轉盤仍可使用。</p>
@@ -754,7 +851,10 @@
             <div class="wheel-top"><h2>🎡 課堂抽籤轉盤</h2><button class="wheel-close" onclick="closeWheel()" aria-label="關閉轉盤">×</button></div>
             <div class="wheel-stage"><div class="wheel-pointer"></div><canvas id="wheel-canvas" width="600" height="600"></canvas></div>
             <div class="wheel-controls">
-                <button id="spin-btn" onclick="toggleSpinWheel()">START｜開始抽籤</button>
+                <div id="wheel-primary-actions" style="display:flex;align-items:stretch;gap:8px;width:100%;">
+                    <button id="spin-btn" onclick="toggleSpinWheel()" style="flex:1;min-width:0;width:auto;padding:10px 12px;font-size:17px;">START</button>
+                    <button type="button" id="wheel-page-reset-btn" onclick="resetWheelPageToInitial()" title="本頁所有內容回到初始值" aria-label="Reset 重設抽籤頁面" style="flex:0 0 84px;width:84px;border:0;border-radius:8px;padding:8px 10px;background:#d84343;color:#fff;font-size:16px;font-weight:bold;cursor:pointer;">Reset</button>
+                </div>
                 <button type="button" id="wheel-settings-toggle" onclick="toggleWheelSettings()" style="width:100%;padding:10px;border:0;border-radius:8px;background:#e8eaf6;color:#303f75;font-weight:bold;font-size:16px;">⚙️ 抽籤設定 ＋</button>
                 <div id="wheel-settings-panel" hidden style="width:100%;box-sizing:border-box;padding:10px;border:1px solid #d7dbea;border-radius:9px;background:#fafaff;gap:8px;flex-direction:column;">
                     <label for="wheel-draw-count" style="font-weight:bold;text-align:left;">連抽次數：<output id="wheel-draw-count-value" for="wheel-draw-count">抽 1 次</output></label>
@@ -792,27 +892,9 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script>
-        // 匯入保險：在任何學生資料被讀取之前，先套用上一輪匯入暫存，避免舊頁面狀態覆蓋匯入值。
-        try {
-            const pendingImportRaw = localStorage.getItem('tab_class_pending_import_v1');
-            if (pendingImportRaw) {
-                const pendingImport = JSON.parse(pendingImportRaw);
-                const pendingEntries = pendingImport && pendingImport.entries;
-                if (pendingEntries && typeof pendingEntries === 'object') {
-                    Object.entries(pendingEntries).forEach(([key, value]) => {
-                        if (key.startsWith('tab_class_') && value != null) {
-                            localStorage.setItem(key, typeof value === 'string' ? value : JSON.stringify(value));
-                        }
-                    });
-                    if (pendingImport.fileName) {
-                        localStorage.setItem('tab_class_import_report_v1', JSON.stringify({ fileName: pendingImport.fileName, importedAt: pendingImport.importedAt || new Date().toISOString() }));
-                    }
-                }
-                localStorage.removeItem('tab_class_pending_import_v1');
-            }
-        } catch (pendingImportError) {
-            console.error('套用待匯入備份失敗：', pendingImportError);
-        }
+        // v5.3.21：匯入改為單次寫入，不再使用重載後重複套用的 pending import。
+        // 清理舊版留下的一次性暫存，避免舊資料在啟動時覆蓋目前資料。
+        try { localStorage.removeItem('tab_class_pending_import_v1'); } catch (e) { console.warn('清理舊版匯入暫存失敗：', e); }
         // 男生 1–17、女生 21–32；沿用舊版儲存的同號分數
         const defaultStudents = [
             ...Array.from({ length: 17 }, (_, i) => ({ name: String(i + 1), score: 0, gender: '男生' })),
@@ -897,7 +979,16 @@
                 const silverSum = teams.reduce((sum, student) => sum + (Number(student.silver) || 0), 0);
                 const goldSum = teams.reduce((sum, student) => sum + (Number(student.gold) || 0), 0);
                 const blackCardSum = teams.reduce((sum, student) => sum + (Number(student.blackCard) || 0), 0);
-                setTimeout(() => alert('匯入載入確認（' + report.fileName + '）\n學生：' + teams.length + ' 位\n目前分數合計：' + scoreSum + '\n銀牌：' + silverSum + ' 面\n金牌：' + goldSum + ' 面\n黑卡：' + blackCardSum + ' 張\n\n若數字與備份內容不同，請把這個結果告訴我。'), 150);
+                // 成功結果使用非阻擋式頁面提示，不再跳出第二個對話框。
+                const status = document.createElement('div');
+                status.setAttribute('role', 'status');
+                status.style.cssText = 'position:fixed;z-index:2147483646;top:16px;left:50%;transform:translateX(-50%);width:min(520px,calc(100% - 28px));box-sizing:border-box;padding:14px 18px;border-radius:12px;background:#e8f5e9;color:#1b5e20;border:1px solid #a5d6a7;box-shadow:0 5px 20px rgba(0,0,0,.18);font-size:15px;line-height:1.6;pointer-events:none;transition:opacity .35s ease;';
+                status.textContent = '匯入成功：' + (report.fileName || 'JSON 備份') + '；已載入 ' + teams.length + ' 位學生，個人分數合計 ' + scoreSum + ' 分。';
+                document.body.appendChild(status);
+                // 匯入完成後自動展開計分板，避免只看到提示與右側「個人紀錄」按鈕。
+                try { const panel = document.getElementById('side-panel'); if (panel) panel.classList.add('open'); } catch (panelErr) { console.warn('匯入後展開計分板失敗：', panelErr); }
+                // 提示只短暫顯示，不阻擋操作，避免看起來像頁面卡住。
+                setTimeout(() => { status.style.opacity = '0'; setTimeout(() => status.remove(), 300); }, 1000);
             }
         } catch (e) { console.error('讀取匯入結果紀錄失敗：', e); }
         let previousState = null;
@@ -910,7 +1001,28 @@
             const pad = n => String(n).padStart(2, '0');
             return `${safeTitle}_${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}_${pad(d.getHours())}${pad(d.getMinutes())}`;
         }
-        function downloadBlob(blob, filename) {
+        async function downloadBlob(blob, filename) {
+            // 新版 Chrome 等支援的瀏覽器會開啟另存新檔視窗，可自行選擇資料夾。
+            if (typeof window.showSaveFilePicker === 'function') {
+                try {
+                    const isJson = filename.toLowerCase().endsWith('.json');
+                    const handle = await window.showSaveFilePicker({
+                        suggestedName: filename,
+                        types: [{ description: isJson ? 'JSON 備份檔' : 'Excel 成績檔',
+                            accept: isJson ? { 'application/json': ['.json'] } : { 'application/vnd.ms-excel': ['.xls'] } }]
+                    });
+                    const writable = await handle.createWritable();
+                    await writable.write(blob);
+                    await writable.close();
+                    return;
+                } catch (err) {
+                    // 使用者取消另存新檔就不執行下載。
+                    if (err && err.name === 'AbortError') return;
+                    console.warn('另存新檔失敗：', err);
+                    alert('無法開啟選擇儲存位置視窗，將改用瀏覽器下載設定。請在 Chrome 設定中開啟「下載前詢問每個檔案的儲存位置」。');
+                }
+            }
+            // 不支援選擇位置 API 的瀏覽器，仍依瀏覽器下載設定處理。
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a'); a.href = url; a.download = filename;
             document.body.appendChild(a); a.click(); a.remove();
@@ -949,6 +1061,19 @@
             data.tab_class_group_contributions = JSON.stringify(groupContributions);
             data.tab_class_group_contribution_totals = JSON.stringify(groupContributionTotals);
             data.tab_class_board_title = document.getElementById('board-title-display')?.textContent || '四１課堂計分板';
+            // 目前跑馬燈文字使用非 tab_class_ key，明確納入完整備份。
+            data.classMarqueeText = localStorage.getItem('classMarqueeText') ?? (document.getElementById('class-marquee-track')?.textContent || '');
+            // 自製跑馬燈詞條使用獨立 key，明確加入 JSON 備份，避免匯出時遺漏。
+            try {
+                // 以 localStorage 原始值為準，避免畫面讀取函式在解析失敗時回傳空陣列，造成備份靜默遺失詞條。
+                const rawCustomPhrases = localStorage.getItem('classCustomMarqueePhrases_v1');
+                const liveCustomPhrases = rawCustomPhrases == null || rawCustomPhrases === '' ? [] : JSON.parse(rawCustomPhrases);
+                if (!Array.isArray(liveCustomPhrases)) throw new Error('自訂詞條儲存格式不是陣列，請先檢查詞條資料，未產生備份。');
+                data.classCustomMarqueePhrases_v1 = JSON.stringify(liveCustomPhrases);
+            } catch (e) {
+                alert('自訂詞條資料讀取失敗，無法確認備份完整性，因此已停止匯出。\n' + (e && e.message ? e.message : '資料格式錯誤'));
+                throw e;
+            }
             // 抽籤紀錄也明確寫入 JSON 完整備份，確保新功能的紀錄能隨備份還原。
             try { data.tab_class_wheel_topic_records_v1 = JSON.stringify(Array.isArray(wheelTopicRecords) ? wheelTopicRecords : JSON.parse(localStorage.getItem('tab_class_wheel_topic_records_v1') || '[]')); } catch (e) { data.tab_class_wheel_topic_records_v1 = localStorage.getItem('tab_class_wheel_topic_records_v1') || '[]'; }
             // 復原快照也必須與本次匯出的目前狀態一致，避免匯入後「還原」跳回另一個視窗的舊資料。
@@ -963,10 +1088,10 @@
             });
             return data;
         }
-        function exportJsonBackup() {
+        async function exportJsonBackup() {
             const payload = { format: 'class-scoreboard-backup', version: 1, exportedAt: new Date().toISOString(), boardTitle: document.getElementById('board-title-display')?.textContent || '課堂計分板', localStorage: appStorageSnapshot() };
             const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json;charset=utf-8'});
-            downloadBlob(blob, exportBaseName() + '.json');
+            await downloadBlob(blob, exportBaseName() + '.json');
         }
         function importJsonBackup(event) {
             const input = event && event.target;
@@ -981,7 +1106,10 @@
                 if (input) input.value = '';
                 alert('無法讀取檔案：' + fileName + '。請確認檔案存在且可正常開啟。');
             };
-            reader.onload = () => {
+            reader.onload = async () => {
+                // 跨越寫入、驗證、畫面套用等整個匯入流程的回復快照。
+                const importRollback = new Map();
+                let importMutationStarted = false;
                 try {
                     const payload = JSON.parse(String(reader.result || ''));
                     let source = payload && (payload.localStorage || payload.storage || payload.data);
@@ -1043,24 +1171,42 @@
                     data.tab_class_medal_undo_snapshot_v1 = JSON.stringify({
                         students: parsedTeams.map(student => ({ id: student.id, name: student.name, silver: Number(student.silver) || 0, gold: Number(student.gold) || 0, blackCard: Number(student.blackCard) || 0 }))
                     });
-                    const entries = Object.entries(data).filter(([key, value]) => key.startsWith('tab_class_') && value != null);
+                    // 自製跑馬燈詞條的 key 不以 tab_class_ 開頭，需另外納入匯入清單。
+                    const customPhrasesKey = 'classCustomMarqueePhrases_v1';
+                    let importedCustomPhrases = data[customPhrasesKey];
+                    // 相容早期備份：詞條可能放在最外層，或使用舊欄位名稱。
+                    if (importedCustomPhrases == null) importedCustomPhrases = payload[customPhrasesKey] ?? data.customMarqueePhrases ?? payload.customMarqueePhrases ?? payload.customPhrases;
+                    if (importedCustomPhrases == null) importedCustomPhrases = '[]';
+                    if (typeof importedCustomPhrases === 'string') importedCustomPhrases = JSON.parse(importedCustomPhrases);
+                    if (!Array.isArray(importedCustomPhrases)) throw new Error('自製詞條格式不正確，備份未匯入。');
+                    importedCustomPhrases = importedCustomPhrases.filter(p => p && typeof p === 'object' && String(p.name ?? '').trim() && String(p.content ?? '').trim()).map(p => ({ name: String(p.name).trim(), content: String(p.content).trim() }));
+                    data[customPhrasesKey] = JSON.stringify(importedCustomPhrases);
+                    const explicitAppKeys = new Set([customPhrasesKey, 'classMarqueeText']);
+                    const entries = Object.entries(data).filter(([key, value]) => (key.startsWith('tab_class_') || explicitAppKeys.has(key)) && value != null);
                     if (!entries.some(([key]) => key === 'tab_class_teams_29')) throw new Error('備份中沒有學生資料。');
-                    if (!confirm('準備匯入「' + fileName + '」。\n學生人數：' + parsedTeams.length + '\n備份資料項目：' + entries.length + '\n\n匯入會覆蓋目前資料，建議先匯出備份。確定繼續嗎？')) {
+                    const shouldImport = await showImportConfirmDialog('準備匯入「' + fileName + '」。\n學生人數：' + parsedTeams.length + '\n備份資料項目：' + entries.length + '\n\n匯入會覆蓋目前資料，建議先匯出備份。');
+                    if (!shouldImport) {
                         if (input) input.value = '';
                         return;
                     }
 
-                    // 先寫入所有備份鍵，逐一讀回驗證；驗證失敗時清楚提示，不假裝成功。
-                    const previousValues = new Map();
+                    // 先快照所有將被更動的資料，再寫入並逐一讀回驗證。
+                    const previousValues = importRollback;
                     try {
+                        entries.forEach(([key]) => { previousValues.set(key, localStorage.getItem(key)); });
+                        previousValues.set('tab_class_import_report_v1', localStorage.getItem('tab_class_import_report_v1'));
+                        previousValues.set('tab_class_pending_import_v1', localStorage.getItem('tab_class_pending_import_v1'));
+                        importMutationStarted = true;
                         entries.forEach(([key, value]) => {
-                            previousValues.set(key, localStorage.getItem(key));
                             const serialized = typeof value === 'string' ? value : JSON.stringify(value);
                             localStorage.setItem(key, serialized);
                             if (localStorage.getItem(key) !== serialized) throw new Error('資料寫入驗證失敗：' + key);
                         });
                         const verifyTeams = JSON.parse(localStorage.getItem('tab_class_teams_29') || 'null');
                         if (!Array.isArray(verifyTeams) || verifyTeams.length !== parsedTeams.length) throw new Error('學生名單寫入後驗證不符。');
+                        const verifyCustomPhrases = JSON.parse(localStorage.getItem(customPhrasesKey) || '[]');
+                        if (!Array.isArray(verifyCustomPhrases) || verifyCustomPhrases.length !== importedCustomPhrases.length) throw new Error('自製詞條寫入後驗證不符，匯入已取消並回復原資料。');
+                        if (JSON.stringify(verifyCustomPhrases) !== JSON.stringify(importedCustomPhrases)) throw new Error('自製詞條內容驗證不符，匯入已取消並回復原資料。');
                         const expectedScoreSum = parsedTeams.reduce((sum, student) => sum + (Number(student.score) || 0), 0);
                         const writtenScoreSum = verifyTeams.reduce((sum, student) => sum + (Number(student.score) || 0), 0);
                         if (expectedScoreSum !== writtenScoreSum) throw new Error(`分數寫入驗證不符：備份 ${expectedScoreSum} 分，寫入 ${writtenScoreSum} 分。`);
@@ -1073,6 +1219,7 @@
                             silverSum: verifyTeams.reduce((sum, student) => sum + (Number(student.silver) || 0), 0),
                             goldSum: verifyTeams.reduce((sum, student) => sum + (Number(student.gold) || 0), 0),
                             blackCardSum: verifyTeams.reduce((sum, student) => sum + (Number(student.blackCard) || 0), 0),
+                            customPhraseCount: verifyCustomPhrases.length,
                             keysWritten: entries.length
                         }));
                     } catch (writeErr) {
@@ -1082,17 +1229,36 @@
                         }
                         throw writeErr;
                     }
-                    // 將匯入內容再存成一次性待套用資料；重載後會在讀取 teams 之前再次寫入。
-                    const pendingEntries = {};
-                    entries.forEach(([key, value]) => { pendingEntries[key] = value; });
-                    localStorage.setItem('tab_class_pending_import_v1', JSON.stringify({ fileName, importedAt: new Date().toISOString(), entries: pendingEntries }));
+                    // 單次寫入策略：不再建立 pending_import，避免重載時第二次套用舊資料。
+                    // 若有舊版殘留的暫存，成功寫入後清除，避免下一次啟動覆蓋本次結果。
+                    localStorage.removeItem('tab_class_pending_import_v1');
+                    const finalPhrases = JSON.parse(localStorage.getItem(customPhrasesKey) || '[]');
+                    if (JSON.stringify(finalPhrases) !== JSON.stringify(importedCustomPhrases)) {
+                        throw new Error('自製詞條最後確認失敗；已嘗試回復匯入前資料。');
+                    }
+                    // 先將已驗證的匯入名單直接套用到目前記憶體與畫面，避免只靠重新載入才更新。
+                    teams = JSON.parse(localStorage.getItem('tab_class_teams_29') || '[]');
+                    if (!Array.isArray(teams) || teams.length !== parsedTeams.length) throw new Error('匯入已寫入，但畫面套用學生名單時驗證失敗。');
+                    if (typeof renderList === 'function') renderList();
+                    if (typeof renderStatsBoard === 'function') renderStatsBoard();
+                    if (typeof renderGroupScoreBoard === 'function') renderGroupScoreBoard();
+                    if (typeof renderCustomMarqueePhrases === 'function') renderCustomMarqueePhrases();
+                    const appliedScoreSum = teams.reduce((sum, student) => sum + (Number(student.score) || 0), 0);
+                    const resultMessage = '匯入資料已寫入並套用。\n學生人數：' + teams.length + ' 人\n個人分數合計：' + appliedScoreSum + ' 分\n來源檔案：' + fileName;
+                    console.info(resultMessage);
                     if (input) input.value = '';
-                    alert('備份已寫入並驗證成功，即將重新載入。系統會在載入學生資料前再次套用備份，並顯示實際讀到的分數與獎牌總數。');
+                    // 成功時不再跳出第二個 alert；重新載入後由匯入報告顯示非阻擋式提示。
                     location.reload();
                 } catch (err) {
+                    // 若寫入後的最後驗證或畫面套用失敗，也一併回復匯入前的所有相關值。
+                    if (importMutationStarted) {
+                        for (const [key, oldValue] of importRollback.entries()) {
+                            try { if (oldValue === null) localStorage.removeItem(key); else localStorage.setItem(key, oldValue); } catch (rollbackErr) { console.error('匯入回復失敗：' + key, rollbackErr); }
+                        }
+                    }
                     console.error('JSON 匯入失敗：', err);
                     if (input) input.value = '';
-                    alert('匯入失敗：' + (err && err.message ? err.message : '檔案格式不正確') + '\n目前資料沒有被刻意清除。請確認選取的是 JSON 備份檔。');
+                    alert('匯入失敗：' + (err && err.message ? err.message : '檔案格式不正確') + '\n已嘗試回復匯入前資料。若畫面曾短暫更新，請重新整理後確認。');
                 }
             };
             reader.readAsText(file, 'utf-8');
@@ -1107,7 +1273,7 @@
         function excelSheet(name, rows) {
             return `<Worksheet ss:Name="${xmlEscape(name).slice(0,31)}"><Table>${rows.map(row=>`<Row>${row.map(v=>Array.isArray(v) ? excelCell(v[0],v[1]) : excelCell(v)).join('')}</Row>`).join('')}</Table></Worksheet>`;
         }
-        function exportExcelGrades() {
+        async function exportExcelGrades() {
             ensureGroupRoles();
             const contribution = student => Number(groupContributions[student.id] ?? groupContributions[student.name] ?? 0) || 0;
             const memberGroup = new Map();
@@ -1162,7 +1328,7 @@
             }
             const workbook = `<?xml version="1.0"?><Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet" xmlns:html="http://www.w3.org/TR/REC-html40">${excelSheet('學生總成績',studentRows)}${excelSheet('分組成績',groupRows)}${excelSheet('識別碼參照表',refRows)}${excelSheet('座位表',seatSheetRows)}${excelSheet('抽籤紀錄',wheelRows)}</Workbook>`;
             // Excel 可直接開啟的多工作表 SpreadsheetML 活頁簿（.xls）。
-            downloadBlob(new Blob(['\ufeff', workbook], {type:'application/vnd.ms-excel;charset=utf-8'}), exportBaseName() + '.xls');
+            await downloadBlob(new Blob(['\ufeff', workbook], {type:'application/vnd.ms-excel;charset=utf-8'}), exportBaseName() + '.xls');
         }
 
         function createNewClass() {
@@ -1204,14 +1370,65 @@
 
         function toggleWheelResetMenu() {
             const menu = document.getElementById('wheel-reset-menu');
+            const button = document.getElementById('wheel-reset-btn');
             menu.hidden = !menu.hidden;
-            if (menu.hidden) document.getElementById('old-class-reset-options').hidden = true;
+            if (menu.hidden) {
+                document.getElementById('old-class-reset-options').hidden = true;
+                return;
+            }
+
+            // 將選單移至 body，避免被工具列、標題列或其他祖先容器裁切。
+            if (menu.parentElement !== document.body) document.body.appendChild(menu);
+            const rect = button.getBoundingClientRect();
+            const menuWidth = Math.min(300, Math.floor(window.innerWidth * 0.88));
+            menu.style.position = 'fixed';
+            menu.style.width = menuWidth + 'px';
+            menu.style.maxWidth = 'calc(100vw - 16px)';
+            menu.style.maxHeight = 'calc(100vh - 24px)';
+            menu.style.overflowY = 'auto';
+            menu.style.zIndex = '2147483647';
+            menu.style.left = Math.max(8, Math.min(rect.right - menuWidth, window.innerWidth - menuWidth - 8)) + 'px';
+            const estimatedHeight = Math.min(menu.scrollHeight || 220, window.innerHeight - 24);
+            let top = rect.bottom + 6;
+            if (top + estimatedHeight > window.innerHeight - 8) {
+                top = rect.top - estimatedHeight - 6;
+            }
+            top = Math.max(8, Math.min(top, window.innerHeight - estimatedHeight - 8));
+            menu.style.top = top + 'px';
+            menu.style.right = 'auto';
         }
         function showOldClassResetOptions() {
             document.getElementById('old-class-reset-menu');
             const options = document.getElementById('old-class-reset-options');
             options.hidden = !options.hidden;
         }
+        function exitResetMenu() {
+            const menu = document.getElementById('wheel-reset-menu');
+            if (menu) menu.hidden = true;
+            const options = document.getElementById('old-class-reset-options');
+            if (options) options.hidden = true;
+        }
+
+        function resetOldClassAllScores() {
+            if (!confirm('確定要重新計分嗎？所有學生個人分數、各組分數、分組加分及獎牌紀錄都會清空；學生名字、固定識別碼、分組與組長／副組長設定保留。')) return;
+            saveCurrentState();
+            teams.forEach(team => {
+                team.score = 0;
+                team.silver = 0;
+                team.gold = 0;
+                team.blackCard = 0;
+            });
+            groupScores = {};
+            groupContributions = {};
+            persistGroupData();
+            saveTeamsAndMedals();
+            renderList();
+            renderGroupScoreBoard();
+            renderStatsBoard();
+            exitResetMenu();
+            alert('已清空所有分數與獎牌紀錄；學生名字、分組及職務設定均已保留。');
+        }
+
         function resetPersonalScores() {
             if (!confirm('確定要將舊班所有學生的「個人分數」歸零嗎？學生名單、固定識別碼、分組、組長／副組長及分組分數都會保留。')) return;
             saveCurrentState();
@@ -1233,7 +1450,7 @@
             alert('各組分數與統計中的分組加分已歸零。');
         }
         function resetToNewClass() {
-            if (!confirm('⚠️ 新班將清除舊班學生名單、個人分數、固定識別碼對應、分組、組長／副組長及分組加分紀錄。此操作無法直接復原，建議先到「設定」匯出 JSON 備份。確定繼續嗎？')) return;
+            if (!confirm('⚠️ 新班重設將清除學生名字、個人分數、獎牌、固定識別碼、分組、組長／副組長及分組加分等所有班級記錄。此操作無法直接復原，建議先匯出 JSON 備份。確定繼續嗎？')) return;
             document.getElementById('wheel-reset-menu').hidden = true;
             document.getElementById('old-class-reset-options').hidden = true;
             createNewClass(true);
@@ -1617,6 +1834,7 @@
             if (currentBoardView === 'stats') renderStatsBoard();
             if (currentBoardView === 'seats') renderSeatBoard();
             if (currentBoardView === 'wheelRecords') renderWheelRecordsBoard();
+            if (currentBoardView === 'homework') renderHomeworkBoard();
             alert('分組名單已儲存！');
         }
 
@@ -1892,10 +2110,69 @@
             if (wheelSpinning) return;
             document.getElementById('wheel-overlay').classList.remove('open');
         }
+
+        function resetWheelPageToInitial() {
+            if (!confirm('確定要將抽籤轉盤本頁所有內容恢復初始值嗎？\n將清除本次抽中順序、主題名稱與主題記錄，並重設抽籤設定。此操作不會清除學生名單或計分。')) return;
+
+            // 停止目前抽籤計時，並重設轉盤運作狀態。
+            if (wheelSpinTimer) { clearInterval(wheelSpinTimer); wheelSpinTimer = null; }
+            if (wheelBatchTimer) { clearTimeout(wheelBatchTimer); wheelBatchTimer = null; }
+            wheelSpinning = false;
+            wheelBatchRemaining = 0;
+            wheelStopRequested = false;
+            wheelRotation = 0;
+            wheelDrawnIds = new Set();
+            wheelWinnerHistory = [];
+            wheelTopicRecords = [];
+            saveWheelTopicRecords();
+
+            // 抽籤設定回到預設值：抽 1 次、抽中後移除、全班。
+            wheelDrawMode = 'remove';
+            wheelDrawScope = 'all';
+            localStorage.setItem('tab_class_wheel_draw_mode_v1', 'remove');
+            localStorage.setItem('tab_class_wheel_draw_scope_v1', 'all');
+            const countSlider = document.getElementById('wheel-draw-count');
+            if (countSlider) countSlider.value = '1';
+            const countOutput = document.getElementById('wheel-draw-count-value');
+            if (countOutput) countOutput.textContent = '抽 1 次';
+            const modeSelect = document.getElementById('wheel-draw-mode');
+            if (modeSelect) modeSelect.value = 'remove';
+            const scopeSelect = document.getElementById('wheel-draw-scope');
+            if (scopeSelect) scopeSelect.value = 'all';
+            const modeSlider = document.getElementById('wheel-draw-mode-slider');
+            if (modeSlider) modeSlider.value = '0';
+            const scopeSlider = document.getElementById('wheel-draw-scope-slider');
+            if (scopeSlider) scopeSlider.value = '0';
+            const modeOutput = document.getElementById('wheel-draw-mode-value');
+            if (modeOutput) modeOutput.textContent = '抽中後移除（本輪不重複）';
+            const scopeOutput = document.getElementById('wheel-draw-scope-value');
+            if (scopeOutput) scopeOutput.textContent = '全班';
+            const topicInput = document.getElementById('wheel-topic');
+            if (topicInput) topicInput.value = '';
+            const result = document.getElementById('wheel-result');
+            if (result) result.textContent = '準備好了嗎？';
+            const spinButton = document.getElementById('spin-btn');
+            if (spinButton) { spinButton.textContent = 'START｜開始抽籤'; spinButton.disabled = false; }
+            const settingsPanel = document.getElementById('wheel-settings-panel');
+            if (settingsPanel) settingsPanel.hidden = true;
+            const settingsButton = document.getElementById('wheel-settings-toggle');
+            if (settingsButton) settingsButton.textContent = '⚙️ 抽籤設定 ＋';
+            renderWheelWinnerHistory();
+            renderWheelTopicRecords();
+            drawWheel();
+        }
         function toggleSpinWheel() {
             if (wheelSpinning) {
                 stopSpinWheel();
                 return;
+            }
+            // 按下 START 後自動收合抽籤設定，讓結果區更容易看到。
+            const settingsPanel = document.getElementById('wheel-settings-panel');
+            const settingsButton = document.getElementById('wheel-settings-toggle');
+            if (settingsPanel && !settingsPanel.hidden) {
+                settingsPanel.hidden = true;
+                settingsPanel.style.display = 'none';
+                if (settingsButton) settingsButton.textContent = '⚙️ 抽籤設定 ＋';
             }
             const requested = Math.max(1, Math.min(15, parseInt(document.getElementById('wheel-draw-count')?.value || '1', 10) || 1));
             const classSize = Array.isArray(teams) ? teams.length : 0;
@@ -2037,7 +2314,7 @@
         }
         let wheelAnnouncementToken = 0;
         function announceWheelWinner(name) {
-            if (!name) return;
+            if (!name || classroomSoundMode === 'off') return;
             const token = ++wheelAnnouncementToken;
             const synth = window.speechSynthesis;
             if (!synth || typeof SpeechSynthesisUtterance === 'undefined') {
@@ -2076,6 +2353,7 @@
             } catch (e) { playWheelWinnerCheer(); }
         }
         function playWheelWinnerCheer() {
+            if (classroomSoundMode === 'off') return;
             const ctx = getClassroomAudioContext();
             // 優先沿用計分板已有的觀眾歡呼音檔，播放 1.5 秒後停止。
             if (typeof classroomCheerAudio !== 'undefined' && classroomCheerAudio) {
@@ -2141,19 +2419,165 @@
             }
         }
 
-        // 左上角只顯示 24 小時制時間，例如：19:45
+        // 左上角顯示英文日期與時間，例如：10/27 TUE 18:50
         function updateDateTime() {
             const now = new Date();
             const hour24 = String(now.getHours()).padStart(2, '0');
             const minute = String(now.getMinutes()).padStart(2, '0');
-            document.getElementById('date-time').textContent = `${hour24}:${minute}`;
+            const month = now.getMonth() + 1;
+            const day = now.getDate();
+            const weekdays = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+            const dateLabel = `${month}/${day} ${weekdays[now.getDay()]}`;
+            document.getElementById('date-time').textContent = `${dateLabel} ${hour24}:${minute}`;
         }
+
+        // 右上角輪播：節日、台北天氣、國小四年級每日英文。
+        const dailyEnglishSentences = [
+            ['Be kind to others.', '要友善地對待別人。'],
+            ['I can do my best.', '我可以盡力做到最好。'],
+            ['What is your favorite subject?', '你最喜歡的科目是什麼？'],
+            ['The weather is sunny today.', '今天天氣晴朗。'],
+            ['Please keep our classroom clean.', '請保持教室整潔。'],
+            ['We should help each other.', '我們應該互相幫助。'],
+            ['May I borrow your pencil?', '我可以借你的鉛筆嗎？'],
+            ['Reading is fun.', '閱讀很有趣。'],
+            ['I usually get up at seven.', '我通常七點起床。'],
+            ['There are four seasons in a year.', '一年有四個季節。'],
+            ['Could you say that again?', '你可以再說一次嗎？'],
+            ['Practice makes perfect.', '熟能生巧。'],
+            ['We must save water.', '我們必須節約用水。'],
+            ['How do you go to school?', '你怎麼去上學？']
+        ];
+        const DAILY_QUOTE_KEY = 'tab_class_daily_quote_v1';
+        const dailyQuoteEntries = [
+            {type:'每日諺語', icon:'📜', text:'一分耕耘，一分收穫。'},
+            {type:'每日諺語', icon:'📜', text:'熟能生巧。'},
+            {type:'每日諺語', icon:'📜', text:'滴水穿石，非一日之功。'},
+            {type:'每日諺語', icon:'📜', text:'三人行，必有我師焉。'},
+            {type:'每日諺語', icon:'📜', text:'己所不欲，勿施於人。'},
+            {type:'每日諺語', icon:'📜', text:'不怕慢，只怕站。'},
+            {type:'每日諺語', icon:'📜', text:'有志者事竟成。'},
+            {type:'每日諺語', icon:'📜', text:'讀萬卷書，行萬里路。'},
+            {type:'人生佳句', icon:'🌱', text:'每天進步一點點，就是很大的進步。'},
+            {type:'人生佳句', icon:'🌱', text:'犯錯不可怕，願意改進就是成長。'},
+            {type:'人生佳句', icon:'🌱', text:'把困難當成練習，能力就會慢慢長大。'},
+            {type:'人生佳句', icon:'🌱', text:'真正的勇敢，是遇到困難仍願意嘗試。'},
+            {type:'人生佳句', icon:'🌱', text:'先做好眼前的小事，就能完成更大的目標。'},
+            {type:'人生佳句', icon:'🌱', text:'尊重別人，也是在展現自己的修養。'},
+            {type:'人生佳句', icon:'🌱', text:'每個人都有自己的步調，不必和別人比較。'},
+            {type:'人生佳句', icon:'🌱', text:'願意聆聽，是理解別人的第一步。'},
+            {type:'四年級英文', icon:'🇬🇧', text:'Never give up.｜永不放棄。'},
+            {type:'四年級英文', icon:'🇬🇧', text:'I can do my best.｜我可以盡力做到最好。'},
+            {type:'四年級英文', icon:'🇬🇧', text:'Practice makes perfect.｜熟能生巧。'},
+            {type:'四年級英文', icon:'🇬🇧', text:'Be kind to others.｜要友善地對待別人。'},
+            {type:'四年級英文', icon:'🇬🇧', text:'We can learn from mistakes.｜我們可以從錯誤中學習。'},
+            {type:'四年級英文', icon:'🇬🇧', text:'Teamwork makes us stronger.｜團隊合作讓我們更強大。'},
+            {type:'四年級英文', icon:'🇬🇧', text:'Believe in yourself.｜相信自己。'},
+            {type:'四年級英文', icon:'🇬🇧', text:'Small steps make a big difference.｜小小的步伐也能帶來大改變。'},
+            {type:'每日格言', icon:'💡', text:'今日事，今日畢。'},
+            {type:'每日格言', icon:'💡', text:'態度決定高度，習慣成就未來。'},
+            {type:'每日格言', icon:'💡', text:'成功來自持續努力，而不是一時衝刺。'},
+            {type:'每日格言', icon:'💡', text:'先理解，再判斷；先聆聽，再回答。'},
+            {type:'每日格言', icon:'💡', text:'自律讓自由更有力量。'},
+            {type:'每日格言', icon:'💡', text:'善良是一種選擇，也是一種力量。'},
+            {type:'每日格言', icon:'💡', text:'把今天過好，就是為明天做準備。'},
+            {type:'每日格言', icon:'💡', text:'知識讓人看得更遠，謙虛讓人走得更遠。'}
+        ];
+        function getTodayKey() {
+            const now = new Date();
+            return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+        }
+        function getDailyQuote() {
+            const today = getTodayKey();
+            try {
+                const saved = JSON.parse(localStorage.getItem(DAILY_QUOTE_KEY) || 'null');
+                if (saved && saved.date === today && Number.isInteger(saved.index) && dailyQuoteEntries[saved.index]) return dailyQuoteEntries[saved.index];
+            } catch (e) {}
+            const start = Math.floor((Date.UTC(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()) - Date.UTC(new Date().getFullYear(),0,0)) / 86400000);
+            const index = start % dailyQuoteEntries.length;
+            try { localStorage.setItem(DAILY_QUOTE_KEY, JSON.stringify({date:today,index})); } catch (e) {}
+            return dailyQuoteEntries[index];
+        }
+        function refreshDailyQuote() {
+            const today = getTodayKey();
+            let currentIndex = -1;
+            try {
+                const saved = JSON.parse(localStorage.getItem(DAILY_QUOTE_KEY) || 'null');
+                if (saved && saved.date === today && Number.isInteger(saved.index)) currentIndex = saved.index;
+            } catch (e) {}
+            let nextIndex = Math.floor(Math.random() * dailyQuoteEntries.length);
+            if (dailyQuoteEntries.length > 1) while (nextIndex === currentIndex) nextIndex = Math.floor(Math.random() * dailyQuoteEntries.length);
+            try { localStorage.setItem(DAILY_QUOTE_KEY, JSON.stringify({date:today,index:nextIndex})); } catch (e) {}
+        }
+
+        function getHolidayInfo(now) {
+            const m = now.getMonth() + 1, d = now.getDate();
+            const fixed = {
+                '1/1':'元旦｜New Year’s Day',
+                '2/14':'西洋情人節｜Valentine’s Day',
+                '3/8':'國際婦女節｜International Women’s Day',
+                '4/4':'兒童節｜Children’s Day',
+                '5/1':'勞動節｜Labor Day',
+                '10/31':'萬聖節｜Halloween',
+                '12/24':'平安夜｜Christmas Eve',
+                '12/25':'聖誕節｜Christmas Day',
+                '12/31':'跨年夜｜New Year’s Eve'
+            };
+            const today = fixed[`${m}/${d}`];
+            if (today) return `今天的節日：${today}`;
+            if (m === 1 && d >= 20 && d <= 31) return '節日提醒：農曆新年將近';
+            if (m === 2 && d >= 1 && d <= 15) return '節日提醒：元宵節將近';
+            if (m === 8 && d >= 20 && d <= 31) return '節日提醒：中秋節將近';
+            if (m === 10 && d >= 20) return '節日提醒：萬聖節 10/31｜Halloween';
+            if (m === 12 && d >= 1 && d < 24) return '節日提醒：聖誕節 12/25｜Christmas';
+            return '節日小知識：認識台灣節日與西洋節日';
+        }
+        let dailyWeatherText = '天氣：台北天氣載入中…';
+        async function loadDailyWeather() {
+            try {
+                const response = await fetch('https://api.open-meteo.com/v1/forecast?latitude=25.033&longitude=121.565&current=temperature_2m,apparent_temperature,weather_code&timezone=Asia%2FTaipei');
+                if (!response.ok) throw new Error('weather request failed');
+                const data = await response.json();
+                const current = data.current;
+                const code = current.weather_code;
+                const labels = code === 0 ? '晴朗' : [1,2,3].includes(code) ? '多雲' : [45,48].includes(code) ? '有霧' : [51,53,55,56,57].includes(code) ? '有毛毛雨' : [61,63,65,66,67,80,81,82].includes(code) ? '有雨' : [71,73,75,77,85,86].includes(code) ? '有雪' : [95,96,99].includes(code) ? '有雷雨' : '天氣變化中';
+                dailyWeatherText = `台北天氣：${labels} ${Math.round(current.temperature_2m)}°C（體感 ${Math.round(current.apparent_temperature)}°C）`;
+            } catch (error) {
+                dailyWeatherText = '天氣：暫時無法取得（請確認網路）';
+            }
+        }
+        let dailyInfoIndex = 0;
+        function updateDailyInfo() {
+            const icon = document.getElementById('daily-info-icon');
+            const text = document.getElementById('daily-info-text');
+            if (!icon || !text) return;
+            const now = new Date();
+            const dayOfYear = Math.floor((Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) - Date.UTC(now.getFullYear(),0,0)) / 86400000);
+            const english = dailyEnglishSentences[dayOfYear % dailyEnglishSentences.length];
+            const items = [
+                ['🎉', getHolidayInfo(now)],
+                ['🌤️', dailyWeatherText],
+                ['🇬🇧', `每日英文：${english[0]}｜${english[1]}`]
+            ];
+            const item = items[dailyInfoIndex % items.length];
+            icon.textContent = item[0];
+            text.textContent = item[1];
+            dailyInfoIndex = (dailyInfoIndex + 1) % items.length;
+        }
+        loadDailyWeather();
+        updateDailyInfo();
+        setInterval(updateDailyInfo, 10000);
+        setInterval(loadDailyWeather, 30 * 60 * 1000);
+
         const titleInput = document.getElementById('board-title');
         const savedBoardTitle = localStorage.getItem('tab_class_board_title') || '四１課堂計分板';
         titleInput.value = savedBoardTitle;
         document.getElementById('board-title-display').textContent = savedBoardTitle;
         updateDateTime();
         setInterval(updateDateTime, 15000);
+
+        // 男女集體加減分滑桿各自保留位置；重繪學生清單時不互相影響。
+        const bulkGenderSliderValues = { boys: 1, girls: 1 };
 
         function renderList() {
             const container = document.getElementById('list-container');
@@ -2176,10 +2600,11 @@
                     controls.style.cssText = 'display:inline-flex;align-items:center;gap:5px;font-size:14px;font-weight:normal';
                     const genderName = section.title === '男生區' ? '男生' : '女生';
                     const sliderWrap = document.createElement('span'); sliderWrap.style.cssText = 'display:inline-flex;align-items:center;gap:6px;min-width:155px;max-width:260px;flex:1 1 155px';
-                    const select = document.createElement('input'); select.type='range'; select.min='1'; select.max='10'; select.step='1'; select.value='5'; select.id = section.title === '男生區' ? 'bulk-boys-points' : 'bulk-girls-points'; select.setAttribute('aria-label', section.title + '集體加減分數');
+                    const sliderKey = section.title === '男生區' ? 'boys' : 'girls';
+                    const select = document.createElement('input'); select.type='range'; select.min='1'; select.max='10'; select.step='1'; select.value=String(bulkGenderSliderValues[sliderKey] || 1); select.id = section.title === '男生區' ? 'bulk-boys-points' : 'bulk-girls-points'; select.setAttribute('aria-label', section.title + '集體加減分數');
                     select.style.cssText = 'width:100%;min-width:75px;accent-color:#008b9a;cursor:pointer;touch-action:pan-x';
-                    const valueLabel = document.createElement('strong'); valueLabel.textContent='5分'; valueLabel.style.cssText='min-width:30px;text-align:center;font-size:14px;color:#263238;white-space:nowrap';
-                    select.addEventListener('input', () => { valueLabel.textContent=select.value+'分'; });
+                    const valueLabel = document.createElement('strong'); valueLabel.textContent=select.value+'分'; valueLabel.style.cssText='min-width:30px;text-align:center;font-size:14px;color:#263238;white-space:nowrap';
+                    select.addEventListener('input', () => { bulkGenderSliderValues[sliderKey] = Number(select.value); valueLabel.textContent=select.value+'分'; });
                     sliderWrap.append(select,valueLabel);
                     const addBtn = document.createElement('button'); addBtn.type='button'; addBtn.textContent='＋ 集體加分'; addBtn.title='只替' + genderName + '加分';
                     addBtn.style.cssText = 'font-size:14px;padding:5px 9px;border:0;border-radius:6px;background:#287c45;color:white;cursor:pointer';
@@ -2206,7 +2631,7 @@
                             <span class="team-medal black" id="black-medal-${index}" title="黑卡" ${Number(team.blackCard)||0 ? '' : 'hidden'}>${Number(team.blackCard)||0}</span>
                         </div>
                         <div class="action-btns">
-                            <button class="btn-minus" aria-label="學生 ${team.name} 扣 0.5 分" onclick="changeScore(${index}, -0.5)">-</button>
+                            <button class="btn-minus" aria-label="學生 ${team.name} 扣 1 分" onclick="changeScore(${index}, -1)">-</button>
                             <button class="btn-plus" aria-label="學生 ${team.name} 加 1 分" onclick="changeScore(${index}, 1)">+</button>
                         </div>
                     `;
@@ -2342,7 +2767,72 @@
         classroomCheerAudio.volume = 0.72;
         let applauseStopTimer = null;
 
+        // v5.3.52：全域音效模式：原有歡呼聲／姓名分數播報／全部關閉。每次開啟預設為原有歡呼聲。
+        let classroomSoundMode = 'cheer';
+        let scoreSpeechToken = 0;
+        function updateSoundModeButton() {
+            const btn = document.getElementById('sound-mode-btn');
+            if (!btn) return;
+            const settings = {
+                cheer: { icon: '🎉', title: '音效模式：原有歡呼聲', label: '原有歡呼聲' },
+                speech: { icon: '🗣️', title: '音效模式：姓名與分數播報', label: '姓名與分數播報' },
+                off: { icon: '🔇', title: '音效模式：全部關閉', label: '全部關閉' }
+            };
+            const setting = settings[classroomSoundMode] || settings.cheer;
+            btn.textContent = setting.icon;
+            btn.title = setting.title;
+            btn.setAttribute('aria-label', setting.title);
+        }
+        function cycleSoundMode() {
+            const modes = ['cheer', 'speech', 'off'];
+            classroomSoundMode = modes[(modes.indexOf(classroomSoundMode) + 1) % modes.length];
+            updateSoundModeButton();
+            if (classroomSoundMode === 'off') {
+                scoreSpeechToken++;
+                try { if (window.speechSynthesis) window.speechSynthesis.cancel(); } catch (e) {}
+                try {
+                    [classroomApplauseAudio, classroomCheerAudio].forEach(audio => { audio.pause(); audio.currentTime = 0; });
+                } catch (e) {}
+                if (applauseStopTimer) { clearTimeout(applauseStopTimer); applauseStopTimer = null; }
+                stopWheelSound(false);
+            }
+        }
+        function scoreNumberWords(value) {
+            const digits = ['零','一','二','三','四','五','六','七','八','九'];
+            const n = Math.round((Math.abs(Number(value) || 0)) * 100) / 100;
+            if (Number.isInteger(n)) {
+                if (n === 10) return '十';
+                if (n > 10 && n < 20) return '十' + digits[n % 10];
+                return String(n).split('').map(ch => /\d/.test(ch) ? digits[Number(ch)] : ch).join('');
+            }
+            const parts = String(n).split('.');
+            return scoreNumberWords(Number(parts[0])) + '點' + parts[1].split('').map(ch => digits[Number(ch)] || '').join('');
+        }
+        function speakScoreChange(label, delta) {
+            if (classroomSoundMode !== 'speech') return;
+            const synth = window.speechSynthesis;
+            if (!synth || typeof SpeechSynthesisUtterance === 'undefined') return;
+            const token = ++scoreSpeechToken;
+            const amount = scoreNumberWords(Math.abs(delta));
+            const action = delta > 0 ? '加' : '減';
+            const text = `${label}，${action}${amount}！`;
+            try { synth.cancel(); synth.resume(); } catch (e) {}
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'zh-TW'; utterance.rate = 0.95; utterance.pitch = 1.0; utterance.volume = 1;
+            const chooseVoice = () => {
+                const voices = synth.getVoices ? synth.getVoices() : [];
+                const chinese = voices.filter(v => /^zh([-_](TW|Hant|HK|CN))?/i.test(v.lang || '') || /繁體|台灣|臺灣|中文|Chinese|Taiwan/i.test(v.name || ''));
+                const preferred = chinese.find(v => /zh[-_]TW/i.test(v.lang || '')) || chinese.find(v => /繁體|台灣|臺灣|Taiwan/i.test(v.name || '')) || chinese[0];
+                if (preferred) utterance.voice = preferred;
+            };
+            chooseVoice();
+            utterance.onerror = () => {};
+            try { synth.speak(utterance); } catch (e) {}
+        }
+        updateSoundModeButton();
+
         function playScoreSound(delta) {
+            if (classroomSoundMode !== 'cheer') return;
             const ctx = getClassroomAudioContext();
             if (delta > 0) {
                 // 加分：多人拍手＋歡呼同時播放，總長約 2 秒。
@@ -2369,6 +2859,7 @@
             playTone(ctx,349.23,now+0.48,0.88,'triangle',0.09,246.94);
         }
         function startWheelSound(durationMs=4600) {
+            if (classroomSoundMode === 'off') return;
             const ctx = getClassroomAudioContext();
             if (!ctx) return;
             stopWheelSound(false);
@@ -2462,7 +2953,8 @@
             if (currentBoardView === 'stats') renderStatsBoard();
             if (currentBoardView === 'seats') renderSeatBoard();
             if (currentBoardView === 'wheelRecords') renderWheelRecordsBoard();
-            playScoreSound(actualDelta);
+            if (classroomSoundMode === 'cheer') playScoreSound(actualDelta);
+            else if (classroomSoundMode === 'speech') speakScoreChange(teams[index].name, actualDelta);
             if (value > 0) {
                 const cb = document.getElementById('celebrate');
                 cb.style.display = 'block';
@@ -2547,7 +3039,7 @@
         }
 
         function switchBoardView(view) {
-            currentBoardView = ['groups', 'stats', 'seats', 'wheelRecords'].includes(view) ? view : 'personal';
+            currentBoardView = ['groups', 'stats', 'seats', 'wheelRecords', 'homework'].includes(view) ? view : 'personal';
             const personal = currentBoardView === 'personal';
             const groups = currentBoardView === 'groups';
             const editingGroups = document.getElementById('side-panel').classList.contains('group-edit-mode');
@@ -2556,6 +3048,7 @@
             document.getElementById('stats-board-container').hidden = editingGroups || currentBoardView !== 'stats';
             document.getElementById('seat-board-container').hidden = editingGroups || currentBoardView !== 'seats';
             document.getElementById('wheel-records-board-container').hidden = editingGroups || currentBoardView !== 'wheelRecords';
+            document.getElementById('homework-board-container').hidden = editingGroups || currentBoardView !== 'homework';
             // 功能面板在三種計分板都可使用；編輯分組時優先把空間留給分組名單。
             document.getElementById('config-area').hidden = false;
             document.getElementById('show-personal-board').classList.toggle('active', personal);
@@ -2563,10 +3056,13 @@
             document.getElementById('show-stats-board').classList.toggle('active', currentBoardView === 'stats');
             document.getElementById('show-seat-board').classList.toggle('active', currentBoardView === 'seats');
             document.getElementById('show-wheel-records-board').classList.toggle('active', currentBoardView === 'wheelRecords');
+            document.getElementById('show-homework-board').classList.toggle('active', currentBoardView === 'homework');
             if (groups) renderGroupScoreBoard();
             if (currentBoardView === 'stats') renderStatsBoard();
             if (currentBoardView === 'seats') renderSeatBoard();
             if (currentBoardView === 'wheelRecords') renderWheelRecordsBoard();
+            // v6.0.3 修正：切換至作業繳交頁時，必須實際產生頁面內容，否則容器會保持空白。
+            if (currentBoardView === 'homework') renderHomeworkBoard();
         }
 
         function renderGroupScoreBoard() {
@@ -2600,8 +3096,8 @@
                 const actions = document.createElement('div');
                 actions.className = 'group-score-actions';
                 const minus = document.createElement('button');
-                minus.className = 'minus'; minus.textContent = '−'; minus.setAttribute('aria-label', `第 ${i + 1} 組扣 0.5 分`);
-                minus.onclick = () => changeGroupScore(i, -0.5);
+                minus.className = 'minus'; minus.textContent = '−'; minus.setAttribute('aria-label', `第 ${i + 1} 組扣 1 分`);
+                minus.onclick = () => changeGroupScore(i, -1);
                 const plus = document.createElement('button');
                 plus.className = 'plus'; plus.textContent = '+'; plus.setAttribute('aria-label', `第 ${i + 1} 組加 1 分`);
                 plus.onclick = () => changeGroupScore(i, 1);
@@ -2617,7 +3113,8 @@
             const nextScore = Math.max(0, oldScore + delta);
             const actualDelta = nextScore - oldScore;
             if (!actualDelta) return;
-            playScoreSound(actualDelta);
+            if (classroomSoundMode === 'cheer') playScoreSound(actualDelta);
+            else if (classroomSoundMode === 'speech') speakScoreChange('第' + scoreNumberWords(index + 1) + '組', actualDelta);
             groupScores[key] = nextScore;
             // 每次組分增減，同步記錄當下該組每位組員的分組加分，留作個人統計。
             const members = (studentGroups.groups[index] || []).filter(name => teams.some(t => t.name === name));
@@ -2742,11 +3239,7 @@
             const root = document.getElementById('seat-board-container');
             if (!root) return;
             root.innerHTML = '';
-            const note = document.createElement('p');
-            note.className = 'seat-board-note';
             const layout = getSeatLayout();
-            note.textContent = `${layout.rows} 排 × ${layout.cols} 列；點選座位後會以兩欄名單選擇學生，未安排的座位顯示「無」。分數與個人計分板同步。`;
-            root.appendChild(note);
             const grid = document.createElement('div');
             grid.className = 'seat-board-grid';
             grid.style.setProperty('--seat-cols', layout.cols);
@@ -2798,11 +3291,11 @@
                 const actions = document.createElement('div');
                 actions.className = 'seat-cell-actions';
                 const minus = document.createElement('button');
-                minus.type = 'button'; minus.className = 'minus'; minus.textContent = '−'; minus.setAttribute('aria-label', `座位 ${seat + 1} 扣 0.5 分`);
+                minus.type = 'button'; minus.className = 'minus'; minus.textContent = '−'; minus.setAttribute('aria-label', `座位 ${seat + 1} 扣 1 分`);
                 const plus = document.createElement('button');
                 plus.type = 'button'; plus.className = 'plus'; plus.textContent = '+'; plus.setAttribute('aria-label', `座位 ${seat + 1} 加 1 分`);
                 minus.disabled = studentIndex < 0; plus.disabled = studentIndex < 0;
-                minus.addEventListener('click', event => { event.stopPropagation(); const i = findStudentIndex(); if (i >= 0) changeScore(i, -0.5); });
+                minus.addEventListener('click', event => { event.stopPropagation(); const i = findStudentIndex(); if (i >= 0) changeScore(i, -1); });
                 plus.addEventListener('click', event => { event.stopPropagation(); const i = findStudentIndex(); if (i >= 0) changeScore(i, 1); });
                 actions.append(minus, plus);
                 cell.append(pick, score, medals, actions);
@@ -2829,7 +3322,7 @@
                 renderSeatBoard();
             });
             settings.append(rowsLabel, colsLabel, apply);
-            const hint = document.createElement('span'); hint.textContent = '可自行輸入排數、列數（1–15），放在座位表下方。';
+            const hint = document.createElement('span'); hint.textContent = '直向叫「排」，橫向叫「列」。可自行輸入排數、列數（1–15）。';
             settings.appendChild(hint);
             root.appendChild(settings);
             const seatActions = document.createElement('div');
@@ -3429,7 +3922,7 @@
             const marquee = document.getElementById('class-marquee');
             marquee.hidden = false;
             const visibilityBtn = document.getElementById('marquee-visibility-btn');
-            if (visibilityBtn) visibilityBtn.textContent = '🙈 (隱藏)';
+            if (visibilityBtn) visibilityBtn.textContent = '🙈';
             track.style.animation = 'none';
             void track.offsetWidth;
             track.style.animation = '';
@@ -3463,10 +3956,10 @@
             if (willHide) {
                 stopQuoteRotation();
                 marquee.hidden = true;
-                if (button) button.textContent = '👁️ (顯示)';
+                if (button) button.textContent = '👁️';
             } else {
                 marquee.hidden = false;
-                if (button) button.textContent = '🙈 (隱藏)';
+                if (button) button.textContent = '🙈';
             }
         }
         function toggleMarqueePanel() {
@@ -3477,26 +3970,27 @@
                 const el = document.getElementById(id); if (el) el.hidden = show;
             });
             if (!show) switchBoardView(currentBoardView);
-            document.getElementById('marquee-toggle-btn').textContent = show ? '↩️ 返回計分板' : '📣 跑馬燈';
+            document.getElementById('marquee-toggle-btn').textContent = '📣';
             const historyBtn = document.getElementById('version-history-btn');
-            if (historyBtn) historyBtn.textContent = '📚 版本歷史';
+            if (historyBtn) historyBtn.textContent = '📚';
         }
         function toggleVersionHistory() {
             const history = document.getElementById('version-history-panel');
             const showHistory = history.hidden;
             history.hidden = !showHistory;
             const marqueePanel = document.getElementById('marquee-panel'); if (marqueePanel) marqueePanel.hidden = true;
-            const marqueeBtn = document.getElementById('marquee-toggle-btn'); if (marqueeBtn) marqueeBtn.textContent = '📣 跑馬燈';
+            const marqueeBtn = document.getElementById('marquee-toggle-btn'); if (marqueeBtn) marqueeBtn.textContent = '📣';
             ['list-container','group-score-container','stats-board-container','seat-board-container','wheel-records-board-container'].forEach(id => {
                 const el = document.getElementById(id); if (el) el.hidden = showHistory ? true : false;
             });
             if (!showHistory) switchBoardView(currentBoardView);
-            document.getElementById('version-history-btn').textContent = showHistory ? '↩️ 返回計分板' : '📚 版本歷史';
+            document.getElementById('version-history-btn').textContent = '📚';
         }
         // 鎖定時封鎖所有會改動資料的點擊／輸入；保留瀏覽、開關面板、截圖、抽籤與鎖定控制。
         document.addEventListener('click', function(event) {
             if (classroomUnlocked || isWheelTarget(event.target)) return;
-            const allowed = event.target.closest('#toggle-btn, .close-panel, #screenshot-btn, #top-wheel-btn, #spin-btn, #version-history-btn, #show-personal-board, #show-group-board, #show-stats-board, #show-seat-board, #show-wheel-records-board, #settings-btn, #edit-roster-btn, #identity-table-btn, #operation-unlock-btn, #operation-rescue-btn, #operation-lock-btn');
+            // 匯入是老師主動選擇的操作；即使課堂操作鎖定，也必須允許打開匯入、選檔及操作確認視窗。
+            const allowed = event.target.closest('#toggle-btn, .close-panel, #screenshot-btn, #top-wheel-btn, #spin-btn, #version-history-btn, #show-personal-board, #show-group-board, #show-stats-board, #show-seat-board, #show-wheel-records-board, #settings-btn, #edit-roster-btn, #identity-table-btn, #operation-unlock-btn, #operation-rescue-btn, #operation-lock-btn, .top-data-btn.import, #json-import-file, #import-confirm-modal');
             if (allowed) return;
             event.preventDefault(); event.stopPropagation(); event.stopImmediatePropagation();
         }, true);
@@ -3506,13 +4000,183 @@
             }
         }, true);
         document.addEventListener('change', function(event) {
-            if (!classroomUnlocked && !isWheelTarget(event.target)) {
+            // 檔案選取的 change 事件若被鎖定攔截，importJsonBackup 不會執行。
+            if (!classroomUnlocked && !isWheelTarget(event.target) && !event.target.closest('#json-import-file')) {
                 event.preventDefault(); event.stopImmediatePropagation();
             }
         }, true);
         updateClassroomLockUI();
 
-            document.addEventListener('DOMContentLoaded', renderCustomMarqueePhrases);
+            // 立即嘗試一次，並保留 DOMContentLoaded 後再渲染，避免註冊時機造成自訂詞條區塊未更新。
+            try { renderCustomMarqueePhrases(); } catch (renderErr) { console.error('自訂詞條初次顯示失敗：', renderErr); }
+            if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', renderCustomMarqueePhrases, { once: true });
+            else setTimeout(() => { try { renderCustomMarqueePhrases(); } catch (renderErr) { console.error('自訂詞條再次顯示失敗：', renderErr); } }, 0);
+            try {
+                const report = JSON.parse(localStorage.getItem('tab_class_import_report_v1') || 'null');
+                if (report && report.customPhraseCount != null) {
+                    const actual = getCustomMarqueePhrases();
+                    const names = actual.map(p => p.name);
+                    const result = { expected: Number(report.customPhraseCount), actual: actual.length, names };
+                    console.info('匯入詞條檢查：', result);
+                    if (actual.length !== Number(report.customPhraseCount)) {
+                        console.warn('匯入報告與目前詞條儲存數量不同。');
+                    } else if (report.fileName) {
+                        console.info('備份還原檢查通過：自訂詞條已從本機儲存空間讀回。', result);
+                    }
+                }
+            } catch (reportErr) { console.warn('讀取匯入檢查紀錄失敗：', reportErr); }
 </script>
+
+<div id="import-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="import-confirm-title" hidden style="position:fixed;inset:0;z-index:2147483647;background:rgba(0,0,0,.48);display:none;align-items:center;justify-content:center;padding:20px;">
+  <div style="width:min(460px,100%);background:var(--panel-bg,#fff);color:var(--text-color,#222);border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.28);padding:22px;">
+    <h3 id="import-confirm-title" style="margin:0 0 12px;font-size:18px;">確認匯入備份</h3>
+    <p id="import-confirm-message" style="white-space:pre-line;line-height:1.65;margin:0 0 20px;"></p>
+    <div style="display:flex;justify-content:flex-end;gap:10px;">
+      <button id="import-confirm-cancel" type="button" style="min-width:92px;padding:9px 18px;border:1px solid #888;border-radius:8px;background:#f1f1f1;color:#222;font-weight:600;">取消</button>
+      <button id="import-confirm-ok" type="button" style="min-width:92px;padding:9px 18px;border:0;border-radius:8px;background:#087f8c;color:#fff;font-weight:600;">確定</button>
+    </div>
+  </div>
+</div>
+<script>
+function showImportConfirmDialog(message) {
+    return new Promise(resolve => {
+        const modal = document.getElementById('import-confirm-modal');
+        const cancelButton = document.getElementById('import-confirm-cancel');
+        const okButton = document.getElementById('import-confirm-ok');
+        document.getElementById('import-confirm-message').textContent = message;
+        // 匯入確認視窗必須高於抽籤遮罩、側面板與固定底部按鈕；舊版 z-index 99999 低於 wheel-overlay 的 200000，可能被遮住。
+        if (modal.parentElement !== document.body) document.body.appendChild(modal);
+        modal.style.setProperty('position', 'fixed', 'important');
+        modal.style.setProperty('z-index', '2147483647', 'important');
+        modal.style.setProperty('pointer-events', 'auto', 'important');
+        modal.hidden = false;
+        modal.style.setProperty('display', 'flex', 'important');
+        let settled = false;
+        const finish = value => {
+            if (settled) return;
+            settled = true;
+            modal.hidden = true;
+            modal.style.display = 'none';
+            cancelButton.removeEventListener('click', onCancel);
+            okButton.removeEventListener('click', onOk);
+            modal.removeEventListener('click', onBackdrop);
+            document.removeEventListener('keydown', onKeydown);
+            resolve(value);
+        };
+        const onCancel = () => finish(false);
+        const onOk = () => finish(true);
+        const onBackdrop = event => { if (event.target === modal) finish(false); };
+        const onKeydown = event => {
+            if (event.key === 'Escape') { event.preventDefault(); finish(false); }
+        };
+        cancelButton.addEventListener('click', onCancel);
+        okButton.addEventListener('click', onOk);
+        modal.addEventListener('click', onBackdrop);
+        document.addEventListener('keydown', onKeydown);
+        // 預設焦點放在「取消」，避免按 Enter 時意外覆蓋資料。
+        cancelButton.focus();
+    });
+}
+
+        // ===== v6.0.0 作業繳交記錄（本機草稿版） =====
+        const HW_STORAGE_KEY = 'tab_class_homework_records_v1';
+        let homeworkMode = 'student';
+        let homeworkRecords = [];
+        try { const parsedHw = JSON.parse(localStorage.getItem(HW_STORAGE_KEY) || '[]'); if (Array.isArray(parsedHw)) homeworkRecords = parsedHw; } catch (e) { homeworkRecords = []; }
+        let activeHomeworkId = '';
+        function saveHomeworkRecords() {
+            try {
+                const raw = JSON.stringify(homeworkRecords);
+                localStorage.setItem(HW_STORAGE_KEY, raw);
+                if (localStorage.getItem(HW_STORAGE_KEY) !== raw) throw new Error('寫入驗證失敗');
+            } catch (e) { alert('作業紀錄未能儲存，可能是瀏覽器儲存空間不足。請先匯出原有資料並檢查設定。'); }
+        }
+        function setHomeworkMode(mode) {
+            homeworkMode = mode === 'teacher' ? 'teacher' : 'student';
+            const studentBtn = document.getElementById('homework-student-mode-setting');
+            const teacherBtn = document.getElementById('homework-teacher-mode-setting');
+            if (studentBtn) { studentBtn.style.outline = homeworkMode === 'student' ? '3px solid #087f8c' : ''; studentBtn.setAttribute('aria-pressed', String(homeworkMode === 'student')); }
+            if (teacherBtn) { teacherBtn.style.outline = homeworkMode === 'teacher' ? '3px solid #087f8c' : ''; teacherBtn.setAttribute('aria-pressed', String(homeworkMode === 'teacher')); }
+            renderHomeworkBoard();
+        }
+        function getActiveHomework() { return homeworkRecords.find(r => r.id === activeHomeworkId) || homeworkRecords[0] || null; }
+        function escapeHwText(value) { return String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])); }
+        function createHomeworkRecord() {
+            if (homeworkMode !== 'teacher') { alert('請先到「設定」切換為老師模式，才能新增作業。'); return; }
+            const nameEl = document.getElementById('hw-new-name');
+            const dateEl = document.getElementById('hw-new-date');
+            const name = (nameEl?.value || '').trim();
+            if (!name) { alert('請先輸入作業名稱。'); nameEl?.focus(); return; }
+            const record = { id: 'HW' + Date.now().toString(36) + Math.random().toString(36).slice(2,6), name, date: dateEl?.value || new Date().toISOString().slice(0,10), createdAt: new Date().toISOString(), statuses: {} };
+            homeworkRecords.unshift(record); activeHomeworkId = record.id; saveHomeworkRecords(); renderHomeworkBoard();
+        }
+        function selectHomeworkRecord(id) { activeHomeworkId = id; renderHomeworkBoard(); }
+        function deleteHomeworkRecord() {
+            if (homeworkMode !== 'teacher') { alert('只有老師模式可以管理作業。'); return; }
+            const rec = getActiveHomework(); if (!rec) return;
+            if (!confirm('確定刪除「' + rec.name + '」及這份作業的所有繳交紀錄嗎？此動作無法復原。')) return;
+            homeworkRecords = homeworkRecords.filter(r => r.id !== rec.id); activeHomeworkId = homeworkRecords[0]?.id || ''; saveHomeworkRecords(); renderHomeworkBoard();
+        }
+        function openHomeworkConfirm(studentId, studentName) {
+            const rec = getActiveHomework(); if (!rec) return;
+            const currentlySubmitted = !!rec.statuses[String(studentId)];
+            if (homeworkMode === 'teacher') {
+                const action = currentlySubmitted ? '改為「尚未登記」' : '登記為「已繳交」';
+                if (!confirm('老師確認要將「' + studentName + '」' + action + '嗎？')) return;
+                if (currentlySubmitted) delete rec.statuses[String(studentId)]; else rec.statuses[String(studentId)] = { submittedAt: new Date().toISOString(), by: 'teacher' };
+                saveHomeworkRecords(); renderHomeworkBoard(); return;
+            }
+            if (currentlySubmitted) { alert('「' + studentName + '」已繳交，如需更正，請告訴老師。'); return; }
+            const modal = document.createElement('div'); modal.className = 'hw-modal-backdrop'; modal.setAttribute('role','dialog'); modal.setAttribute('aria-modal','true');
+            modal.innerHTML = '<div class="hw-modal"><h3>確認作業繳交</h3><p>你要登記「<strong>' + escapeHwText(rec.name) + '</strong>」已經繳交了嗎？</p><p style="color:#64748b;font-size:14px;">學生模式下，登記後不能自行取消；如有錯誤，請老師協助更正。</p><div class="hw-modal-actions"><button type="button" class="hw-btn hw-btn-muted" data-hw-cancel>取消</button><button type="button" class="hw-btn hw-btn-primary" data-hw-confirm>確認繳交</button></div></div>';
+            document.body.appendChild(modal);
+            const close = () => modal.remove(); modal.querySelector('[data-hw-cancel]').addEventListener('click', close);
+            modal.addEventListener('click', e => { if (e.target === modal) close(); });
+            modal.querySelector('[data-hw-confirm]').addEventListener('click', () => { rec.statuses[String(studentId)] = { submittedAt: new Date().toISOString(), by: 'student' }; saveHomeworkRecords(); close(); renderHomeworkBoard(); });
+        }
+        function renderHomeworkBoard() {
+            const root = document.getElementById('homework-board-container'); if (!root) return;
+            const rec = getActiveHomework(); if (rec && !activeHomeworkId) activeHomeworkId = rec.id;
+            const isTeacher = homeworkMode === 'teacher';
+            const options = homeworkRecords.map(r => '<option value="' + escapeHwText(r.id) + '" ' + (rec && r.id === rec.id ? 'selected' : '') + '>' + escapeHwText(r.name) + '（' + escapeHwText(r.date || '') + '）</option>').join('');
+            let html = '<div class="hw-shell"><div class="hw-top"><div><h2 class="hw-title">📚 作業繳交記錄</h2><div class="hw-subtitle">每份作業獨立記錄；本功能不影響原本的個人或分組分數。</div></div><div class="hw-controls">';
+            if (homeworkRecords.length) html += '<select aria-label="選擇作業" onchange="selectHomeworkRecord(this.value)">' + options + '</select>';
+            html += '<button class="hw-btn hw-btn-muted" type="button" onclick="openPanel(); showSettingsPanel()">⚙️ 設定權限</button></div></div>';
+            if (isTeacher) html += '<div class="hw-admin"><h3>🧑‍🏫 老師：新增作業</h3><div class="hw-admin-row"><input id="hw-new-name" type="text" maxlength="100" placeholder="作業名稱，例如：國語習作第 8 課" aria-label="新作業名稱"><input id="hw-new-date" type="date" value="' + new Date().toISOString().slice(0,10) + '" aria-label="作業日期"><button class="hw-btn hw-btn-primary" type="button" onclick="createHomeworkRecord()">＋ 建立作業</button>' + (rec ? '<button class="hw-btn hw-btn-warn" type="button" onclick="deleteHomeworkRecord()">刪除這份作業</button>' : '') + '</div><p class="hw-mode-note">老師模式可以新增作業、修改學生狀態及刪除作業。</p></div>';
+            if (!rec) {
+                html += '<div class="hw-empty"><h3>目前還沒有作業</h3><p>請到「設定」切換老師模式，再建立第一份作業。</p></div></div>'; root.innerHTML = html; return;
+            }
+            const roster = Array.isArray(teams) ? teams : [];
+            const submittedCount = roster.filter(st => !!rec.statuses[String(st.id || st.name)]).length;
+            const pendingCount = Math.max(0, roster.length - submittedCount);
+            const male = roster.filter(st => String(st.gender || '').includes('男'));
+            const female = roster.filter(st => String(st.gender || '').includes('女'));
+            html += '<div class="hw-topline"><div class="hw-homework-title"><h2>' + escapeHwText(rec.name) + '</h2><span>作業日期：' + escapeHwText(rec.date || '未設定') + '</span></div>';
+            html += '<div class="hw-summary"><div class="hw-stat hw-stat-total"><strong>' + roster.length + '</strong><span>全班人數</span></div><div class="hw-stat hw-stat-done"><strong>' + submittedCount + '</strong><span>已繳交</span></div><div class="hw-stat hw-stat-pending"><strong>' + pendingCount + '</strong><span>尚未登記</span></div><div class="hw-stat hw-stat-rate"><strong>' + (roster.length ? Math.round(submittedCount / roster.length * 100) : 0) + '%</strong><span>繳交率</span></div></div></div>';
+            const drawSection = (title, list) => {
+                if (!list.length) return '';
+                const count = list.filter(st => !!rec.statuses[String(st.id || st.name)]).length;
+                let out = '<section class="hw-section"><div class="hw-section-head"><h3>' + title + '</h3><span>已交 ' + count + '／' + list.length + ' 人</span></div><div class="hw-student-grid">';
+                list.forEach((st, idx) => { const key = String(st.id || st.name); const done = !!rec.statuses[key]; out += '<button type="button" class="hw-student ' + (done ? 'submitted' : 'pending') + '" onclick="openHomeworkConfirm(\'' + escapeHwText(key).replace(/\\/g,'\\\\').replace(/'/g,"\\'") + '\',\'' + escapeHwText(st.name).replace(/\\/g,'\\\\').replace(/'/g,"\\'") + '\')" aria-label="' + escapeHwText(st.name) + '，' + (done ? '已繳交' : '尚未登記') + '"><span class="hw-student-name">' + escapeHwText(st.name) + '</span><span class="hw-status-icon">' + (done ? '✓' : '●') + '</span><span class="hw-status-text">' + (done ? '已繳交' : '尚未登記') + '</span></button>'; });
+                return out + '</div></section>';
+            };
+            html += drawSection('男生區', male) + drawSection('女生區', female);
+            if (isTeacher) {
+                const missing = roster.filter(st => !rec.statuses[String(st.id || st.name)]);
+                html += '<div class="hw-admin"><h3>📋 尚未登記名單（' + missing.length + ' 人）</h3>' + (missing.length ? '<div style="display:flex;flex-wrap:wrap;gap:8px">' + missing.map(st => '<span style="border:1px solid #f59e0b;border-radius:8px;padding:6px 10px">' + escapeHwText(st.name) + '</span>').join('') + '</div>' : '<p>全班都已登記繳交。</p>') + '</div>';
+            }
+            html += '<p class="hw-mode-note">目前模式：' + (isTeacher ? '老師模式（可修正紀錄）' : '學生模式（登記後不可自行取消）') + '。此為本機初稿，請先用測試資料操作。</p></div>';
+            root.innerHTML = html;
+        }
+        // Settings navigation helper; opens existing panel and reveals its settings section.
+        function showSettingsPanel() {
+            const panel = document.getElementById('side-panel'); if (panel && !panel.classList.contains('open')) openPanel();
+            const settingsBtn = document.getElementById('settings-btn') || document.querySelector('[onclick*="settings-panel"]');
+            if (settingsBtn) settingsBtn.click();
+            const settings = document.getElementById('settings-panel'); if (settings) settings.hidden = false;
+        }
+
+</script>
+
 </body>
 </html>
