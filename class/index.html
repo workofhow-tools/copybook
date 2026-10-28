@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>v6.0.3｜401計分板</title>
+    <title>v6.0.7｜401計分板</title>
     <style>
         :root {
             --primary-color: #4CAF50;
@@ -568,6 +568,29 @@
 
 
 
+        /* v6.0.6：學生繳交確認視窗固定置中，避免重複開啟 */
+        .hw-modal-backdrop {
+            position: fixed !important; inset: 0 !important; z-index: 2147483646 !important;
+            display: flex !important; align-items: center !important; justify-content: center !important;
+            padding: 16px !important; box-sizing: border-box !important;
+            background: rgba(15, 23, 42, .48) !important;
+        }
+        .hw-modal {
+            width: min(460px, 100%) !important; max-height: min(90vh, 680px) !important;
+            overflow-y: auto !important; box-sizing: border-box !important;
+            padding: 22px !important; border-radius: 16px !important; background: #fff !important;
+            box-shadow: 0 16px 48px rgba(0,0,0,.28) !important; text-align: left !important;
+        }
+        .hw-modal h3 { margin: 0 0 14px !important; font-size: 22px !important; }
+        .hw-modal p { line-height: 1.6 !important; }
+        .hw-modal-actions { display:flex !important; justify-content:flex-end !important; flex-wrap:wrap !important; gap:10px !important; margin-top:18px !important; }
+        .hw-modal-actions .hw-btn { min-height:42px !important; padding:9px 16px !important; border:0 !important; border-radius:8px !important; font: bold 15px 'Microsoft JhengHei',sans-serif !important; cursor:pointer !important; }
+        .hw-modal-actions .hw-btn-muted { background:#eceff1 !important; color:#37474f !important; }
+        .hw-modal-actions .hw-btn-primary { background:#008b9a !important; color:#fff !important; }
+        /* v6.0.5：完整備份所有作業紀錄；v6.0.4：作業頁只顯示目前模式狀態，模式切換統一由設定操作 */
+        .hw-mode-status{display:inline-flex;align-items:center;gap:5px;padding:7px 10px;border:1px solid #cbd5e1;border-radius:8px;background:#f8fafc;color:#475569;font-size:14px;font-weight:700;white-space:nowrap}
+        .hw-mode-status.teacher{background:#eff6ff;border-color:#93c5fd;color:#1d4ed8}
+        .hw-mode-status.student{background:#f0fdf4;border-color:#86efac;color:#166534}
         /* v6.0.3 作業日期與統計資料同列；已繳交卡片以綠色明確區分 */
         .hw-topline{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;margin:8px 0 18px}
         .hw-homework-title{display:flex;align-items:baseline;gap:18px;flex-wrap:wrap;min-width:220px}
@@ -609,7 +632,7 @@
                     </div>
                     <div id="class-marquee" aria-label="課堂跑馬燈"><span id="class-marquee-track">每一天都是進步的好機會！準備好課本、收好小物品，帶著認真的心，一起成為更棒的自己！</span></div>
                 </div>
-                <div style="display:flex;align-items:center;gap:14px;min-width:0;margin:0 0 4px"><h3 id="board-title-display" style="flex:0 0 auto;margin:0">四１課堂計分板</h3><span id="current-version-label" style="flex:0 0 auto;font-size:12px;color:#008c95;background:#e0f7fa;border:1px solid #b2ebf2;border-radius:12px;padding:3px 8px;font-weight:bold">v6.0.0</span><div id="daily-info-box" role="status" aria-live="polite" title="節日、天氣與每日英文">
+                <div style="display:flex;align-items:center;gap:14px;min-width:0;margin:0 0 4px"><h3 id="board-title-display" style="flex:0 0 auto;margin:0">四１課堂計分板</h3><span id="current-version-label" style="flex:0 0 auto;font-size:12px;color:#008c95;background:#e0f7fa;border:1px solid #b2ebf2;border-radius:12px;padding:3px 8px;font-weight:bold">v6.0.7</span><div id="daily-info-box" role="status" aria-live="polite" title="節日、天氣與每日英文">
                         <span id="daily-info-icon">📅</span><span id="daily-info-text">每日資訊載入中…</span>
                     </div></div>
                 <div class="board-view-switch" role="group" aria-label="切換計分板">
@@ -652,6 +675,10 @@
             <div id="custom-marquee-phrases" class="marquee-phrases" aria-live="polite"></div>
         </section>
         <section id="version-history-panel" hidden aria-label="版本歷史紀錄">
+            <article class="version-entry"><strong>v6.0.7｜學生模式也顯示尚未登記名單</strong><p>更新日期：2026-10-28 09:58</p><p>學生模式與老師模式都能查看尚未登記作業的學生名單；學生模式仍不能自行修改或取消已登記紀錄。</p></article>
+            <article class="version-entry"><strong>v6.0.6｜繳交確認視窗置中並防止重複開啟</strong><p>更新日期：2026-10-28 09:53</p><p>學生點擊繳交卡片時，確認視窗固定顯示在畫面中央，方便直接點選；同一時間只允許一個確認視窗，重複點擊不會疊出多個視窗。確認或取消後視窗即關閉。</p></article>
+            <article class="version-entry"><strong>v6.0.5｜修正作業紀錄完整匯出與匯入</strong><p>更新日期：2026-10-28 07:18</p><p>完整備份會明確納入所有作業及各份作業的繳交狀態；匯入時驗證作業紀錄格式與筆數，並在匯入報告顯示作業筆數，避免只還原一筆或不易察覺資料遺漏。</p></article>
+            <article class="version-entry"><strong>v6.0.4｜作業頁顯示模式狀態並修正當日日期</strong><p>更新日期：2026-10-28 07:09</p><p>作業繳交頁的「設定權限」按鈕改為只顯示目前的老師／學生模式；模式仍統一由下方「設定」切換。新增作業日期預設改用台灣電腦的本地日期，避免清晨時因 UTC 時區而顯示前一天。</p></article>
             <article class="version-entry"><strong>v6.0.3｜調整作業日期與統計列並強化已繳交顏色</strong><p>更新日期：2026-10-27 22:45</p><p>作業日期與全班人數、已繳交、尚未登記、繳交率改為同一列呈現；已繳交學生卡片以綠色底色、邊框與文字明顯標示。</p></article>
             <article class="version-entry"><strong>v6.0.3｜修正作業繳交頁面空白</strong><p>更新日期：2026-10-27 22:19</p><p>修正切換至「作業繳交」時未呼叫 renderHomeworkBoard() 的問題；現在進入頁面會顯示建立作業提示或既有作業卡片。</p></article>
             <article class="version-entry"><strong>v6.0.0｜新增獨立作業繳交記錄（第一版草稿）</strong><p>更新日期：2026-10-27 21:58</p><p>新增獨立作業繳交畫面、男女生區域卡片、作業建立與切換、繳交確認、未交統計及設定內的學生／老師模式。作業資料使用本機儲存並納入 tab_class_ 前綴備份設計；此版供初步試用與討論。</p></article>
@@ -1034,6 +1061,17 @@
                 const key = localStorage.key(i);
                 if (key && key.startsWith('tab_class_')) data[key] = localStorage.getItem(key);
             }
+            // v6.0.5：明確納入整份作業清單，包含每份作業的繳交狀態，避免只依賴通用 key 掃描。
+            const homeworkBackupKey = 'tab_class_homework_records_v1';
+            try {
+                const rawHomework = localStorage.getItem(homeworkBackupKey);
+                const allHomework = rawHomework == null || rawHomework === '' ? [] : JSON.parse(rawHomework);
+                if (!Array.isArray(allHomework)) throw new Error('作業紀錄不是陣列');
+                data[homeworkBackupKey] = JSON.stringify(allHomework);
+            } catch (e) {
+                alert('作業繳交紀錄格式有誤，為避免備份不完整，已停止匯出。\n' + (e && e.message ? e.message : '資料格式錯誤'));
+                throw e;
+            }
             // 匯出前以畫面目前顯示值校正資料，避免畫面與 teams 狀態短暫不同步時匯出舊分數／獎牌。
             const exportTeams = teams.map((team, index) => {
                 const copy = { ...team };
@@ -1116,6 +1154,26 @@
                     if (!source || typeof source !== 'object' || Array.isArray(source)) source = payload;
                     const data = { ...source };
 
+                    // v6.0.5：明確驗證並保留所有作業紀錄，而非只還原目前選取的作業。
+                    const homeworkRecordsKey = 'tab_class_homework_records_v1';
+                    let importedHomeworkRecords = data[homeworkRecordsKey];
+                    if (importedHomeworkRecords == null) importedHomeworkRecords = '[]';
+                    if (typeof importedHomeworkRecords === 'string') importedHomeworkRecords = JSON.parse(importedHomeworkRecords);
+                    if (!Array.isArray(importedHomeworkRecords)) throw new Error('作業繳交紀錄格式不正確，備份未匯入。');
+                    const homeworkIds = new Set();
+                    importedHomeworkRecords = importedHomeworkRecords.map((record, index) => {
+                        if (!record || typeof record !== 'object' || Array.isArray(record)) throw new Error('第 ' + (index + 1) + ' 筆作業資料格式不正確，備份未匯入。');
+                        const id = String(record.id ?? '').trim();
+                        const name = String(record.name ?? '').trim();
+                        if (!id || !name) throw new Error('第 ' + (index + 1) + ' 筆作業缺少識別碼或名稱，備份未匯入。');
+                        if (homeworkIds.has(id)) throw new Error('作業識別碼重複：' + id + '，備份未匯入。');
+                        homeworkIds.add(id);
+                        const statuses = record.statuses == null ? {} : record.statuses;
+                        if (!statuses || typeof statuses !== 'object' || Array.isArray(statuses)) throw new Error('作業「' + name + '」的繳交狀態格式不正確，備份未匯入。');
+                        return { ...record, id, name, date: String(record.date ?? ''), createdAt: String(record.createdAt ?? ''), statuses };
+                    });
+                    data[homeworkRecordsKey] = JSON.stringify(importedHomeworkRecords);
+
                     // 抽籤紀錄匯入同步：舊版備份若沒有這個欄位，明確視為空紀錄，避免沿用本機舊紀錄；若有欄位則驗證並正規化。
                     const wheelRecordsKey = 'tab_class_wheel_topic_records_v1';
                     let importedWheelRecords = data[wheelRecordsKey];
@@ -1184,7 +1242,7 @@
                     const explicitAppKeys = new Set([customPhrasesKey, 'classMarqueeText']);
                     const entries = Object.entries(data).filter(([key, value]) => (key.startsWith('tab_class_') || explicitAppKeys.has(key)) && value != null);
                     if (!entries.some(([key]) => key === 'tab_class_teams_29')) throw new Error('備份中沒有學生資料。');
-                    const shouldImport = await showImportConfirmDialog('準備匯入「' + fileName + '」。\n學生人數：' + parsedTeams.length + '\n備份資料項目：' + entries.length + '\n\n匯入會覆蓋目前資料，建議先匯出備份。');
+                    const shouldImport = await showImportConfirmDialog('準備匯入「' + fileName + '」。\n學生人數：' + parsedTeams.length + '\n作業紀錄：' + importedHomeworkRecords.length + ' 筆\n備份資料項目：' + entries.length + '\n\n匯入會覆蓋目前資料，建議先匯出備份。');
                     if (!shouldImport) {
                         if (input) input.value = '';
                         return;
@@ -1204,6 +1262,9 @@
                         });
                         const verifyTeams = JSON.parse(localStorage.getItem('tab_class_teams_29') || 'null');
                         if (!Array.isArray(verifyTeams) || verifyTeams.length !== parsedTeams.length) throw new Error('學生名單寫入後驗證不符。');
+                        const verifyHomework = JSON.parse(localStorage.getItem(homeworkRecordsKey) || 'null');
+                        if (!Array.isArray(verifyHomework) || verifyHomework.length !== importedHomeworkRecords.length) throw new Error('作業紀錄寫入後筆數不符，匯入已取消並回復原資料。');
+                        if (JSON.stringify(verifyHomework) !== JSON.stringify(importedHomeworkRecords)) throw new Error('作業紀錄內容驗證不符，匯入已取消並回復原資料。');
                         const verifyCustomPhrases = JSON.parse(localStorage.getItem(customPhrasesKey) || '[]');
                         if (!Array.isArray(verifyCustomPhrases) || verifyCustomPhrases.length !== importedCustomPhrases.length) throw new Error('自製詞條寫入後驗證不符，匯入已取消並回復原資料。');
                         if (JSON.stringify(verifyCustomPhrases) !== JSON.stringify(importedCustomPhrases)) throw new Error('自製詞條內容驗證不符，匯入已取消並回復原資料。');
@@ -1220,6 +1281,7 @@
                             goldSum: verifyTeams.reduce((sum, student) => sum + (Number(student.gold) || 0), 0),
                             blackCardSum: verifyTeams.reduce((sum, student) => sum + (Number(student.blackCard) || 0), 0),
                             customPhraseCount: verifyCustomPhrases.length,
+                            homeworkRecordCount: verifyHomework.length,
                             keysWritten: entries.length
                         }));
                     } catch (writeErr) {
@@ -1244,7 +1306,7 @@
                     if (typeof renderGroupScoreBoard === 'function') renderGroupScoreBoard();
                     if (typeof renderCustomMarqueePhrases === 'function') renderCustomMarqueePhrases();
                     const appliedScoreSum = teams.reduce((sum, student) => sum + (Number(student.score) || 0), 0);
-                    const resultMessage = '匯入資料已寫入並套用。\n學生人數：' + teams.length + ' 人\n個人分數合計：' + appliedScoreSum + ' 分\n來源檔案：' + fileName;
+                    const resultMessage = '匯入資料已寫入並套用。\n學生人數：' + teams.length + ' 人\n作業紀錄：' + (JSON.parse(localStorage.getItem('tab_class_homework_records_v1') || '[]').length) + ' 筆\n個人分數合計：' + appliedScoreSum + ' 分\n來源檔案：' + fileName;
                     console.info(resultMessage);
                     if (input) input.value = '';
                     // 成功時不再跳出第二個 alert；重新載入後由匯入報告顯示非阻擋式提示。
@@ -4101,13 +4163,19 @@ function showImportConfirmDialog(message) {
         }
         function getActiveHomework() { return homeworkRecords.find(r => r.id === activeHomeworkId) || homeworkRecords[0] || null; }
         function escapeHwText(value) { return String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])); }
+        function getLocalDateString(date = new Date()) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
         function createHomeworkRecord() {
             if (homeworkMode !== 'teacher') { alert('請先到「設定」切換為老師模式，才能新增作業。'); return; }
             const nameEl = document.getElementById('hw-new-name');
             const dateEl = document.getElementById('hw-new-date');
             const name = (nameEl?.value || '').trim();
             if (!name) { alert('請先輸入作業名稱。'); nameEl?.focus(); return; }
-            const record = { id: 'HW' + Date.now().toString(36) + Math.random().toString(36).slice(2,6), name, date: dateEl?.value || new Date().toISOString().slice(0,10), createdAt: new Date().toISOString(), statuses: {} };
+            const record = { id: 'HW' + Date.now().toString(36) + Math.random().toString(36).slice(2,6), name, date: dateEl?.value || getLocalDateString(), createdAt: new Date().toISOString(), statuses: {} };
             homeworkRecords.unshift(record); activeHomeworkId = record.id; saveHomeworkRecords(); renderHomeworkBoard();
         }
         function selectHomeworkRecord(id) { activeHomeworkId = id; renderHomeworkBoard(); }
@@ -4118,6 +4186,8 @@ function showImportConfirmDialog(message) {
             homeworkRecords = homeworkRecords.filter(r => r.id !== rec.id); activeHomeworkId = homeworkRecords[0]?.id || ''; saveHomeworkRecords(); renderHomeworkBoard();
         }
         function openHomeworkConfirm(studentId, studentName) {
+            // 防止連續點擊或事件重複觸發，造成確認視窗疊加。
+            if (document.querySelector('.hw-modal-backdrop')) return;
             const rec = getActiveHomework(); if (!rec) return;
             const currentlySubmitted = !!rec.statuses[String(studentId)];
             if (homeworkMode === 'teacher') {
@@ -4128,11 +4198,19 @@ function showImportConfirmDialog(message) {
             }
             if (currentlySubmitted) { alert('「' + studentName + '」已繳交，如需更正，請告訴老師。'); return; }
             const modal = document.createElement('div'); modal.className = 'hw-modal-backdrop'; modal.setAttribute('role','dialog'); modal.setAttribute('aria-modal','true');
-            modal.innerHTML = '<div class="hw-modal"><h3>確認作業繳交</h3><p>你要登記「<strong>' + escapeHwText(rec.name) + '</strong>」已經繳交了嗎？</p><p style="color:#64748b;font-size:14px;">學生模式下，登記後不能自行取消；如有錯誤，請老師協助更正。</p><div class="hw-modal-actions"><button type="button" class="hw-btn hw-btn-muted" data-hw-cancel>取消</button><button type="button" class="hw-btn hw-btn-primary" data-hw-confirm>確認繳交</button></div></div>';
+            modal.innerHTML = '<div class="hw-modal" role="document"><h3>確認作業繳交</h3><p>你要登記「<strong>' + escapeHwText(rec.name) + '</strong>」已經繳交了嗎？</p><p style="color:#64748b;font-size:14px;">學生模式下，登記後不能自行取消；如有錯誤，請老師協助更正。</p><div class="hw-modal-actions"><button type="button" class="hw-btn hw-btn-muted" data-hw-cancel>取消</button><button type="button" class="hw-btn hw-btn-primary" data-hw-confirm>確認繳交</button></div></div>';
             document.body.appendChild(modal);
-            const close = () => modal.remove(); modal.querySelector('[data-hw-cancel]').addEventListener('click', close);
+            const close = () => { if (modal.isConnected) modal.remove(); };
+            modal.querySelector('[data-hw-cancel]').addEventListener('click', close);
             modal.addEventListener('click', e => { if (e.target === modal) close(); });
-            modal.querySelector('[data-hw-confirm]').addEventListener('click', () => { rec.statuses[String(studentId)] = { submittedAt: new Date().toISOString(), by: 'student' }; saveHomeworkRecords(); close(); renderHomeworkBoard(); });
+            const confirmButton = modal.querySelector('[data-hw-confirm]');
+            confirmButton.addEventListener('click', () => {
+                if (rec.statuses[String(studentId)]) { close(); renderHomeworkBoard(); return; }
+                confirmButton.disabled = true;
+                rec.statuses[String(studentId)] = { submittedAt: new Date().toISOString(), by: 'student' };
+                saveHomeworkRecords(); close(); renderHomeworkBoard();
+            });
+            modal.querySelector('[data-hw-cancel]').focus();
         }
         function renderHomeworkBoard() {
             const root = document.getElementById('homework-board-container'); if (!root) return;
@@ -4141,8 +4219,8 @@ function showImportConfirmDialog(message) {
             const options = homeworkRecords.map(r => '<option value="' + escapeHwText(r.id) + '" ' + (rec && r.id === rec.id ? 'selected' : '') + '>' + escapeHwText(r.name) + '（' + escapeHwText(r.date || '') + '）</option>').join('');
             let html = '<div class="hw-shell"><div class="hw-top"><div><h2 class="hw-title">📚 作業繳交記錄</h2><div class="hw-subtitle">每份作業獨立記錄；本功能不影響原本的個人或分組分數。</div></div><div class="hw-controls">';
             if (homeworkRecords.length) html += '<select aria-label="選擇作業" onchange="selectHomeworkRecord(this.value)">' + options + '</select>';
-            html += '<button class="hw-btn hw-btn-muted" type="button" onclick="openPanel(); showSettingsPanel()">⚙️ 設定權限</button></div></div>';
-            if (isTeacher) html += '<div class="hw-admin"><h3>🧑‍🏫 老師：新增作業</h3><div class="hw-admin-row"><input id="hw-new-name" type="text" maxlength="100" placeholder="作業名稱，例如：國語習作第 8 課" aria-label="新作業名稱"><input id="hw-new-date" type="date" value="' + new Date().toISOString().slice(0,10) + '" aria-label="作業日期"><button class="hw-btn hw-btn-primary" type="button" onclick="createHomeworkRecord()">＋ 建立作業</button>' + (rec ? '<button class="hw-btn hw-btn-warn" type="button" onclick="deleteHomeworkRecord()">刪除這份作業</button>' : '') + '</div><p class="hw-mode-note">老師模式可以新增作業、修改學生狀態及刪除作業。</p></div>';
+            html += '<span class="hw-mode-status ' + (isTeacher ? 'teacher' : 'student') + '" role="status">目前模式：' + (isTeacher ? '🧑‍🏫 老師' : '👩‍🎓 學生') + '</span></div></div>';
+            if (isTeacher) html += '<div class="hw-admin"><h3>🧑‍🏫 老師：新增作業</h3><div class="hw-admin-row"><input id="hw-new-name" type="text" maxlength="100" placeholder="作業名稱，例如：國語習作第 8 課" aria-label="新作業名稱"><input id="hw-new-date" type="date" value="' + getLocalDateString() + '" aria-label="作業日期"><button class="hw-btn hw-btn-primary" type="button" onclick="createHomeworkRecord()">＋ 建立作業</button>' + (rec ? '<button class="hw-btn hw-btn-warn" type="button" onclick="deleteHomeworkRecord()">刪除這份作業</button>' : '') + '</div><p class="hw-mode-note">老師模式可以新增作業、修改學生狀態及刪除作業。</p></div>';
             if (!rec) {
                 html += '<div class="hw-empty"><h3>目前還沒有作業</h3><p>請到「設定」切換老師模式，再建立第一份作業。</p></div></div>'; root.innerHTML = html; return;
             }
@@ -4161,9 +4239,10 @@ function showImportConfirmDialog(message) {
                 return out + '</div></section>';
             };
             html += drawSection('男生區', male) + drawSection('女生區', female);
-            if (isTeacher) {
+            {
+                // v6.0.7：老師與學生都可查看尚未登記名單；學生仍無權修改其他人的狀態。
                 const missing = roster.filter(st => !rec.statuses[String(st.id || st.name)]);
-                html += '<div class="hw-admin"><h3>📋 尚未登記名單（' + missing.length + ' 人）</h3>' + (missing.length ? '<div style="display:flex;flex-wrap:wrap;gap:8px">' + missing.map(st => '<span style="border:1px solid #f59e0b;border-radius:8px;padding:6px 10px">' + escapeHwText(st.name) + '</span>').join('') + '</div>' : '<p>全班都已登記繳交。</p>') + '</div>';
+                html += '<div class="hw-admin hw-missing-list"><h3>📋 尚未登記名單（' + missing.length + ' 人）</h3>' + (missing.length ? '<div style="display:flex;flex-wrap:wrap;gap:8px">' + missing.map(st => '<span style="border:1px solid #f59e0b;border-radius:8px;padding:6px 10px">' + escapeHwText(st.name) + '</span>').join('') + '</div>' : '<p>全班都已登記繳交。</p>') + '</div>';
             }
             html += '<p class="hw-mode-note">目前模式：' + (isTeacher ? '老師模式（可修正紀錄）' : '學生模式（登記後不可自行取消）') + '。此為本機初稿，請先用測試資料操作。</p></div>';
             root.innerHTML = html;
