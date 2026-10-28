@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>v6.1.24｜401計分板</title>
+    <title>v6.1.40｜401計分板</title>
     <script>
         // 唯一版本來源：新版本只需更新此處，瀏覽器標題與頁面標籤會同步。
-        window.APP_VERSION = 'v6.1.24';
+        window.APP_VERSION = 'v6.1.43';
         document.title = window.APP_VERSION + '｜401計分板';
         document.addEventListener('DOMContentLoaded', function () {
             var versionLabel = document.getElementById('current-version-label');
@@ -655,6 +655,18 @@
         .hw-legend-item{min-width:0;border:1px solid var(--hw-status-border);background:var(--hw-status-bg);border-radius:10px;padding:9px 7px;text-align:center;color:var(--hw-status-color)}
         .hw-legend-item strong{display:block;font-size:14px;line-height:1.35}.hw-legend-item small{display:block;margin-top:4px;font-size:11px;line-height:1.35;color:#475569}
         .hw-legend-dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--hw-status-color);margin-right:5px}
+
+        /* v6.1.32：功能頁籤移至標題上方，修正作業標題列未關閉造成名單偏移 */
+        .hw-heading-row{display:flex;align-items:center;gap:14px;width:100%;min-width:0;flex-wrap:wrap}
+        .hw-heading-row .hw-controls{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-top:0;flex:1 1 auto}
+        .hw-history-tabs{margin:8px 0 10px;padding-bottom:8px}
+        .hw-shell > .hw-status-legend{grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin:0 0 12px;padding:0;border:0;background:transparent}
+        .hw-shell > .hw-status-legend .hw-legend-item{padding:5px 4px;border-radius:8px}
+        .hw-shell > .hw-status-legend .hw-legend-item strong{font-size:clamp(10px,.95vw,13px)}
+        .hw-shell > .hw-status-legend .hw-legend-item small{font-size:clamp(8px,.75vw,10px);line-height:1.15}
+        .hw-topline{margin:8px 0 14px}
+        @media(max-width:760px){.hw-heading-row{align-items:flex-start;flex-direction:row}.hw-heading-row .hw-controls{width:100%;flex-basis:100%}.hw-shell > .hw-status-legend{grid-template-columns:repeat(5,minmax(0,1fr));gap:2px}.hw-shell > .hw-status-legend .hw-legend-item{padding:4px 1px}}
+
         /* v6.1.15：狀態圖例與「作業繳交記錄」標題同列；跑馬燈保持正常顯示 */
         .hw-top{display:block;margin:4px 0 10px}
         .hw-heading-row{display:flex;align-items:center;gap:14px;width:100%;min-width:0}
@@ -667,6 +679,24 @@
         .hw-controls{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-top:10px}
         .hw-controls select{min-width:200px;max-width:100%}
         @media(max-width:760px){.hw-heading-row{align-items:flex-start;flex-direction:column;gap:8px}.hw-legend-slot{width:100%}.hw-legend-slot .hw-status-legend{gap:2px}.hw-legend-slot .hw-legend-item{padding:3px 1px}.hw-legend-slot .hw-legend-item strong{font-size:10px}.hw-legend-slot .hw-legend-item small{font-size:8px}.hw-title{white-space:normal}}
+        .hw-history-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 14px;padding-bottom:10px;border-bottom:1px solid #dbe5ea}
+        .hw-history-tabs button{flex:1 1 150px;border:1px solid #b8d5dc;border-radius:9px;padding:10px 12px;background:#f0f9fb;color:#075985;font:700 15px 'Microsoft JhengHei',sans-serif;cursor:pointer}
+        .hw-history-tabs button.active{background:#087e8b;color:#fff;border-color:#087e8b;box-shadow:0 2px 5px #0002}
+        .hw-history-panel{border:1px solid #d8e4e8;border-radius:12px;background:#fff;padding:14px;margin:8px 0 14px}
+        .hw-history-panel h3{margin:0 0 10px;color:#075985}
+        .hw-history-filter{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:8px 0 12px}
+        .hw-history-filter select,.hw-history-filter input{min-height:38px;border:1px solid #cbd5e1;border-radius:7px;padding:7px 9px;font:inherit;max-width:100%}
+        .hw-history-assignment{border:1px solid #d7e4e8;border-radius:10px;margin:9px 0;overflow:hidden}
+        .hw-history-assignment>summary{cursor:pointer;padding:12px;background:#f0f9fb;font-weight:800;color:#164e63}
+        .hw-history-date{border-top:1px solid #e2e8f0;padding:10px 12px}
+        .hw-history-date>summary{cursor:pointer;font-weight:700;line-height:1.6}
+        .hw-history-counts{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+        .hw-history-count{display:inline-block;padding:4px 8px;border-radius:999px;background:#f1f5f9;font-size:12px;font-weight:700}
+        .hw-history-count.bad{background:#fff1f2;color:#be123c}.hw-history-count.rewrite{background:#ecfdf5;color:#047857}.hw-history-count.pending{background:#fffbeb;color:#92400e}
+        .hw-history-names{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+        .hw-history-name{border:1px solid #dbe4e8;border-radius:7px;padding:5px 8px;background:#fff;font-size:13px}
+        .hw-history-empty{padding:18px;text-align:center;color:#64748b;border:1px dashed #cbd5e1;border-radius:9px}
+        @media(max-width:600px){.hw-history-panel{padding:9px}.hw-history-tabs button{font-size:13px;padding:9px 6px}}
         .hw-student{border-color:var(--hw-status-border)!important;background:var(--hw-status-bg)!important;color:var(--hw-status-color)!important}
         .hw-student .hw-student-name,.hw-student .hw-status-icon,.hw-student .hw-status-text{color:var(--hw-status-color)!important}
         .hw-color-open{border:0;border-radius:9px;padding:9px 12px;background:#3156a5;color:#fff;font-weight:700;cursor:pointer}
@@ -804,6 +834,100 @@
             #config-area.config-workspace-active { padding: 9px; max-height: calc(100dvh - 220px); }
         }
 
+
+
+/* v6.1.35 student heading: subject, assignment and date stay on the title row */
+.hw-student-info-row{display:grid;grid-template-columns:max-content minmax(0,1fr) max-content;align-items:center;gap:14px;margin:6px 0 10px;width:100%;}
+.hw-student-info-row .hw-title{font-size:clamp(22px,2.2vw,32px);}
+.hw-student-fields{display:grid;grid-template-columns:minmax(120px,1fr) minmax(180px,1.45fr) minmax(145px,.85fr);gap:10px;align-items:end;min-width:0;}
+.hw-student-fields label{display:flex;flex-direction:column;gap:4px;min-width:0;font-size:12px;font-weight:700;color:#31556a;}
+.hw-student-fields select,.hw-student-fields input{box-sizing:border-box;width:100%;min-width:0;height:38px;padding:6px 10px;border:1px solid #a8cbd9;border-radius:8px;background:#fff;color:#18384b;font:16px 'Microsoft JhengHei',sans-serif;}
+.hw-student-fields select:disabled,.hw-student-fields input:disabled{opacity:1;color:#18384b;background:#fff;cursor:default;}
+.hw-student-fields input[readonly]{background:#fff;}
+@media(max-width:1000px){.hw-student-info-row{grid-template-columns:max-content minmax(0,1fr);}.hw-student-info-row .hw-mode-status{grid-column:2;justify-self:start}.hw-student-fields{grid-template-columns:minmax(100px,.8fr) minmax(150px,1.2fr) minmax(130px,.8fr);}}
+@media(max-width:700px){.hw-student-info-row{grid-template-columns:1fr;gap:8px}.hw-student-fields{grid-template-columns:1fr 1fr}.hw-student-name-field{grid-column:1/-1}.hw-student-info-row .hw-mode-status{grid-column:1}}
+
+/* v6.1.34 teacher UI: separate teacher workspace; keep student view intact */
+.hw-teacher-create{display:grid;grid-template-columns:minmax(170px,1.1fr) minmax(220px,1.5fr) minmax(155px,.8fr) auto;gap:10px;align-items:end;padding:14px;background:linear-gradient(135deg,#eefaff,#f7fffd);border:1px solid #9ddceb;border-radius:14px;margin:8px 0 12px}
+.hw-teacher-create label{display:flex;flex-direction:column;gap:5px;font-weight:700;color:#31556a;font-size:13px;min-width:0}
+.hw-teacher-create input,.hw-teacher-create select{width:100%;min-width:0;box-sizing:border-box;padding:10px 12px;border:1px solid #a8cbd9;border-radius:10px;background:#fff;font:16px 'Microsoft JhengHei',sans-serif;color:#18384b}
+.hw-teacher-create button{min-height:42px;white-space:nowrap}
+.hw-teacher-workspace{display:grid;grid-template-columns:minmax(160px, .9fr) minmax(420px, 2.7fr) minmax(190px,1fr);gap:12px;align-items:start;margin:12px 0}
+.hw-teacher-card{min-width:0;border:1px solid #d6e4ec;border-radius:14px;background:#fff;padding:10px;box-shadow:0 2px 7px #1231}
+.hw-teacher-card h3{margin:0 0 10px;font-size:17px;color:#15566e}
+.hw-subject-list{display:flex;flex-direction:column;gap:5px}
+.hw-subject-item{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:8px 9px;border:1px solid #d8e5ec;border-radius:8px;background:#f8fbfd;color:#21465a;text-align:left;cursor:pointer;font:600 14px 'Microsoft JhengHei',sans-serif}
+.hw-subject-item.active{border-color:#0b8794;background:#e5f8fa;color:#006b78;box-shadow:inset 3px 0 #0b8794}
+.hw-subject-item small{color:#647b8b;font-weight:500}
+.hw-subject-add{width:100%;margin-top:8px;padding:8px;border:1px dashed #8cb9c7;border-radius:8px;background:#f3fbfd;color:#0b7180;font-weight:700;cursor:pointer}
+.hw-roster-table-wrap{overflow:auto;max-width:100%}
+.hw-roster-table{border-collapse:separate;border-spacing:0;width:100%;min-width:510px;font-size:13px}
+.hw-roster-table th{position:sticky;top:0;background:#eef7fb;color:#28566b;padding:8px 5px;border-bottom:1px solid #d4e3ea;white-space:nowrap}
+.hw-roster-table td{padding:7px 5px;border-bottom:1px solid #e7edf1;text-align:center;white-space:nowrap}
+.hw-roster-table tr:nth-child(even) td{background:#fbfdfe}
+.hw-roster-table td:nth-child(2){text-align:left;font-weight:700}
+.hw-roster-table input[type=radio]{width:17px;height:17px;cursor:pointer;accent-color:#1684dc}
+.hw-roster-table input[type=text]{width:100%;min-width:80px;box-sizing:border-box;border:1px solid #d5e1e7;border-radius:6px;padding:6px;font-size:12px}
+.hw-quick-stack{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.hw-quick-stack button{padding:8px 6px;border:1px solid #d5e5ec;border-radius:8px;background:#f5fafc;color:#23546a;font-weight:700;cursor:pointer;font-size:12px}
+.hw-quick-stack button.primary{background:#e1f7ed;border-color:#9cdec1;color:#08754b}
+.hw-quick-stack button.danger{background:#fff1f2;border-color:#fecdd3;color:#be123c}
+.hw-quick-status{margin-top:12px;border:1px solid #dce9ee;border-radius:10px;padding:8px;background:#f8fcfd}
+.hw-quick-status h4{font-size:13px;margin:0 0 7px;color:#30566a}
+.hw-quick-status button{display:flex;justify-content:space-between;gap:6px;width:100%;padding:5px 2px;border:0;border-bottom:1px solid #e6eef2;background:transparent;color:#31566a;text-align:left;cursor:pointer;font-size:12px}
+.hw-subject-admin{margin-top:10px;font-size:12px;color:#647b8b;line-height:1.5}
+.hw-teacher-note{font-size:12px;color:#647b8b;margin:8px 2px}
+.hw-record-subject{display:inline-block;margin-right:8px;padding:2px 7px;border-radius:6px;background:#e9f7fa;color:#0c7180;font-size:12px;font-weight:700}
+@media(max-width:1050px){.hw-teacher-workspace{grid-template-columns:minmax(145px,.7fr) minmax(0,2fr)}.hw-teacher-workspace .hw-quick-card{grid-column:1/-1}.hw-quick-stack{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:720px){.hw-teacher-create{grid-template-columns:1fr 1fr}.hw-teacher-create label:nth-child(2){grid-column:1/-1}.hw-teacher-workspace{grid-template-columns:1fr}.hw-teacher-workspace .hw-quick-card{grid-column:auto}.hw-quick-stack{grid-template-columns:1fr 1fr}}
+
+
+/* v6.1.38：老師版資訊列與原參考版面一致，標題／科目／作業名稱／日期同列 */
+.hw-teacher-heading{
+  display:grid !important;
+  grid-template-columns:minmax(145px,.8fr) minmax(140px,.75fr) minmax(145px,.85fr) minmax(210px,1.35fr) minmax(155px,.95fr) minmax(145px,.8fr);
+  gap:10px;align-items:end;margin:8px 0 10px !important;padding:10px 12px;
+  border:1px solid #a7dce7;border-radius:12px;
+  background:linear-gradient(110deg,#f1fbfd,#f7fffc);
+}
+.hw-teacher-heading .hw-title{
+  min-width:0;white-space:nowrap;font-size:clamp(22px,2.15vw,34px);
+  align-self:center;line-height:1.15;
+}
+.hw-teacher-heading label{
+  display:flex;flex-direction:column;gap:4px;min-width:0;
+  color:#31566b;font-size:13px;font-weight:700;
+}
+.hw-teacher-heading input,.hw-teacher-heading select{
+  width:100%;min-width:0;box-sizing:border-box;min-height:40px;padding:7px 10px;
+  border:1px solid #a8cbd9;border-radius:9px;background:#fff;
+  color:#18384b;font:16px 'Microsoft JhengHei',sans-serif;
+}
+.hw-teacher-heading .hw-create-btn{
+  min-height:40px;white-space:nowrap;padding:8px 12px;border:1px solid #999;
+  border-radius:4px;background:#f5f5f5;color:#222;font-size:14px;cursor:pointer;
+}
+.hw-teacher-heading .hw-mode-status{white-space:nowrap;align-self:center}
+.hw-teacher-create{display:none !important}
+.hw-teacher-workspace{grid-template-columns:minmax(170px,.9fr) minmax(480px,2.8fr) minmax(220px,1.05fr);gap:12px}
+.hw-teacher-card{min-width:0}
+.hw-roster-table{min-width:550px}
+@media(max-width:1150px){
+ .hw-teacher-heading{grid-template-columns:minmax(180px,1fr) minmax(140px,.8fr) minmax(180px,1.2fr) minmax(140px,.8fr);align-items:end}
+ .hw-teacher-heading .hw-mode-status{grid-column:auto;justify-self:stretch}
+ .hw-teacher-workspace{grid-template-columns:minmax(145px,.75fr) minmax(400px,2fr)}
+ .hw-teacher-workspace .hw-quick-card{grid-column:1/-1}
+}
+@media(max-width:760px){
+ .hw-teacher-heading{grid-template-columns:1fr 1fr;padding:10px}
+ .hw-teacher-heading .hw-title{grid-column:1/-1}
+ .hw-teacher-heading label:nth-of-type(2){grid-column:1/-1}
+ .hw-teacher-heading .hw-mode-status{grid-column:1/-1;justify-self:start}
+ .hw-teacher-heading .hw-create-btn{width:100%}
+ .hw-teacher-workspace{grid-template-columns:1fr}
+ .hw-teacher-workspace .hw-quick-card{grid-column:auto}
+}
+
 </style>
 </head>
 <body>
@@ -835,7 +959,7 @@
                         <span id="daily-info-icon">📅</span><span id="daily-info-text">每日資訊載入中…</span>
                     </div>
                 </div>
-                <div style="display:flex;align-items:center;gap:14px;min-width:0;margin:0 0 4px"><h3 id="board-title-display" style="flex:0 0 auto;margin:0">四１課堂計分板</h3><span id="current-version-label" style="flex:0 0 auto;font-size:12px;color:#008c95;background:#e0f7fa;border:1px solid #b2ebf2;border-radius:12px;padding:3px 8px;font-weight:bold">v6.1.19</span><div id="class-marquee" aria-label="課堂跑馬燈"><span id="class-marquee-track">每一天都是進步的好機會！準備好課本、收好小物品，帶著認真的心，一起成為更棒的自己！</span></div></div>
+                <div style="display:flex;align-items:center;gap:14px;min-width:0;margin:0 0 4px"><h3 id="board-title-display" style="flex:0 0 auto;margin:0">四１課堂計分板</h3><span id="current-version-label" style="flex:0 0 auto;font-size:12px;color:#008c95;background:#e0f7fa;border:1px solid #b2ebf2;border-radius:12px;padding:3px 8px;font-weight:bold">v6.1.30</span><div id="class-marquee" aria-label="課堂跑馬燈"><span id="class-marquee-track">每一天都是進步的好機會！準備好課本、收好小物品，帶著認真的心，一起成為更棒的自己！</span></div></div>
                 <div class="board-view-switch" role="group" aria-label="切換計分板">
                     <button type="button" id="show-personal-board" class="active" onclick="switchBoardView('personal')">👤 個人計分板</button>
                     <button type="button" id="show-seat-board" onclick="switchBoardView('seats')">🪑 座位表計分</button>
@@ -876,6 +1000,14 @@
             <div id="custom-marquee-phrases" class="marquee-phrases" aria-live="polite"></div>
         </section>
         <section id="version-history-panel" hidden aria-label="版本歷史紀錄">
+            <article class="version-entry"><strong>v6.1.38｜老師版新增作業欄位整合</strong><p>更新日期：2026-10-29</p><p>老師版將科目、作業名稱與繳交日期放在「作業繳交記錄」標題同一列，保留左側科目管理、中間全班狀態表與右側快速操作；新增作業會保存科目、名稱及日期。</p></article>
+            <article class="version-entry"><strong>v6.1.37｜學生版科目、作業與日期可切換</strong><p>更新日期：2026-10-29 01:20</p><p>學生模式的科目、作業名稱與日期改為可選擇欄位，可瀏覽不同科目、不同作業及不同日期的既有紀錄；只切換目前檢視，不允許學生建立、修改或刪除作業。</p></article>
+            <article class="version-entry"><strong>v6.1.36｜新增舊作業科目分類</strong><p>更新日期：2026-10-29 01:05</p><p>老師模式新增「舊作業科目分類」區塊，列出尚未設定科目的舊作業，逐筆選擇科目並寫回原紀錄；保留原作業名稱、日期、學生狀態與備註。</p></article>
+            <article class="version-entry"><strong>v6.1.35｜學生版作業資訊列調整</strong><p>更新日期：2026-10-29 00:55</p><p>學生版將科目、作業名稱與日期移至「作業繳交記錄」標題同一橫列，移除下方重複的作業名稱／日期列；保留五個狀態卡片、男女生名單與三個提醒區塊。學生模式欄位僅供查看，避免誤改作業資料。</p></article>
+            <article class="version-entry"><strong>v6.1.34｜老師版版面重整與科目作業管理</strong><p>更新日期：2026-10-29 16:45</p><p>老師版重新安排為左側科目管理、中間全班登記表、右側快速操作；新增作業時選科目、填作業名稱及日期。舊作業未設定科目時歸入未分類，學生版維持原本男女生名單版面。</p></article>
+            <article class="version-entry"><strong>v6.1.32｜功能頁籤上移與學生名單版面修正</strong><p>更新日期：2026-10-29 16:15</p><p>將「作業登記／個人欠交／全班紀錄」移到「作業繳交記錄」標題上方；修正作業標題列缺少結束標籤造成男女生名單被擠到右側的問題，讓男女生名單恢復左右並排並充分使用畫面寬度。保留五個窄版狀態卡片，維持不顯示全班統計橫列。</p></article>
+            <article class="version-entry"><strong>v6.1.31｜調整作業繳交頁面版面順序</strong><p>更新日期：2026-10-29</p><p>將「作業登記／個人欠交／全班紀錄」頁籤與五個彩色狀態卡片交換位置；狀態卡片改為較窄的橫向排列，並移除全班人數、已繳交、未繳交及繳交率統計橫列，讓學生名單更靠近頁面上方。</p></article>
+            <article class="version-entry"><strong>v6.1.30｜新增作業繳交記錄一覽表</strong><p>更新日期：2026-10-28 23:44</p><p>在既有作業繳交功能內新增作業登記、個人欠交與全班紀錄頁籤；直接讀取原有作業與學生狀態資料，依作業名稱與日期查看各狀態學生名單，個人頁顯示目前尚欠及歷史狀態。</p></article>
             <article class="version-entry"><strong>v6.1.24｜修正右側頭像、按鈕與版本標籤對齊</strong><p>更新日期：2026-10-28 23:12</p><p>將頭像、個人紀錄直式按鈕、紅色版本標籤放入同一個固定垂直容器，統一水平中線與間距；版本文字由 window.APP_VERSION 自動帶入。</p></article>
             <article class="version-entry"><strong>v6.1.23｜移除個人紀錄按鈕內的人像並新增紅色版本標籤</strong><p>更新日期：2026-10-28 23:00</p><p>移除右側「個人紀錄」直式按鈕內多餘的人像圖示；在按鈕下方新增紅色版本標籤，與上方頭像、按鈕垂直對齊。版本文字從 window.APP_VERSION 自動讀取。</p></article>
             <article class="version-entry"><strong>v6.1.22｜設定區新增個人頭像上傳與恢復預設</strong><p>更新日期：2026-10-28 22:42</p><p>在「修改右側直式按鈕名稱」旁新增個人頭像設定，可上傳圖片、預覽、自動保存，並可確認後恢復預設人像；頭像顯示在右側「個人紀錄」按鈕上方。版本號統一由 window.APP_VERSION 管理。</p></article>
@@ -4448,6 +4580,8 @@ function showImportConfirmDialog(message) {
         let homeworkRecords = [];
         try { const parsedHw = JSON.parse(localStorage.getItem(HW_STORAGE_KEY) || '[]'); if (Array.isArray(parsedHw)) homeworkRecords = parsedHw; } catch (e) { homeworkRecords = []; }
         let activeHomeworkId = '';
+        let homeworkHistoryView = 'register';
+        let homeworkHistoryStudentId = '';
         function saveHomeworkRecords() {
             try {
                 const raw = JSON.stringify(homeworkRecords);
@@ -4587,17 +4721,68 @@ function showImportConfirmDialog(message) {
             });
             modal.querySelector('[data-hw-cancel]').focus();
         }
+        function setHomeworkHistoryView(view) {
+            homeworkHistoryView = ['register','individual','class'].includes(view) ? view : 'register';
+            renderHomeworkBoard();
+        }
+        function hwStudentLabel(studentId) {
+            const student = (Array.isArray(teams) ? teams : []).find(st => String(st.id || st.name) === String(studentId));
+            return student ? student.name : String(studentId);
+        }
+        function renderHomeworkHistoryView() {
+            if (homeworkHistoryView === 'individual') {
+                const roster = Array.isArray(teams) ? teams : [];
+                if (!homeworkHistoryStudentId && roster.length) homeworkHistoryStudentId = String(roster[0].id || roster[0].name);
+                const options = roster.map(st => { const id=String(st.id || st.name); return '<option value="'+escapeHwText(id)+'" '+(id===homeworkHistoryStudentId?'selected':'')+'>'+escapeHwText(st.name)+'</option>'; }).join('');
+                let out='<section class="hw-history-panel"><h3>👤 個人欠交紀錄</h3><div class="hw-history-filter"><label for="hw-history-student">選擇學生：</label><select id="hw-history-student" onchange="homeworkHistoryStudentId=this.value;renderHomeworkBoard()">'+options+'</select></div>';
+                const student=roster.find(st=>String(st.id||st.name)===homeworkHistoryStudentId);
+                if(!student){out+='<div class="hw-history-empty">目前沒有學生名單。</div></section>';return out;}
+                const sid=String(student.id||student.name);
+                const pending=[];
+                homeworkRecords.forEach(rec=>{const st=hwStatusInfo(rec,sid);if(st.id!=='submitted')pending.push({rec,status:st});});
+                pending.sort((a,b)=>String(a.rec.date||'').localeCompare(String(b.rec.date||'')));
+                out+='<p>學生：<strong>'+escapeHwText(student.name)+'</strong>　目前尚欠 <strong>'+pending.length+'</strong> 份（包含尚未登記、未完成、忘記帶及待重寫）。</p>';
+                if(!pending.length) out+='<div class="hw-history-empty">目前沒有尚欠作業，太好了！</div>';
+                else {out+='<div class="hw-history-names">';pending.forEach(item=>{const cls=item.status.id==='rewrite'?'rewrite':item.status.id==='pending'?'pending':'bad';out+='<div class="hw-history-name"><strong>'+escapeHwText(item.rec.name)+'</strong><br><small>'+escapeHwText(item.rec.date||'未設定日期')+'</small><br><span class="hw-history-count '+cls+'">'+escapeHwText(item.status.label)+'</span></div>';});out+='</div>';}
+                out+='<h3 style="margin-top:18px">📜 作業歷史（含已繳交）</h3>';
+                if(!homeworkRecords.length) out+='<div class="hw-history-empty">尚無作業紀錄。</div>';
+                else {out+='<div class="hw-history-names">';homeworkRecords.slice().sort((a,b)=>String(b.date||'').localeCompare(String(a.date||''))).forEach(rec=>{const st=hwStatusInfo(rec,sid);out+='<div class="hw-history-name"><strong>'+escapeHwText(rec.name)+'</strong><br><small>'+escapeHwText(rec.date||'未設定日期')+'</small><br><span class="hw-history-count '+(st.id==='submitted'?'':st.id==='rewrite'?'rewrite':st.id==='pending'?'pending':'bad')+'">'+escapeHwText(st.label)+'</span></div>';});out+='</div>';}
+                return out+'</section>';
+            }
+            const grouped=new Map();
+            homeworkRecords.forEach(rec=>{const name=String(rec.name||'未命名作業');if(!grouped.has(name))grouped.set(name,[]);grouped.get(name).push(rec);});
+            let out='<section class="hw-history-panel"><h3>🏫 全班作業紀錄</h3><p class="hw-mode-note">依作業名稱分類，再依日期排列。展開日期即可查看各狀態的學生名單。</p>';
+            if(!homeworkRecords.length) return out+'<div class="hw-history-empty">目前還沒有作業紀錄。</div></section>';
+            const roster=Array.isArray(teams)?teams:[];
+            [...grouped.entries()].sort((a,b)=>a[0].localeCompare(b[0],'zh-Hant')).forEach(([name,records])=>{
+                records.sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
+                out+='<details class="hw-history-assignment"><summary>'+escapeHwText(name)+' <span style="color:#64748b;font-weight:500">（'+records.length+' 次）</span></summary>';
+                records.forEach(rec=>{
+                    const statuses={submitted:[],pending:[],incomplete:[],forgot:[],rewrite:[]};
+                    roster.forEach(st=>{const id=String(st.id||st.name),status=hwStatusInfo(rec,id);(statuses[status.id]||statuses.pending).push(st.name);});
+                    const counts='<div class="hw-history-counts"><span class="hw-history-count">已繳 '+statuses.submitted.length+' 人</span><span class="hw-history-count pending">尚未登記 '+statuses.pending.length+' 人</span><span class="hw-history-count bad">未完成 '+statuses.incomplete.length+' 人</span><span class="hw-history-count bad">忘記帶 '+statuses.forgot.length+' 人</span><span class="hw-history-count rewrite">待重寫 '+statuses.rewrite.length+' 人</span></div>';
+                    out+='<details class="hw-history-date"><summary>'+escapeHwText(rec.date||'未設定日期')+'　｜　已繳 '+statuses.submitted.length+'／'+roster.length+' 人</summary>'+counts;
+                    [['尚未登記','pending'],['未完成','incomplete'],['忘記帶','forgot'],['待重寫','rewrite']].forEach(([label,key])=>{out+='<div style="margin:8px 0"><strong>'+label+'（'+statuses[key].length+'人）</strong><div class="hw-history-names">'+(statuses[key].length?statuses[key].map(n=>'<span class="hw-history-name">'+escapeHwText(n)+'</span>').join(''):'<span style="color:#64748b;font-size:13px">無</span>')+'</div></div>';});
+                    out+='</details>';
+                });
+                out+='</details>';
+            });
+            return out+'</section>';
+        }
         function renderHomeworkBoard() {
             const root = document.getElementById('homework-board-container'); if (!root) return;
             const rec = getActiveHomework(); if (rec && !activeHomeworkId) activeHomeworkId = rec.id;
             const isTeacher = homeworkMode === 'teacher';
             const options = homeworkRecords.map(r => '<option value="' + escapeHwText(r.id) + '" ' + (rec && r.id === rec.id ? 'selected' : '') + '>' + escapeHwText(r.name) + '（' + escapeHwText(r.date || '') + '）</option>').join('');
-            let html = '<div class="hw-shell"><div class="hw-top"><div class="hw-heading-row"><h2 class="hw-title">📚 作業繳交記錄</h2><div class="hw-legend-slot"></div></div><div class="hw-controls">';
+            let html = '<div class="hw-shell"><div class="hw-top">';
+            html += '<div class="hw-history-tabs" role="group" aria-label="作業功能頁籤"><button type="button" class="'+(homeworkHistoryView==='register'?'active':'')+'" onclick="setHomeworkHistoryView(\'register\')">📝 作業登記</button><button type="button" class="'+(homeworkHistoryView==='individual'?'active':'')+'" onclick="setHomeworkHistoryView(\'individual\')">👤 個人欠交</button><button type="button" class="'+(homeworkHistoryView==='class'?'active':'')+'" onclick="setHomeworkHistoryView(\'class\')">🏫 全班紀錄</button></div>';
+            html += '<div class="hw-heading-row"><h2 class="hw-title">📚 作業繳交記錄</h2><div class="hw-controls">';
             if (homeworkRecords.length) html += '<select aria-label="選擇作業" onchange="selectHomeworkRecord(this.value)">' + options + '</select>';
             html += '<span class="hw-mode-status ' + (isTeacher ? 'teacher' : 'student') + '" role="status">目前模式：' + (isTeacher ? '🧑‍🏫 老師' : '👩‍🎓 學生') + '</span>';
             if (isTeacher) html += '<button type="button" class="hw-color-open" onclick="openHomeworkColorDrawer()">🎨 修改顏色</button>';
-            html += '</div></div>';
-            html += renderHomeworkLegend();
+            html += '</div></div></div>';
+            if (homeworkHistoryView !== 'register') { html += renderHomeworkHistoryView() + '</div>'; root.innerHTML = html; return; }
+            // v6.1.48：老師與學生模式皆不顯示五色狀態圖例卡列。
             if (isTeacher) html += '<div class="hw-admin"><h3>🧑‍🏫 老師：新增作業</h3><div class="hw-admin-row"><input id="hw-new-name" type="text" maxlength="100" placeholder="作業名稱，例如：國語習作第 8 課" aria-label="新作業名稱"><input id="hw-new-date" type="date" value="' + getLocalDateString() + '" aria-label="作業日期"><button class="hw-btn hw-btn-primary" type="button" onclick="createHomeworkRecord()">＋ 建立作業</button>' + (rec ? '<button class="hw-btn hw-btn-warn" type="button" onclick="deleteHomeworkRecord()">刪除這份作業</button>' : '') + '</div><p class="hw-mode-note">老師模式可以新增作業、修改學生狀態及刪除作業。</p></div>';
             if (!rec) { html += '<div class="hw-empty"><h3>目前還沒有作業</h3><p>請到「設定」切換老師模式，再建立第一份作業。</p></div></div>'; root.innerHTML = html; return; }
             const roster = Array.isArray(teams) ? teams : [];
@@ -4607,8 +4792,7 @@ function showImportConfirmDialog(message) {
             const rewriteCount = roster.filter(st => statusFor(st).id === 'rewrite').length;
             const male = roster.filter(st => String(st.gender || '').includes('男'));
             const female = roster.filter(st => String(st.gender || '').includes('女'));
-            html += '<div class="hw-topline"><div class="hw-homework-title"><h2>' + escapeHwText(rec.name) + '</h2>' + (isTeacher ? '<button type="button" class="hw-btn hw-rename-homework" onclick="renameActiveHomework()">✏️ 修改作業名稱</button>' : '') + '<span>作業日期：' + escapeHwText(rec.date || '未設定') + '</span></div>';
-            html += '<div class="hw-summary"><div class="hw-stat hw-stat-total"><strong>' + roster.length + '</strong><span>全班人數</span></div><div class="hw-stat hw-stat-done"><strong>' + submittedCount + '</strong><span>已繳交</span></div><div class="hw-stat hw-stat-pending"><strong>' + pendingCount + '</strong><span>未繳交（含未登記）</span></div>' + (rewriteCount > 0 ? '<div class="hw-stat hw-stat-rewrite"><strong>' + rewriteCount + '</strong><span>待重寫</span></div>' : '') + '<div class="hw-stat hw-stat-rate"><strong>' + (roster.length ? Math.round(submittedCount / roster.length * 100) : 0) + '%</strong><span>繳交率</span></div></div></div>';
+            html += '<div class="hw-topline"><div class="hw-homework-title"><h2>' + escapeHwText(rec.name) + '</h2>' + (isTeacher ? '<button type="button" class="hw-btn hw-rename-homework" onclick="renameActiveHomework()">✏️ 修改作業名稱</button>' : '') + '<span>作業日期：' + escapeHwText(rec.date || '未設定') + '</span></div></div>';
             const drawSection = (title, list) => {
                 if (!list.length) return '';
                 const count = list.filter(st => statusFor(st).id === 'submitted').length;
@@ -4625,7 +4809,7 @@ function showImportConfirmDialog(message) {
                 summaryColumn('尚未登記','繳交完請記得點選。',pendingStudents,'#F59E0B','#FFFBEB') +
                 summaryColumn('未繳交','未完成／忘記帶／請寫在今日聯絡簿提醒',unsubmittedStudents,'#F43F5E','#FFF1F2') +
                 summaryColumn('待重寫名單','請重新完成，隔日繳交',rewriteStudents,'#16A765','#ECFDF5') + '</div>';
-            html += '<p class="hw-mode-note">目前模式：' + (isTeacher ? '老師模式（可修正紀錄與顏色）' : '學生模式（登記後不可自行更改）') + '。顏色圖例會顯示在作業標題旁。</p></div>';
+            html += '<p class="hw-mode-note">目前模式：' + (isTeacher ? '老師模式（可修正紀錄與顏色）' : '學生模式（登記後不可自行更改）') + '。' + '</p></div>';
             root.innerHTML = html;
             placeHomeworkLegendInHeader(currentBoardView === 'homework');
         }
@@ -4803,7 +4987,328 @@ function showImportConfirmDialog(message) {
   sync();
 })();
 
+
+/* v6.1.35: student view inline subject/name/date fields matching approved reference layout */
+const HW_DEFAULT_SUBJECTS = ['國語','數學','社會','自然','英文','健康','綜合','藝文','體育','未分類'];
+let hwSubjectList = (()=>{try{const a=JSON.parse(localStorage.getItem('tab_class_homework_subjects_v1')||'null');return Array.isArray(a)&&a.length?a:HW_DEFAULT_SUBJECTS.slice();}catch(e){return HW_DEFAULT_SUBJECTS.slice();}})();
+let hwTeacherSubjectFilter = '全部';
+function saveHwSubjects(){try{localStorage.setItem('tab_class_homework_subjects_v1',JSON.stringify(hwSubjectList));}catch(e){alert('科目清單儲存失敗，請先匯出備份。');}}
+function hwSubjectOf(rec){return String(rec?.subject||'未分類');}
+function hwAddSubject(){if(homeworkMode!=='teacher')return;const n=prompt('新增科目名稱：');if(n===null)return;const name=n.trim();if(!name)return;if(hwSubjectList.includes(name)){alert('這個科目已存在。');return;}hwSubjectList=hwSubjectList.filter(x=>x!=='未分類');hwSubjectList.push(name);hwSubjectList.push('未分類');saveHwSubjects();renderHomeworkBoard();}
+function hwSetSubjectFilter(subject){hwTeacherSubjectFilter=subject;renderHomeworkBoard();}
+function hwAssignLegacySubject(recordId,subject){if(homeworkMode!=='teacher')return;const rec=homeworkRecords.find(r=>String(r.id)===String(recordId));if(!rec)return;const next=String(subject||'未分類').trim()||'未分類';const before=JSON.stringify(rec);rec.subject=next;saveHomeworkRecords();const check=homeworkRecords.find(r=>String(r.id)===String(recordId));if(!check||check.subject!==next){try{Object.assign(rec,JSON.parse(before));}catch(_){}alert('科目分類儲存失敗，原資料已盡可能保留。');return;}hwTeacherSubjectFilter=next;renderHomeworkBoard();}
+function hwSetStudentStatus(studentId,status){const rec=getActiveHomework();if(!rec)return;if(!rec.statuses)rec.statuses={};rec.statuses[String(studentId)]={status,updatedAt:new Date().toISOString(),updatedBy:'teacher'};saveHomeworkRecords();renderHomeworkBoard();}
+function hwSetAllStatus(status){const rec=getActiveHomework();if(!rec)return;if(!confirm('確定將本次作業全班設為「'+(HW_STATUSES.find(s=>s.id===status)?.label||status)+'」？'))return;rec.statuses=rec.statuses||{};(Array.isArray(teams)?teams:[]).forEach(st=>{rec.statuses[String(st.id||st.name)]={status,updatedAt:new Date().toISOString(),updatedBy:'teacher'};});saveHomeworkRecords();renderHomeworkBoard();}
+function hwClearThisStatus(){const rec=getActiveHomework();if(!rec)return;if(!confirm('只清除這份作業的全班狀態？作業及其他作業紀錄不會刪除。'))return;rec.statuses={};saveHomeworkRecords();renderHomeworkBoard();}
+function hwCopyPrevious(){const rec=getActiveHomework();if(!rec)return;const prev=homeworkRecords.filter(r=>r.id!==rec.id&&hwSubjectOf(r)===hwSubjectOf(rec)).sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')))[0];if(!prev){alert('同科目目前沒有其他作業可供複製。');return;}if(!confirm('將「'+prev.name+'」的學生狀態複製到目前作業？'))return;rec.statuses=JSON.parse(JSON.stringify(prev.statuses||{}));saveHomeworkRecords();renderHomeworkBoard();}
+function hwStatusCell(st,rec){const sid=String(st.id||st.name),cur=hwStatusInfo(rec,sid).id;return HW_STATUSES.map(x=>'<td title="'+escapeHwText(x.label)+'"><input type="radio" name="hwst_'+escapeHwText(sid)+'" aria-label="'+escapeHwText(st.name)+'：'+escapeHwText(x.label)+'" '+(cur===x.id?'checked':'')+' onchange="hwSetStudentStatus(\''+escapeHwText(sid).replace(/'/g,"\\'")+'\',\''+x.id+'\')"></td>').join('');}
+function hwTeacherWorkspace(rec){const roster=Array.isArray(teams)?teams:[];const subjects=[...new Set([...hwSubjectList,...homeworkRecords.map(hwSubjectOf)])];if(!subjects.includes('未分類'))subjects.push('未分類');const counts={};subjects.forEach(s=>counts[s]=homeworkRecords.filter(r=>hwSubjectOf(r)===s).length);const shown=hwTeacherSubjectFilter==='全部'?subjects:subjects.filter(s=>s===hwTeacherSubjectFilter);let out='<div class="hw-teacher-workspace">';
+ out+='<aside class="hw-teacher-card"><h3>⚙️ 科目管理</h3><div class="hw-subject-list"><button class="hw-subject-item '+(hwTeacherSubjectFilter==='全部'?'active':'')+'" onclick="hwSetSubjectFilter(\'全部\')"><span>全部科目</span><small>'+homeworkRecords.length+'</small></button>';
+ shown.forEach(sub=>{out+='<button class="hw-subject-item '+(hwTeacherSubjectFilter===sub?'active':'')+'" onclick="hwSetSubjectFilter(\''+escapeHwText(sub).replace(/'/g,"\\'")+'\')"><span>'+escapeHwText(sub)+'</span><small>'+counts[sub]+'</small></button>';});out+='</div><button class="hw-subject-add" onclick="hwAddSubject()">＋ 新增科目</button><p class="hw-subject-admin">舊作業未設定科目時會列在「未分類」，不會刪除或改動原有學生狀態。</p>';
+ const legacy=homeworkRecords.filter(r=>!String(r.subject||'').trim());
+ out+='<div class="hw-legacy-classifier" style="margin-top:12px;padding-top:10px;border-top:1px solid #d7e5ec"><h4 style="margin:0 0 8px;color:#0b6172">🗂️ 舊作業科目分類 <small>('+legacy.length+' 筆)</small></h4>';
+ if(!legacy.length){out+='<p class="hw-subject-admin">目前沒有尚未分類的舊作業。</p>';}
+ legacy.forEach(old=>{out+='<div style="border:1px solid #dbe7ee;border-radius:8px;padding:8px;margin:7px 0;background:#fff"><strong style="display:block;overflow-wrap:anywhere">'+escapeHwText(old.name||'未命名作業')+'</strong><small style="color:#647b8b">日期：'+escapeHwText(old.date||'未設定')+'</small><select aria-label="為 '+escapeHwText(old.name||'舊作業')+' 指定科目" style="width:100%;margin-top:6px;padding:6px;border:1px solid #b8d4df;border-radius:6px" onchange="hwAssignLegacySubject(\''+escapeHwText(old.id).replace(/'/g,"\\'")+'\',this.value)"><option value="">選擇科目…</option>'+subjects.filter(x=>x!=='未分類').map(x=>'<option value="'+escapeHwText(x)+'">'+escapeHwText(x)+'</option>').join('')+'<option value="未分類">保留未分類</option></select></div>';});
+ out+='</div></aside>';
+ out+='<section class="hw-teacher-card"><h3>👥 全班繳交狀態　<small style="font-weight:500;color:#647b8b">'+escapeHwText(rec.name)+'｜'+escapeHwText(rec.date||'')+'</small></h3><div class="hw-roster-table-wrap"><table class="hw-roster-table"><thead><tr><th>座號</th><th>姓名</th>'+HW_STATUSES.map(x=>'<th>'+escapeHwText(x.label)+'</th>').join('')+'<th>備註</th></tr></thead><tbody>';
+ roster.forEach((st,i)=>{const sid=String(st.id||st.name);out+='<tr><td>'+escapeHwText(st.number||st.seat||i+1)+'</td><td>'+escapeHwText(st.name)+'</td>'+hwStatusCell(st,rec)+'<td><input type="text" placeholder="備註" value="'+escapeHwText((rec.notes||{})[sid]||'')+'" onchange="hwSaveNote(\''+escapeHwText(sid).replace(/'/g,"\\'")+'\',this.value)"></td></tr>';});
+ out+='</tbody></table></div><p class="hw-teacher-note">點選狀態即可即時儲存；原有作業紀錄與歷史狀態保留。</p></section>';
+ const statusCounts={};HW_STATUSES.forEach(x=>statusCounts[x.id]=roster.filter(st=>hwStatusInfo(rec,String(st.id||st.name)).id===x.id).length);
+ out+='<aside class="hw-teacher-card hw-quick-card"><h3>⚡ 快速操作</h3><div class="hw-quick-stack"><button class="primary" onclick="hwSetAllStatus(\'submitted\')">✓ 全部已繳交</button><button onclick="hwCopyPrevious()">⟳ 複製同科前次</button><button class="danger" onclick="hwClearThisStatus()">清除本次狀態</button><button onclick="renameActiveHomework()">✎ 修改作業名</button></div><div class="hw-quick-status"><h4>本次作業名單</h4>'+HW_STATUSES.map(x=>'<button onclick="hwShowStatusNames(\''+x.id+'\')"><span>'+escapeHwText(x.label)+'</span><strong>'+statusCounts[x.id]+' 人　›</strong></button>').join('')+'</div><div class="hw-subject-admin">狀態更新會寫入既有作業資料；不會另建重複的學生紀錄。</div></aside></div>';return out;}
+function hwSaveNote(studentId,value){const rec=getActiveHomework();if(!rec)return;rec.notes=rec.notes||{};rec.notes[String(studentId)]=String(value||'');saveHomeworkRecords();}
+function hwShowStatusNames(statusId){const rec=getActiveHomework();if(!rec)return;const list=(Array.isArray(teams)?teams:[]).filter(st=>hwStatusInfo(rec,String(st.id||st.name)).id===statusId).map(st=>st.name);const label=HW_STATUSES.find(x=>x.id===statusId)?.label||statusId;alert(label+'（'+list.length+'人）\n'+(list.length?list.join('、'):'目前沒有學生'));}
+const renderHomeworkBoardV6132 = renderHomeworkBoard;
+renderHomeworkBoard = function(){
+ if(homeworkMode!=='teacher'||homeworkHistoryView!=='register'){renderHomeworkBoardV6132();if(homeworkMode==='student'&&homeworkHistoryView==='register'){const rec=getActiveHomework();const h=document.querySelector('.hw-homework-title h2');if(h&&rec)h.textContent='📚 '+(rec.subject?rec.subject+'｜':'')+rec.name;}return;}
+ const root=document.getElementById('homework-board-container');if(!root)return;const rec=getActiveHomework();const subjects=[...new Set([...hwSubjectList,...homeworkRecords.map(hwSubjectOf)])];if(!subjects.includes('未分類'))subjects.push('未分類');const currentSubject=rec?hwSubjectOf(rec):'國語';
+ let html='<div class="hw-shell"><div class="hw-history-tabs" role="group" aria-label="作業功能頁籤"><button type="button" class="active" onclick="setHomeworkHistoryView(\'register\')">📝 作業登記</button><button type="button" onclick="setHomeworkHistoryView(\'individual\')">👤 個人欠交</button><button type="button" onclick="setHomeworkHistoryView(\'class\')">🏫 全班紀錄</button></div>';
+ html+='<div class="hw-teacher-create"><label>科目<select id="hw-new-subject">'+subjects.map(x=>'<option value="'+escapeHwText(x)+'" '+(x===currentSubject?'selected':'')+'>'+escapeHwText(x)+'</option>').join('')+'</select></label><label>作業名稱<input id="hw-new-name" type="text" maxlength="100" placeholder="例如：第五課生字練習"></label><label>繳交日期<input id="hw-new-date" type="date" value="'+getLocalDateString()+'"></label><button type="button" class="hw-btn hw-btn-primary" onclick="createHomeworkRecord()">＋ 建立作業</button></div>';
+ if(!rec){html+='<div class="hw-empty"><h3>目前尚無作業</h3><p>選擇科目、輸入作業名稱與日期，再建立第一份作業。</p></div></div>';root.innerHTML=html;return;}
+ html+='<div class="hw-heading-row" style="margin:4px 0 10px"><h2 class="hw-title" style="white-space:normal;flex:1">📚 '+escapeHwText(hwSubjectOf(rec))+'｜'+escapeHwText(rec.name)+'（'+escapeHwText(rec.date||'未設定')+'）</h2><div class="hw-controls"><select aria-label="選擇作業" onchange="selectHomeworkRecord(this.value)">'+homeworkRecords.map(r=>'<option value="'+escapeHwText(r.id)+'" '+(r.id===rec.id?'selected':'')+'>'+escapeHwText(hwSubjectOf(r)+'｜'+r.name+'（'+(r.date||'')+'）')+'</option>').join('')+'</select><span class="hw-mode-status teacher">目前模式：🧑‍🏫 老師</span><button type="button" class="hw-color-open" onclick="openHomeworkColorDrawer()">🎨 修改顏色</button></div></div>';
+ html+=hwTeacherWorkspace(rec)+'<p class="hw-mode-note">老師版：左側管理科目，中間登記全班狀態，右側快速操作。學生版維持原有名單介面。</p></div>';root.innerHTML=html;
+};
+/* v6.1.37: 學生模式可切換科目、作業名稱與日期，只瀏覽既有紀錄，不可編輯作業資料。 */
+function hwStudentRecordsForSubject(subject){return homeworkRecords.filter(r=>hwSubjectOf(r)===String(subject));}
+function hwStudentSelectSubject(subject){
+  const list=hwStudentRecordsForSubject(subject).slice().sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
+  if(!list.length)return;
+  const current=getActiveHomework();
+  const match=list.find(r=>current&&r.name===current.name&&r.date===current.date)||list[0];
+  activeHomeworkId=match.id;renderHomeworkBoard();
+}
+function hwStudentSelectName(name){
+  const current=getActiveHomework();if(!current)return;
+  const list=hwStudentRecordsForSubject(hwSubjectOf(current)).filter(r=>String(r.name||'')===String(name)).sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
+  if(!list.length)return;
+  const match=list.find(r=>String(r.date||'')===String(current.date||''))||list[0];
+  activeHomeworkId=match.id;renderHomeworkBoard();
+}
+function hwStudentSelectDate(date){
+  const current=getActiveHomework();if(!current)return;
+  const sameSubject=hwStudentRecordsForSubject(hwSubjectOf(current));
+  let match=sameSubject.find(r=>String(r.date||'')===String(date)&&String(r.name||'')===String(current.name||''));
+  if(!match)match=sameSubject.filter(r=>String(r.date||'')===String(date)).sort((a,b)=>String(a.name||'').localeCompare(String(b.name||'')))[0];
+  if(!match)match=homeworkRecords.find(r=>String(r.date||'')===String(date));
+  if(match){activeHomeworkId=match.id;renderHomeworkBoard();}
+}
+const renderHomeworkBoardV6134 = renderHomeworkBoard;
+renderHomeworkBoard = function(){
+  renderHomeworkBoardV6134();
+  if(homeworkMode!=='student' || homeworkHistoryView!=='register') return;
+  const root=document.getElementById('homework-board-container');
+  const rec=getActiveHomework();
+  if(!root || !rec) return;
+  const heading=root.querySelector('.hw-heading-row');
+  if(!heading) return;
+  const subject=hwSubjectOf(rec);
+  // 學生版只顯示目前作業日期當天實際有作業的科目；常用科目順序與老師版一致。
+  const currentDate=String(rec.date||'');
+  const subjectPool=[...new Set(homeworkRecords.filter(r=>String(r.date||'')===currentDate).map(hwSubjectOf))];
+  const pinnedSubjects=['國語','數學','社會','綜合'];
+  const subjects=[...pinnedSubjects.filter(x=>subjectPool.includes(x)),...subjectPool.filter(x=>!pinnedSubjects.includes(x)&&x!=='未分類').sort((a,b)=>a.localeCompare(b,'zh-Hant')),...(subjectPool.includes('未分類')?['未分類']:[])];
+  const subjectOptions=subjects.map(x=>'<option value="'+escapeHwText(x)+'" '+(x===subject?'selected':'')+'>'+escapeHwText(x)+'</option>').join('');
+  const names=[...new Set(hwStudentRecordsForSubject(subject).map(r=>String(r.name||'未命名作業')))].sort((a,b)=>a.localeCompare(b,'zh-Hant'));
+  const nameOptions=names.map(x=>'<option value="'+escapeHwText(x)+'" '+(x===String(rec.name||'')?'selected':'')+'>'+escapeHwText(x)+'</option>').join('');
+  const dates=[...new Set(hwStudentRecordsForSubject(subject).map(r=>String(r.date||'')).filter(Boolean))].sort((a,b)=>b.localeCompare(a));
+  const dateOptions=dates.map(x=>'<option value="'+escapeHwText(x)+'" '+(x===String(rec.date||'')?'selected':'')+'>'+escapeHwText(x)+'</option>').join('');
+  heading.outerHTML='<div class="hw-heading-row hw-student-info-row">'+
+    '<h2 class="hw-title">📚 作業繳交記錄</h2>'+
+    '<div class="hw-student-fields">'+
+      '<label><span>科目</span><select aria-label="選擇科目" onchange="hwStudentSelectSubject(this.value)">'+subjectOptions+'</select></label>'+
+      '<label class="hw-student-name-field"><span>作業名稱</span><select aria-label="選擇作業名稱" onchange="hwStudentSelectName(this.value)">'+nameOptions+'</select></label>'+
+      '<label class="hw-student-date-field"><span>繳交日期</span><select aria-label="選擇繳交日期" onchange="hwStudentSelectDate(this.value)">'+dateOptions+'</select></label>'+
+    '</div>'+
+    '<span class="hw-mode-status student" role="status">目前模式：👩‍🎓 學生</span>'+
+  '</div>';
+  const oldTitle=root.querySelector('.hw-topline');
+  if(oldTitle) oldTitle.remove();
+  placeHomeworkLegendInHeader(currentBoardView === 'homework');
+};
+const createHomeworkRecordV6132=createHomeworkRecord;
+createHomeworkRecord=function(){if(homeworkMode!=='teacher'){alert('請先切換為老師模式。');return;}const nameEl=document.getElementById('hw-new-name'),dateEl=document.getElementById('hw-new-date'),subjectEl=document.getElementById('hw-new-subject');const name=(nameEl?.value||'').trim();if(!name){alert('請先輸入作業名稱。');nameEl?.focus();return;}const subject=(subjectEl?.value||'未分類').trim()||'未分類';const date=dateEl?.value||getLocalDateString();const record={id:'HW'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),subject,name,date,createdAt:new Date().toISOString(),statuses:{},notes:{}};homeworkRecords.unshift(record);activeHomeworkId=record.id;hwTeacherSubjectFilter=subject;saveHomeworkRecords();renderHomeworkBoard();};
+
+
+/* v6.1.38：老師版將科目、作業名稱、繳交日期整合到作業標題同一列。 */
+const renderHomeworkBoardV6138Base = renderHomeworkBoard;
+renderHomeworkBoard = function(){
+  renderHomeworkBoardV6138Base();
+  if(homeworkMode!=='teacher' || homeworkHistoryView!=='register') return;
+  const root=document.getElementById('homework-board-container');
+  if(!root) return;
+  const rec=getActiveHomework();
+  const subjects=[...new Set([...hwSubjectList,...homeworkRecords.map(hwSubjectOf)])];
+  if(!subjects.includes('未分類')) subjects.push('未分類');
+  const currentSubject=rec?hwSubjectOf(rec):(subjects.find(x=>x!=='未分類')||'國語');
+  const subjectOptions=subjects.map(x=>'<option value="'+escapeHwText(x)+'" '+(x===currentSubject?'selected':'')+'>'+escapeHwText(x)+'</option>').join('');
+  const heading=root.querySelector('.hw-heading-row');
+  const oldCreate=root.querySelector('.hw-teacher-create');
+  if(oldCreate) oldCreate.remove();
+  if(heading){
+    heading.classList.add('hw-teacher-heading');
+    heading.style.margin='8px 0 10px';
+    heading.innerHTML=
+      '<span class="hw-mode-status teacher">目前模式：🧑‍🏫 老師</span>'+
+      '<label><span>科目</span><select id="hw-new-subject" aria-label="選擇或新增作業科目">'+subjectOptions+'</select></label>'+
+      '<label><span>作業名稱</span><input id="hw-new-name" type="text" maxlength="100" placeholder="例如：第五課生字練習" aria-label="作業名稱"></label>'+
+      '<label><span>繳交日期</span><input id="hw-new-date" type="date" value="'+escapeHwText(rec&&rec.date?rec.date:getLocalDateString())+'" aria-label="繳交日期"></label>'+
+      '<button type="button" class="hw-create-btn" onclick="createHomeworkRecord()">建立</button>'+
+      '<button type="button" class="hw-color-open" onclick="openHomeworkColorDrawer()">🎨 修改顏色</button>';
+  }
+  const oldTopline=root.querySelector('.hw-topline');
+  if(oldTopline) oldTopline.remove();
+};
+const createHomeworkRecordV6138Base=createHomeworkRecord;
+createHomeworkRecord=function(){
+  if(homeworkMode!=='teacher'){alert('請先切換為老師模式。');return;}
+  const nameEl=document.getElementById('hw-new-name');
+  const dateEl=document.getElementById('hw-new-date');
+  const subjectEl=document.getElementById('hw-new-subject');
+  const name=(nameEl?.value||'').trim();
+  if(!name){alert('請先輸入作業名稱。');nameEl?.focus();return;}
+  const subject=(subjectEl?.value||'未分類').trim()||'未分類';
+  const date=dateEl?.value||getLocalDateString();
+  if(!hwSubjectList.includes(subject)){hwSubjectList.push(subject);saveHwSubjects();}
+  const record={id:'HW'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),subject,name,date,createdAt:new Date().toISOString(),statuses:{},notes:{}};
+  homeworkRecords.unshift(record);
+  activeHomeworkId=record.id;
+  hwTeacherSubjectFilter=subject;
+  saveHomeworkRecords();
+  renderHomeworkBoard();
+};
+
+</script>
+
+<style>
+.hw-existing-picker{display:grid;grid-template-columns:minmax(180px,.8fr) minmax(260px,2fr) auto;gap:10px;align-items:end;margin:8px 0 12px;padding:12px;border:1px solid #b8dce5;border-radius:12px;background:#f2fbfd;box-sizing:border-box}
+.hw-existing-picker label{display:flex;flex-direction:column;gap:5px;font-weight:700;color:#155e75;min-width:0}
+.hw-existing-picker select{width:100%;min-width:0;box-sizing:border-box;min-height:42px;border:1px solid #a8cbd8;border-radius:8px;padding:8px 10px;background:white;font:inherit;color:#164e63}
+.hw-existing-picker .hw-existing-count{font-size:13px;color:#64748b;font-weight:500;padding:0 2px 8px;white-space:nowrap}
+@media(max-width:760px){.hw-existing-picker{grid-template-columns:1fr}.hw-existing-picker .hw-existing-count{white-space:normal}}
+</style>
+<script>
+/* v6.1.39: 明確顯示既有作業選擇器，並確實將新增作業的科目寫入原作業紀錄。 */
+(function(){
+  const originalRender = renderHomeworkBoard;
+  window.createHomeworkRecord = function(){
+    if (homeworkMode !== 'teacher') { alert('請先到「設定」切換為老師模式，才能新增作業。'); return; }
+    const nameEl=document.getElementById('hw-new-name');
+    const dateEl=document.getElementById('hw-new-date');
+    const subjectEl=document.getElementById('hw-new-subject');
+    const name=(nameEl?.value||'').trim();
+    if(!name){alert('請先輸入作業名稱。');nameEl?.focus();return;}
+    const subject=String(subjectEl?.value||'未分類').trim()||'未分類';
+    const record={id:'HW'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),name,subject,date:dateEl?.value||getLocalDateString(),createdAt:new Date().toISOString(),statuses:{}};
+    homeworkRecords.unshift(record);activeHomeworkId=record.id;
+    if(typeof saveHomeworkRecords==='function')saveHomeworkRecords();
+    if(typeof renderHomeworkBoard==='function')renderHomeworkBoard();
+  };
+  function pickerMarkup(){
+    const subjects=[...new Set([...((typeof hwSubjectList!=='undefined'&&Array.isArray(hwSubjectList))?hwSubjectList:[]),...homeworkRecords.map(r=>String(r.subject||'未分類'))])];
+    if(!subjects.includes('未分類'))subjects.push('未分類');
+    const active=getActiveHomework();
+    const subject=active?String(active.subject||'未分類'):'全部';
+    const options=homeworkRecords.slice().sort((a,b)=>String(b.date||'').localeCompare(String(a.date||''))).map(r=>'<option value="'+escapeHwText(r.id)+'" '+(active&&String(r.id)===String(active.id)?'selected':'')+'>'+escapeHwText((r.subject||'未分類')+'｜'+(r.name||'未命名作業')+'（'+(r.date||'未設定日期')+'）')+'</option>').join('');
+    return '<div class="hw-existing-picker"><label>檢視已有作業<select aria-label="依科目篩選已有作業" onchange="hwFilterExistingBySubject(this.value)"><option value="全部">全部科目</option>'+subjects.map(x=>'<option value="'+escapeHwText(x)+'" '+(x===subject?'selected':'')+'>'+escapeHwText(x)+'</option>').join('')+'</select></label><label>選擇作業／日期<select id="hw-existing-record-select" aria-label="選擇已有作業與日期" onchange="selectHomeworkRecord(this.value)">'+(options||'<option value="">目前沒有已有作業</option>')+'</select></label><div class="hw-existing-count">共 '+homeworkRecords.length+' 筆既有作業</div></div>';
+  }
+  window.hwFilterExistingBySubject=function(subject){
+    const list=homeworkRecords.filter(r=>subject==='全部'||String(r.subject||'未分類')===String(subject)).sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
+    if(!list.length){alert('這個科目目前沒有作業紀錄。');renderHomeworkBoard();return;}
+    activeHomeworkId=list[0].id;renderHomeworkBoard();
+  };
+  window.renderHomeworkBoard=function(){
+    originalRender();
+    if(homeworkMode!=='teacher'||homeworkHistoryView!=='register')return;
+    const root=document.getElementById('homework-board-container');if(!root)return;
+    const create=root.querySelector('.hw-teacher-create');
+    if(create&&!root.querySelector('.hw-existing-picker'))create.insertAdjacentHTML('afterend',pickerMarkup());
+    else if(!create&&!root.querySelector('.hw-existing-picker')){
+      // v6.1.40：將「既有作業查找區」移到作業標題／新增作業區之後，交換原本上下位置。
+      const heading=root.querySelector('.hw-heading-row');
+      if(heading)heading.insertAdjacentHTML('afterend',pickerMarkup());
+      else { const tabs=root.querySelector('.hw-history-tabs');if(tabs)tabs.insertAdjacentHTML('afterend',pickerMarkup()); }
+    }
+    const picker=root.querySelector('.hw-existing-picker');
+    if(picker){
+      const subjectSelect=picker.querySelector('select[aria-label="依科目篩選已有作業"]');
+      const active=getActiveHomework();
+      if(subjectSelect&&active)subjectSelect.value=String(active.subject||'未分類');
+      const recordSelect=picker.querySelector('#hw-existing-record-select');
+      if(recordSelect&&active)recordSelect.value=String(active.id);
+    }
+  };
+})();
+</script>
+
+<style>
+/* v6.1.47：科目下拉選單將國語、數學、社會、綜合置頂。 */
+.hw-existing-picker.hw-existing-picker-v6146{display:grid;grid-template-columns:minmax(150px,.72fr) minmax(145px,.8fr) minmax(190px,1.8fr) minmax(260px,2.5fr) auto;gap:10px;align-items:end;margin:8px 0 12px;padding:12px;border:1px solid #b8dce5;border-radius:12px;background:#f2fbfd;box-sizing:border-box}
+.hw-existing-picker-v6146 .hw-existing-picker-title{font-size:16px;font-weight:700;color:#155e75;padding:0 2px 9px;white-space:nowrap}
+.hw-existing-picker-v6146 label{display:flex;flex-direction:column;gap:5px;font-weight:700;color:#155e75;min-width:0}
+.hw-existing-picker-v6146 select,.hw-existing-picker-v6146 input[type=date]{width:100%;min-width:0;box-sizing:border-box;min-height:42px;border:1px solid #a8cbd8;border-radius:8px;padding:8px 10px;background:white;font:inherit;color:#164e63}
+.hw-existing-picker-v6146 .hw-existing-count{font-size:13px;color:#64748b;font-weight:500;padding:0 2px 8px;white-space:nowrap}
+@media(max-width:1000px){.hw-existing-picker.hw-existing-picker-v6146{grid-template-columns:repeat(2,minmax(0,1fr))}.hw-existing-picker-v6146 .hw-existing-picker-title{grid-column:1/-1;padding-bottom:0}.hw-existing-picker-v6146 .hw-existing-count{white-space:normal;align-self:center}}
+@media(max-width:560px){.hw-existing-picker.hw-existing-picker-v6146{grid-template-columns:1fr}}
+</style>
+<script>
+/* v6.1.47：常用科目順序調整；查找既有作業仍可切換「科目」或「日期」。 */
+(function installHomeworkSubjectDatePicker(){
+  if (window.__hwSubjectDatePickerV6146Installed) return;
+  window.__hwSubjectDatePickerV6146Installed = true;
+  window.hwExistingPickerMode = window.hwExistingPickerMode || 'subject';
+
+  function activeRecord(){ try{return getActiveHomework();}catch(_){return null;} }
+  function records(){ return Array.isArray(homeworkRecords) ? homeworkRecords : []; }
+  function subjectOf(r){ return String((r && r.subject) || '未分類'); }
+  function dateOf(r){ return String((r && r.date) || ''); }
+  function allSubjects(){
+    const vals=[...(Array.isArray(hwSubjectList)?hwSubjectList:[]),...records().map(subjectOf)];
+    const unique=[...new Set(vals)];
+    // 常用科目固定置頂：國語、數學、社會、綜合；其餘科目依原清單順序排列，未分類永遠置底。
+    const pinned=['國語','數學','社會','綜合'];
+    const rest=unique.filter(s=>!pinned.includes(s)&&s!=='未分類');
+    return [...pinned.filter(s=>unique.includes(s)),...rest,...(unique.includes('未分類')?['未分類']:[])];
+  }
+  function sortRecords(list){return list.slice().sort((a,b)=>dateOf(b).localeCompare(dateOf(a)) || String(b.createdAt||'').localeCompare(String(a.createdAt||'')));}
+  function escape(s){return typeof escapeHwText==='function'?escapeHwText(String(s??'')):String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+  function subjectOptions(selected){
+    return allSubjects().map(s=>'<option value="'+escape(s)+'" '+(s===selected?'selected':'')+'>'+escape(s)+'</option>').join('');
+  }
+  function assignmentOptions(list, selectedId){
+    return sortRecords(list).map(r=>'<option value="'+escape(r.id)+'" '+(String(r.id)===String(selectedId)?'selected':'')+'>'+escape(subjectOf(r)+'｜'+(r.name||'未命名作業')+'（'+(dateOf(r)||'未設定日期')+'）')+'</option>').join('');
+  }
+  function currentFilteredList(){
+    const mode=window.hwExistingPickerMode||'subject';
+    const root=document.getElementById('homework-board-container');
+    const active=activeRecord();
+    if(mode==='date'){
+      const dateEl=root&&root.querySelector('#hw-existing-date-filter');
+      const date=dateEl?dateEl.value:(dateOf(active)||getLocalDateString());
+      return records().filter(r=>dateOf(r)===date);
+    }
+    const subjectEl=root&&root.querySelector('#hw-existing-subject-filter');
+    const subject=subjectEl?subjectEl.value:(active?subjectOf(active):(allSubjects()[0]||'國語'));
+    return records().filter(r=>subjectOf(r)===subject);
+  }
+  function updateAssignments(preferActive){
+    const root=document.getElementById('homework-board-container'); if(!root)return;
+    const select=root.querySelector('#hw-existing-record-select-v6146'); if(!select)return;
+    const active=activeRecord();
+    const list=sortRecords(currentFilteredList());
+    let chosen=(preferActive && active && list.some(r=>String(r.id)===String(active.id)))?String(active.id):(list[0]?String(list[0].id):'');
+    select.innerHTML=list.length?assignmentOptions(list,chosen):'<option value="">此條件下沒有作業</option>';
+    select.disabled=!list.length;
+    const count=root.querySelector('.hw-existing-count');
+    if(count)count.textContent='共 '+list.length+' 筆符合條件（全部 '+records().length+' 筆）';
+    if(chosen && active && String(active.id)!==chosen && typeof selectHomeworkRecord==='function'){
+      // 變更條件時切到該條件下第一筆作業，讓中間的全班狀態表同步更新。
+      select.value=chosen;
+      selectHomeworkRecord(chosen);
+      return;
+    }
+    if(chosen)select.value=chosen;
+  }
+  function pickerMarkup(){
+    const active=activeRecord();
+    const mode=window.hwExistingPickerMode||'subject';
+    const activeSubject=active?subjectOf(active):(allSubjects()[0]||'國語');
+    const activeDate=active&&dateOf(active)?dateOf(active):getLocalDateString();
+    const initialList=mode==='date'?records().filter(r=>dateOf(r)===activeDate):records().filter(r=>subjectOf(r)===activeSubject);
+    const selected=active&&initialList.some(r=>String(r.id)===String(active.id))?String(active.id):(sortRecords(initialList)[0]?String(sortRecords(initialList)[0].id):'');
+    const secondControl=mode==='subject'
+      ? '<label><span>科目</span><select id="hw-existing-subject-filter" aria-label="選擇科目" onchange="hwExistingPickerFilterChanged()">'+subjectOptions(activeSubject)+'</select></label>'
+      : '<label><span>日期</span><input id="hw-existing-date-filter" type="date" aria-label="選擇日期" value="'+escape(activeDate)+'" onchange="hwExistingPickerFilterChanged()"></label>';
+    return '<div class="hw-existing-picker hw-existing-picker-v6146">'+
+      '<div class="hw-existing-picker-title">檢視已有作業</div>'+
+      '<label><span>科目／日期</span><select id="hw-existing-mode-filter" aria-label="切換依科目或日期查找" onchange="hwExistingPickerModeChanged(this.value)"><option value="subject" '+(mode==='subject'?'selected':'')+'>📊 科目</option><option value="date" '+(mode==='date'?'selected':'')+'>🗓️ 日期</option></select></label>'+
+      secondControl+
+      '<label><span>選擇作業／日期</span><select id="hw-existing-record-select-v6146" aria-label="選擇作業與日期" onchange="selectHomeworkRecord(this.value)">'+(initialList.length?assignmentOptions(initialList,selected):'<option value="">此條件下沒有作業</option>')+'</select></label>'+
+      '<div class="hw-existing-count">共 '+initialList.length+' 筆符合條件（全部 '+records().length+' 筆）</div>'+
+      '</div>';
+  }
+  window.hwExistingPickerModeChanged=function(mode){
+    window.hwExistingPickerMode=mode==='date'?'date':'subject';
+    const root=document.getElementById('homework-board-container');if(!root)return;
+    const old=root.querySelector('.hw-existing-picker-v6146');if(!old)return;
+    old.outerHTML=pickerMarkup();
+    updateAssignments(true);
+  };
+  window.hwExistingPickerFilterChanged=function(){updateAssignments(true);};
+
+  const previousRender=window.renderHomeworkBoard;
+  window.renderHomeworkBoard=function(){
+    previousRender.apply(this,arguments);
+    if(homeworkMode!=='teacher'||homeworkHistoryView!=='register')return;
+    const root=document.getElementById('homework-board-container');if(!root)return;
+    const old=root.querySelector('.hw-existing-picker'); if(old)old.remove();
+    const markup=pickerMarkup();
+    const heading=root.querySelector('.hw-heading-row');
+    if(heading)heading.insertAdjacentHTML('afterend',markup);
+    else {const tabs=root.querySelector('.hw-history-tabs');if(tabs)tabs.insertAdjacentHTML('afterend',markup);}
+  };
+})();
 </script>
 
 </body>
 </html>
+
+<!-- v6.1.48：作業登記頁移除五色狀態圖例卡列，保留學生狀態卡片及其功能。 -->
