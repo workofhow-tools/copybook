@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>v6.1.40｜401計分板</title>
+    <title>401計分板</title>
     <script>
         // 唯一版本來源：新版本只需更新此處，瀏覽器標題與頁面標籤會同步。
-        window.APP_VERSION = 'v6.1.43';
+        window.APP_VERSION = 'v6.1.51';
         document.title = window.APP_VERSION + '｜401計分板';
         document.addEventListener('DOMContentLoaded', function () {
             var versionLabel = document.getElementById('current-version-label');
@@ -936,7 +936,7 @@
     <div id="right-floating-rail">
         <div id="profile-avatar-wrap" aria-label="個人頭像"><span id="profile-avatar-default">👨🏻‍🏫</span></div>
         <button id="toggle-btn" onclick="openPanel()">個人紀錄</button>
-        <div id="floating-version-label" aria-label="目前版本">v6.1.24</div>
+        <div id="floating-version-label" aria-label="目前版本">v6.1.51</div>
     </div>
 
     <div id="side-panel">
@@ -959,7 +959,7 @@
                         <span id="daily-info-icon">📅</span><span id="daily-info-text">每日資訊載入中…</span>
                     </div>
                 </div>
-                <div style="display:flex;align-items:center;gap:14px;min-width:0;margin:0 0 4px"><h3 id="board-title-display" style="flex:0 0 auto;margin:0">四１課堂計分板</h3><span id="current-version-label" style="flex:0 0 auto;font-size:12px;color:#008c95;background:#e0f7fa;border:1px solid #b2ebf2;border-radius:12px;padding:3px 8px;font-weight:bold">v6.1.30</span><div id="class-marquee" aria-label="課堂跑馬燈"><span id="class-marquee-track">每一天都是進步的好機會！準備好課本、收好小物品，帶著認真的心，一起成為更棒的自己！</span></div></div>
+                <div style="display:flex;align-items:center;gap:14px;min-width:0;margin:0 0 4px"><h3 id="board-title-display" style="flex:0 0 auto;margin:0">四１課堂計分板</h3><span id="current-version-label" style="flex:0 0 auto;font-size:12px;color:#008c95;background:#e0f7fa;border:1px solid #b2ebf2;border-radius:12px;padding:3px 8px;font-weight:bold">v6.1.51</span><div id="class-marquee" aria-label="課堂跑馬燈"><span id="class-marquee-track">每一天都是進步的好機會！準備好課本、收好小物品，帶著認真的心，一起成為更棒的自己！</span></div></div>
                 <div class="board-view-switch" role="group" aria-label="切換計分板">
                     <button type="button" id="show-personal-board" class="active" onclick="switchBoardView('personal')">👤 個人計分板</button>
                     <button type="button" id="show-seat-board" onclick="switchBoardView('seats')">🪑 座位表計分</button>
@@ -1000,6 +1000,8 @@
             <div id="custom-marquee-phrases" class="marquee-phrases" aria-live="polite"></div>
         </section>
         <section id="version-history-panel" hidden aria-label="版本歷史紀錄">
+            <article class="version-entry"><strong>v6.1.51｜統一版本號來源並補齊近期版本歷史</strong><p>更新日期：2026-10-29 02:48</p><p>將目前版本號統一由 window.APP_VERSION 管理，瀏覽器分頁標題、頁面標籤與右側浮動版本標籤皆由同一來源同步更新；補上 v6.1.44 至 v6.1.50 近期作業頁調整摘要，避免程式內仍顯示舊版本。</p></article>
+            <article class="version-entry"><strong>v6.1.44–v6.1.50｜作業繳交頁面與科目篩選調整</strong><p>更新日期：2026-10-29</p><p>近期版本持續調整老師版與學生版作業繳交頁的欄位、版面與既有紀錄檢視方式；包含作業科目、名稱、日期的呈現與切換，以及學生端依所選日期只顯示當日有作業的科目。此處合併記錄近期連續調整，不推定每一項修改所屬的精確小版本。</p></article>
             <article class="version-entry"><strong>v6.1.38｜老師版新增作業欄位整合</strong><p>更新日期：2026-10-29</p><p>老師版將科目、作業名稱與繳交日期放在「作業繳交記錄」標題同一列，保留左側科目管理、中間全班狀態表與右側快速操作；新增作業會保存科目、名稱及日期。</p></article>
             <article class="version-entry"><strong>v6.1.37｜學生版科目、作業與日期可切換</strong><p>更新日期：2026-10-29 01:20</p><p>學生模式的科目、作業名稱與日期改為可選擇欄位，可瀏覽不同科目、不同作業及不同日期的既有紀錄；只切換目前檢視，不允許學生建立、修改或刪除作業。</p></article>
             <article class="version-entry"><strong>v6.1.36｜新增舊作業科目分類</strong><p>更新日期：2026-10-29 01:05</p><p>老師模式新增「舊作業科目分類」區塊，列出尚未設定科目的舊作業，逐筆選擇科目並寫回原紀錄；保留原作業名稱、日期、學生狀態與備註。</p></article>
