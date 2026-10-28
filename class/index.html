@@ -3,7 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>v6.0.7｜401計分板</title>
+    <title>v6.1.24｜401計分板</title>
+    <script>
+        // 唯一版本來源：新版本只需更新此處，瀏覽器標題與頁面標籤會同步。
+        window.APP_VERSION = 'v6.1.24';
+        document.title = window.APP_VERSION + '｜401計分板';
+        document.addEventListener('DOMContentLoaded', function () {
+            var versionLabel = document.getElementById('current-version-label');
+            if (versionLabel) versionLabel.textContent = window.APP_VERSION;
+            var floatingVersionLabel = document.getElementById('floating-version-label');
+            if (floatingVersionLabel) floatingVersionLabel.textContent = window.APP_VERSION;
+        });
+    </script>
     <style>
         :root {
             --primary-color: #4CAF50;
@@ -28,17 +39,29 @@
             -webkit-overflow-scrolling: touch;
         }
 
-        /* 觸控優化懸浮鈕 */
-        #toggle-btn {
-            position: fixed; top: 50%; right: 12px; transform: translateY(-50%); z-index: 99999;
-            writing-mode: vertical-rl; text-orientation: mixed;
-            background: linear-gradient(180deg, #00bcd4, #009688);
-            color: white; border: none; padding: 22px 12px; border-radius: 18px;
-            cursor: pointer; box-shadow: 0 6px 15px rgba(0,0,0,0.3);
-            font-size: 19px; font-weight: bold; letter-spacing: 2px;
-        }
-        #toggle-btn:hover { filter: brightness(1.06); }
-        #toggle-btn:active { transform: translateY(-50%) scale(.97); }
+        /* 右側三個元素共用同一個置中欄，避免頭像、按鈕、版本標籤左右偏移 */
+        #right-floating-rail { position:fixed; z-index:100000; right:12px; top:50%; transform:translateY(-50%); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px; width:max-content; max-width:calc(100vw - 16px); }
+        /* 直式個人紀錄按鈕 */
+        #toggle-btn { position:relative; top:auto; right:auto; transform:none; z-index:auto; writing-mode:vertical-rl; text-orientation:mixed; background:linear-gradient(180deg,#00bcd4,#009688); color:white; border:none; padding:22px 12px; border-radius:28px; cursor:pointer; box-shadow:0 6px 15px rgba(0,0,0,.3); font-size:19px; font-weight:bold; letter-spacing:2px; }
+        #toggle-btn:hover { filter:brightness(1.06); }
+        #toggle-btn:active { transform:scale(.97); }
+        /* 版本標籤文字一律由 APP_VERSION 自動帶入 */
+        #floating-version-label { position:relative; right:auto; top:auto; z-index:auto; min-width:88px; box-sizing:border-box; padding:6px 10px; border-radius:999px; background:#fde7e7; color:#c91d1d; border:1px solid #f8caca; font:700 14px 'Microsoft JhengHei',sans-serif; text-align:center; white-space:nowrap; box-shadow:0 3px 9px rgba(0,0,0,.08); }
+        /* 個人頭像與按鈕、版本標籤在同一垂直中線 */
+        #profile-avatar-wrap { position:relative; right:auto; top:auto; width:76px; height:76px; flex:0 0 auto; border-radius:50%; border:3px solid #fff; background:linear-gradient(135deg,#e5f5ff,#b9e4f8); box-shadow:0 4px 14px rgba(0,0,0,.22); display:flex; align-items:center; justify-content:center; overflow:hidden; }
+        #profile-avatar-wrap img { width:100%; height:100%; object-fit:cover; display:block; }
+        #profile-avatar-default { font-size:42px; line-height:1; }
+        @media(max-width:650px){ #right-floating-rail { right:8px; gap:14px; } #profile-avatar-wrap { width:58px; height:58px; } #profile-avatar-default { font-size:32px; } #toggle-btn { padding:18px 10px; font-size:17px; } #floating-version-label { min-width:72px; padding:5px 7px; font-size:12px; } }
+        .avatar-settings-row { display:grid; grid-template-columns:minmax(0,1fr) minmax(240px,1fr); gap:14px; align-items:stretch; margin:12px 0 14px; }
+        .avatar-settings-card { min-width:0; border:1px solid #dce3e6; border-radius:10px; padding:12px; background:#f8fbfc; box-sizing:border-box; }
+        .avatar-settings-card label { display:block; font-weight:bold; margin:0 0 6px; }
+        .avatar-settings-card input[type=text] { width:100%; box-sizing:border-box; }
+        .avatar-preview-row { display:flex; align-items:center; gap:10px; margin:8px 0; }
+        #avatar-settings-preview { width:58px;height:58px;border-radius:50%;border:2px solid #d5e4eb;background:#e8f4fc;object-fit:cover;display:flex;align-items:center;justify-content:center;font-size:32px;overflow:hidden;flex:0 0 auto; }
+        #avatar-settings-preview img { width:100%;height:100%;object-fit:cover; }
+        .avatar-action-row { display:flex;gap:7px;flex-wrap:wrap; }
+        .avatar-action-row .settings-save { margin-top:0; }
+        @media(max-width:650px){ .avatar-settings-row{grid-template-columns:1fr;} #profile-avatar-wrap{width:58px;height:58px;right:9px;top:calc(50% - 185px);} #profile-avatar-default{font-size:32px;} }
 
         /* 側邊抽屜面板 */
         #side-panel {
@@ -500,6 +523,14 @@
             bottom: 0;
         }
 
+        /* v6.1.14：作業繳交時隱藏底部操作列，將高度還給全班名單；其他功能恢復原樣 */
+        #side-panel.open.homework-view-active {
+            padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px)) !important;
+        }
+        #side-panel.open.homework-view-active .config-actions {
+            display: none !important;
+        }
+
 
         /* 功能列已獨立固定在底部；這裡只承載各功能面板，未開啟時不佔空間 */
         #config-area {
@@ -548,6 +579,14 @@
         #class-marquee[hidden] { display:none !important; }
         #class-marquee-track { display:inline-block; padding-left:100%; white-space:nowrap; font-size:22px; line-height:1.3; font-weight:bold; color:#d84315; animation:classMarqueeScroll 18s linear infinite; }
         #class-marquee-track.paused { animation-play-state:paused; }
+        /* v6.1.13：作業頁把狀態圖例移到標題右側原本的跑馬燈位置，減少垂直高度 */
+        #class-marquee.homework-legend-mode{height:auto;min-height:40px;flex:1 1 700px;min-width:0;padding:0;border:0;background:transparent;overflow:visible;}
+        #class-marquee.homework-legend-mode #class-marquee-track{display:none!important;}
+        #class-marquee .hw-status-legend{width:100%;box-sizing:border-box;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;margin:0;padding:0;border:0;border-radius:0;background:transparent;}
+        #class-marquee .hw-legend-item{padding:4px 3px;border-radius:7px;}
+        #class-marquee .hw-legend-item strong{font-size:12px;line-height:1.2;white-space:nowrap;}
+        #class-marquee .hw-legend-item small{font-size:9px;line-height:1.15;margin-top:2px;}
+        @media(max-width:760px){#class-marquee.homework-legend-mode{flex-basis:100%;}#class-marquee .hw-status-legend{grid-template-columns:repeat(5,minmax(0,1fr));gap:2px}#class-marquee .hw-legend-item{padding:4px 1px}#class-marquee .hw-legend-item strong{font-size:10px}#class-marquee .hw-legend-item small{font-size:8px}}
         @keyframes classMarqueeScroll { from { transform:translateX(0); } to { transform:translateX(-100%); } }
         #marquee-panel { flex:1 1 auto; min-width:0; overflow:auto; padding:12px; margin:8px 0; border:1px solid #dce3e6; border-radius:12px; background:#fff; }
         #marquee-panel[hidden] { display:none !important; }
@@ -596,23 +635,185 @@
         .hw-homework-title{display:flex;align-items:baseline;gap:18px;flex-wrap:wrap;min-width:220px}
         .hw-homework-title h2{font-size:clamp(24px,3vw,34px);margin:0;font-weight:700}
         .hw-homework-title span{color:#64748b;font-size:16px}
+        .hw-rename-homework{border:1px solid #60a5fa!important;background:#eff6ff!important;color:#1d4ed8!important;border-radius:9px!important;padding:8px 12px!important;font-weight:800!important;white-space:nowrap;cursor:pointer}
+        .hw-rename-homework:hover{background:#dbeafe!important}
         .hw-summary{display:flex;align-items:stretch;justify-content:flex-end;gap:10px;flex-wrap:wrap;margin:0}
         .hw-stat{display:flex;align-items:baseline;gap:6px;padding:8px 12px;border-radius:10px;background:#f8fafc;border:1px solid #e2e8f0;white-space:nowrap}
         .hw-stat strong{font-size:clamp(20px,2vw,27px);line-height:1.1;color:#334155}
         .hw-stat span{font-size:14px;color:#475569}
-        .hw-stat-done strong,.hw-stat-done span{color:#15803d}
+        .hw-stat-done strong,.hw-stat-done span{color:#1671D9}
         .hw-stat-pending strong,.hw-stat-pending span{color:#c2410c}
         .hw-stat-rate strong{color:#0f766e}
-        .hw-student.submitted{background:#f0fdf4!important;border:1.5px solid #16a34a!important;color:#166534!important;box-shadow:inset 0 0 0 1px rgba(22,163,74,.08)}
-        .hw-student.submitted .hw-student-name,.hw-student.submitted .hw-status-icon,.hw-student.submitted .hw-status-text{color:#15803d!important}
+        .hw-stat-rewrite strong,.hw-stat-rewrite span{color:#16a765}
+        .hw-student.submitted{background:#E6F4FF!important;border:1px solid #4DA3FF!important;color:#1671D9!important;box-shadow:none}
+        .hw-student.submitted .hw-student-name,.hw-student.submitted .hw-status-icon,.hw-student.submitted .hw-status-text{color:#1671D9!important}
         .hw-student.pending{background:#fffaf0!important;border:1.5px solid #f59e0b!important}
         @media(max-width:760px){.hw-topline{align-items:flex-start}.hw-summary{justify-content:flex-start;gap:6px}.hw-stat{padding:6px 8px}.hw-stat span{font-size:12px}.hw-homework-title{gap:8px}}
+
+        /* v6.1.0 作業狀態色彩圖例與教師專用側邊設定 */
+        .hw-status-legend{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:12px 0 16px;padding:10px;border:1px solid #bae6fd;border-radius:14px;background:linear-gradient(135deg,#f0f9ff,#fff)}
+        .hw-legend-item{min-width:0;border:1px solid var(--hw-status-border);background:var(--hw-status-bg);border-radius:10px;padding:9px 7px;text-align:center;color:var(--hw-status-color)}
+        .hw-legend-item strong{display:block;font-size:14px;line-height:1.35}.hw-legend-item small{display:block;margin-top:4px;font-size:11px;line-height:1.35;color:#475569}
+        .hw-legend-dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--hw-status-color);margin-right:5px}
+        /* v6.1.15：狀態圖例與「作業繳交記錄」標題同列；跑馬燈保持正常顯示 */
+        .hw-top{display:block;margin:4px 0 10px}
+        .hw-heading-row{display:flex;align-items:center;gap:14px;width:100%;min-width:0}
+        .hw-title{flex:0 0 auto;margin:0;font-size:clamp(22px,2.4vw,32px);white-space:nowrap}
+        .hw-legend-slot{flex:1 1 auto;min-width:0}
+        .hw-legend-slot .hw-status-legend{grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;margin:0;padding:0;border:0;background:transparent}
+        .hw-legend-slot .hw-legend-item{padding:4px 3px;border-radius:8px}
+        .hw-legend-slot .hw-legend-item strong{font-size:clamp(10px,1vw,13px);line-height:1.2;white-space:nowrap}
+        .hw-legend-slot .hw-legend-item small{font-size:clamp(8px,.8vw,10px);line-height:1.2;margin-top:2px}
+        .hw-controls{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-top:10px}
+        .hw-controls select{min-width:200px;max-width:100%}
+        @media(max-width:760px){.hw-heading-row{align-items:flex-start;flex-direction:column;gap:8px}.hw-legend-slot{width:100%}.hw-legend-slot .hw-status-legend{gap:2px}.hw-legend-slot .hw-legend-item{padding:3px 1px}.hw-legend-slot .hw-legend-item strong{font-size:10px}.hw-legend-slot .hw-legend-item small{font-size:8px}.hw-title{white-space:normal}}
+        .hw-student{border-color:var(--hw-status-border)!important;background:var(--hw-status-bg)!important;color:var(--hw-status-color)!important}
+        .hw-student .hw-student-name,.hw-student .hw-status-icon,.hw-student .hw-status-text{color:var(--hw-status-color)!important}
+        .hw-color-open{border:0;border-radius:9px;padding:9px 12px;background:#3156a5;color:#fff;font-weight:700;cursor:pointer}
+        .hw-color-drawer{position:fixed;z-index:2147483000;right:12px;top:90px;bottom:12px;width:min(370px,calc(100vw - 24px));overflow:auto;box-sizing:border-box;background:#fff;border:1px solid #dbeafe;border-radius:18px;padding:18px;box-shadow:0 18px 55px #0f172a40}
+        .hw-color-drawer[hidden]{display:none!important}.hw-color-drawer-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}.hw-color-drawer h3{margin:0;font-size:20px}.hw-color-close{border:0;background:#eef2f7;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:18px}
+        .hw-color-row{display:grid;grid-template-columns:minmax(0,1fr) 54px;gap:10px;align-items:center;padding:9px;margin:8px 0;border:1px solid #e2e8f0;border-radius:12px}
+        .hw-color-row label{display:block;font-weight:700;font-size:14px}.hw-color-row small{display:block;color:#64748b;font-size:12px;line-height:1.4;margin-top:3px}
+        .hw-color-row input[type=color]{width:48px;height:40px;padding:3px;border:1px solid #cbd5e1;border-radius:8px;background:#fff;cursor:pointer}
+        .hw-color-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.hw-color-actions button{flex:1;min-width:120px;border:0;border-radius:9px;padding:11px 9px;font-weight:700;cursor:pointer}.hw-color-save{background:#2563eb;color:white}.hw-color-reset{background:#e2e8f0;color:#334155}
+        .hw-color-note{background:#fffbeb;color:#854d0e;border-radius:10px;padding:10px;font-size:12px;line-height:1.6;margin-top:12px}
+        .hw-status-choice{display:flex;align-items:center;gap:10px;width:100%;margin:8px 0;padding:11px;border:2px solid var(--hw-status-border);border-radius:11px;background:var(--hw-status-bg);color:var(--hw-status-color);text-align:left;cursor:pointer;font-family:inherit}
+        .hw-status-choice[aria-checked="true"]{box-shadow:0 0 0 2px #0f172a20;outline:2px solid var(--hw-status-color)}.hw-status-choice input{accent-color:var(--hw-status-color)}.hw-status-choice strong{display:block}.hw-status-choice small{display:block;color:#475569;line-height:1.4;margin-top:2px}
+        /* v6.1.2：作業名單改為橫向網格；寬螢幕每排 10 人，小螢幕自動減欄 */
+        .hw-student-grid{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:6px;align-items:stretch}
+        .hw-student{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:3px!important;flex-wrap:nowrap!important;min-width:0!important;width:100%!important;box-sizing:border-box!important;padding:7px 3px!important;text-align:center!important;line-height:1.25!important;white-space:normal!important}
+        .hw-student-name,.hw-status-text{display:block!important;max-width:100%;overflow-wrap:anywhere;font-size:clamp(11px,0.9vw,14px)!important}
+        /* v6.1.5：姓名保留清楚粗體；狀態文字直接使用圖例色系，邊框細化 */
+        .hw-student{border-width:1px!important;box-shadow:none!important}
+        .hw-student .hw-student-name{font-weight:400!important;font-size:clamp(13px,1vw,16px)!important;color:var(--hw-status-color)!important;text-shadow:none!important}
+        .hw-student .hw-status-text{font-weight:400!important;color:var(--hw-status-color)!important}
+        /* v6.1.6：尚未登記的姓名與狀態文字加深，保留原本淡橘背景與邊框 */
+        .hw-student.pending .hw-student-name,.hw-student.pending .hw-status-text{color:#C76A00!important}
+        .hw-status-text{font-size:clamp(10px,0.82vw,13px)!important}
+        @media(max-width:1200px){.hw-student-grid{grid-template-columns:repeat(8,minmax(0,1fr))}}
+        @media(max-width:900px){.hw-status-legend{grid-template-columns:repeat(3,minmax(0,1fr))}.hw-student-grid{grid-template-columns:repeat(5,minmax(0,1fr))}}
+        @media(max-width:520px){.hw-status-legend{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding:7px}.hw-legend-item{padding:8px 5px}.hw-legend-item small{font-size:10px}.hw-color-drawer{top:12px;bottom:12px}.hw-status-choice{padding:9px}.hw-student-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}.hw-student{padding:7px 2px!important}.hw-student-name,.hw-status-text{font-size:11px!important}}
+        @media(max-width:360px){.hw-student-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+        /* v6.1.18：作業狀態摘要三欄，姓名卡片最多四排並依視窗寬度向右增加欄數 */
+        .hw-status-summaries{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:8px 0 4px;align-items:start}
+        .hw-status-summary{min-width:0;border:1px solid var(--summary-border);background:var(--summary-bg);border-radius:12px;padding:8px;box-sizing:border-box}
+        .hw-status-summary-head{border-left:4px solid var(--summary-border);background:rgba(255,255,255,.78);border-radius:8px;padding:7px 9px;margin-bottom:7px}
+        .hw-status-summary-head h3{margin:0 0 3px;font-size:clamp(14px,1.25vw,18px);color:#263b50}
+        .hw-status-summary-head p{margin:0;font-size:clamp(10px,.9vw,12px);line-height:1.45;color:#4b5563;overflow-wrap:anywhere}
+        .hw-summary-name-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(58px,max-content));grid-auto-flow:row;grid-auto-rows:minmax(28px,auto);gap:5px;align-items:start;justify-content:start;max-width:100%;max-height:calc(4 * 28px + 3 * 5px + 8px);overflow-y:auto;overflow-x:hidden;padding:1px 1px 4px}
+        .hw-summary-name{display:inline-flex;align-items:center;justify-content:center;min-height:28px;box-sizing:border-box;padding:5px 9px;border:1px solid var(--summary-border);border-radius:7px;background:rgba(255,255,255,.88);color:#263b50;font-size:clamp(11px,.95vw,14px);white-space:nowrap;max-width:100%}
+        .hw-summary-empty{font-size:12px;color:#64748b;padding:5px 2px}
+        @media(max-width:900px){.hw-status-summaries{grid-template-columns:repeat(2,minmax(0,1fr))}}
+        @media(max-width:560px){.hw-status-summaries{grid-template-columns:minmax(0,1fr);gap:6px}.hw-status-summary{padding:7px}.hw-summary-name{min-height:26px;padding:4px 7px}}
+        /* v6.1.17：作業頁男女名單左右並排，移除「區」字並壓縮垂直空間 */
+        .hw-gender-columns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;align-items:start;margin-top:4px}
+        .hw-gender-columns .hw-section{min-width:0;margin:0 0 4px!important;padding:7px!important}
+        .hw-gender-columns .hw-section-head{margin-bottom:4px!important;gap:8px}
+        .hw-gender-columns .hw-section-head h3{margin:0!important}
+        .hw-gender-columns .hw-student-grid{grid-template-columns:repeat(6,minmax(0,1fr));gap:4px}
+        .hw-gender-columns .hw-student{padding:6px 2px!important}
+        @media(max-width:760px){.hw-gender-columns{grid-template-columns:minmax(0,1fr);gap:6px}.hw-gender-columns .hw-student-grid{grid-template-columns:repeat(5,minmax(0,1fr))}}
+        @media(max-width:520px){.hw-gender-columns .hw-student-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}}
+        /* v6.1.17：男女名單區塊增加清楚外框、柔和底色與標題底條 */
+        .hw-gender-columns .hw-section{
+            border:2px solid #73d2f4!important;
+            border-radius:16px!important;
+            background:linear-gradient(145deg,#f2fbff 0%,#e1f5ff 100%)!important;
+            box-shadow:0 4px 12px rgba(24,126,170,.12)!important;
+            padding:10px!important;
+            overflow:hidden;
+        }
+        .hw-gender-columns .hw-section:nth-child(2){
+            border-color:#f2a5d2!important;
+            background:linear-gradient(145deg,#fff6fb 0%,#ffe8f4 100%)!important;
+            box-shadow:0 4px 12px rgba(190,74,139,.12)!important;
+        }
+        .hw-gender-columns .hw-section-head{
+            display:flex;align-items:center;flex-wrap:wrap;
+            background:rgba(255,255,255,.72);
+            border-radius:10px;padding:7px 10px;margin-bottom:8px!important;
+        }
+        .hw-gender-columns .hw-section:nth-child(1) .hw-section-head{border-left:5px solid #19b9ef}
+        .hw-gender-columns .hw-section:nth-child(2) .hw-section-head{border-left:5px solid #ef70b7}
+        .hw-gender-columns .hw-section-head h3{font-size:clamp(18px,1.5vw,24px)!important;color:#173b50}
+        .hw-gender-columns .hw-section-head span{font-size:clamp(13px,1.1vw,17px)!important;color:#526d82;font-weight:600}
+        .hw-gender-columns .hw-student{border-radius:7px!important;background-color:rgba(255,255,255,.82)!important;box-shadow:0 1px 3px rgba(25,55,80,.08)!important}
+        .hw-gender-columns .hw-student:hover{transform:translateY(-1px);box-shadow:0 3px 7px rgba(25,55,80,.14)!important}
+
+
+
+        /* v6.1.9：確保作業頁中的上方計分板切換列不會被內容區覆蓋 */
+        #side-panel .panel-header {
+            position: relative !important;
+            z-index: 100010 !important;
+            flex-shrink: 0;
+            isolation: isolate;
+        }
+        #side-panel .header-main,
+        #side-panel .board-view-switch {
+            position: relative !important;
+            z-index: 100011 !important;
+            pointer-events: auto !important;
+        }
+        #side-panel .board-view-switch button {
+            position: relative;
+            z-index: 100012;
+            pointer-events: auto !important;
+            touch-action: manipulation;
+        }
+        #homework-board-container,
+        #group-score-container,
+        #stats-board-container,
+        #seat-board-container,
+        #wheel-records-board-container,
+        #list-container {
+            position: relative;
+            z-index: 0;
+        }
+
+
+        /* v6.1.11：三個底部功能面板改在主要工作區顯示，不再堆到計分內容下方 */
+        #config-area.config-workspace-active {
+            display: block !important;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px 14px 18px;
+            margin: 8px 0 12px;
+            border: 1px solid #d8e7eb;
+            border-radius: 14px;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,.04);
+            overflow: auto;
+            max-height: calc(100dvh - 250px);
+        }
+        #side-panel.config-view-active #list-container,
+        #side-panel.config-view-active #group-score-container,
+        #side-panel.config-view-active #stats-board-container,
+        #side-panel.config-view-active #seat-board-container,
+        #side-panel.config-view-active #wheel-records-board-container,
+        #side-panel.config-view-active #homework-board-container {
+            display: none !important;
+        }
+        #side-panel.config-view-active #config-area {
+            order: 1;
+        }
+        #side-panel.config-view-active .config-actions {
+            z-index: 100020;
+        }
+        @media (max-width: 520px) {
+            #config-area.config-workspace-active { padding: 9px; max-height: calc(100dvh - 220px); }
+        }
+
 </style>
 </head>
 <body>
 
-    <!-- 藍綠色個人版懸浮鈕 -->
-    <button id="toggle-btn" onclick="openPanel()">👤 個人紀錄</button>
+    <!-- 右側頭像、個人紀錄按鈕與版本標籤共用同一置中欄 -->
+    <div id="right-floating-rail">
+        <div id="profile-avatar-wrap" aria-label="個人頭像"><span id="profile-avatar-default">👨🏻‍🏫</span></div>
+        <button id="toggle-btn" onclick="openPanel()">個人紀錄</button>
+        <div id="floating-version-label" aria-label="目前版本">v6.1.24</div>
+    </div>
 
     <div id="side-panel">
         <div class="panel-header">
@@ -630,11 +831,11 @@
                         <button type="button" class="top-data-btn excel" onclick="exportExcelGrades()" title="匯出 Excel 成績" aria-label="匯出 Excel 成績">📊</button>
                         <button type="button" class="top-data-btn import" onclick="document.getElementById('json-import-file').click()" title="匯入 JSON 備份" aria-label="匯入 JSON 備份">📥</button>
                     </div>
-                    <div id="class-marquee" aria-label="課堂跑馬燈"><span id="class-marquee-track">每一天都是進步的好機會！準備好課本、收好小物品，帶著認真的心，一起成為更棒的自己！</span></div>
-                </div>
-                <div style="display:flex;align-items:center;gap:14px;min-width:0;margin:0 0 4px"><h3 id="board-title-display" style="flex:0 0 auto;margin:0">四１課堂計分板</h3><span id="current-version-label" style="flex:0 0 auto;font-size:12px;color:#008c95;background:#e0f7fa;border:1px solid #b2ebf2;border-radius:12px;padding:3px 8px;font-weight:bold">v6.0.7</span><div id="daily-info-box" role="status" aria-live="polite" title="節日、天氣與每日英文">
+                    <div id="daily-info-box" role="status" aria-live="polite" title="節日、天氣與每日英文">
                         <span id="daily-info-icon">📅</span><span id="daily-info-text">每日資訊載入中…</span>
-                    </div></div>
+                    </div>
+                </div>
+                <div style="display:flex;align-items:center;gap:14px;min-width:0;margin:0 0 4px"><h3 id="board-title-display" style="flex:0 0 auto;margin:0">四１課堂計分板</h3><span id="current-version-label" style="flex:0 0 auto;font-size:12px;color:#008c95;background:#e0f7fa;border:1px solid #b2ebf2;border-radius:12px;padding:3px 8px;font-weight:bold">v6.1.19</span><div id="class-marquee" aria-label="課堂跑馬燈"><span id="class-marquee-track">每一天都是進步的好機會！準備好課本、收好小物品，帶著認真的心，一起成為更棒的自己！</span></div></div>
                 <div class="board-view-switch" role="group" aria-label="切換計分板">
                     <button type="button" id="show-personal-board" class="active" onclick="switchBoardView('personal')">👤 個人計分板</button>
                     <button type="button" id="show-seat-board" onclick="switchBoardView('seats')">🪑 座位表計分</button>
@@ -675,6 +876,29 @@
             <div id="custom-marquee-phrases" class="marquee-phrases" aria-live="polite"></div>
         </section>
         <section id="version-history-panel" hidden aria-label="版本歷史紀錄">
+            <article class="version-entry"><strong>v6.1.24｜修正右側頭像、按鈕與版本標籤對齊</strong><p>更新日期：2026-10-28 23:12</p><p>將頭像、個人紀錄直式按鈕、紅色版本標籤放入同一個固定垂直容器，統一水平中線與間距；版本文字由 window.APP_VERSION 自動帶入。</p></article>
+            <article class="version-entry"><strong>v6.1.23｜移除個人紀錄按鈕內的人像並新增紅色版本標籤</strong><p>更新日期：2026-10-28 23:00</p><p>移除右側「個人紀錄」直式按鈕內多餘的人像圖示；在按鈕下方新增紅色版本標籤，與上方頭像、按鈕垂直對齊。版本文字從 window.APP_VERSION 自動讀取。</p></article>
+            <article class="version-entry"><strong>v6.1.22｜設定區新增個人頭像上傳與恢復預設</strong><p>更新日期：2026-10-28 22:42</p><p>在「修改右側直式按鈕名稱」旁新增個人頭像設定，可上傳圖片、預覽、自動保存，並可確認後恢復預設人像；頭像顯示在右側「個人紀錄」按鈕上方。版本號統一由 window.APP_VERSION 管理。</p></article>
+            <article class="version-entry"><strong>v6.1.21｜統計列新增待重寫人數</strong><p>更新日期：2026-10-28 22:35</p><p>作業統計列新增「待重寫」人數，依實際退回重寫學生數動態顯示；若為 0 人則隱藏該統計卡，避免佔用版面。原有未繳交總數與繳交率計算維持不變。</p></article>
+
+            <article class="version-entry"><strong>v6.1.20｜提醒名單姓名改為橫向排列</strong><p>更新日期：2026-10-28 22:30</p><p>三欄提醒名單的姓名卡片改為先橫向排列、再自動換行；最多顯示四排，依視窗寬度調整欄數，名單過多時在欄內捲動。保留學生端移除「尚未登記」選項等既有功能。</p></article>
+            <article class="version-entry"><strong>v6.1.19｜學生作業選項移除「尚未登記」</strong><p>更新日期：2026-10-28 22:16</p><p>學生填寫作業狀態時，移除多餘的「尚未登記」選項；尚未選擇時仍維持未登記狀態。老師模式保留「尚未登記」選項，方便清除學生已登錄的狀態。</p></article>
+            <article class="version-entry"><strong>v6.1.18｜新增作業狀態三欄提醒名單</strong><p>更新日期：2026-10-28 22:10</p><p>在作業繳交頁新增「尚未登記、未繳交、待重寫名單」三欄提醒；依指定文字顯示說明，學生姓名以小卡呈現，每欄最多四排並依視窗大小調整。未繳交統計改為計入所有非已繳交狀態，名單分欄呈現避免重複。</p></article>
+            <article class="version-entry"><strong>v6.1.17｜男女名單外框與背景美化</strong><p>更新日期：2026-10-28 21:20</p><p>男女名單左右並排的結構不變；男生區增加淡藍色漸層背景與藍色外框，女生區增加淡粉色漸層背景與粉色外框，並美化標題列、圓角及陰影，讓兩區更醒目、容易辨識。</p></article>
+            <article class="version-entry"><strong>v6.1.17｜男女作業名單左右並排</strong><p>更新日期：2026-10-28 21:05</p><p>作業繳交頁的男生與女生名單改為桌面寬螢幕左右並排，標題改為「男生」與「女生」並移除「區」字；每欄採六欄學生卡片，縮短垂直高度。窄螢幕自動改為上下排列，避免卡片過窄。</p></article>
+            <article class="version-entry"><strong>v6.1.15｜狀態圖例移到作業標題旁並縮短頁面</strong><p>更新日期：2026-10-28 20:43</p><p>五種作業狀態圖例改放在「作業繳交記錄」標題右側，移除原本佔用高度的說明句；課堂跑馬燈恢復正常顯示，作業頁底部操作列仍保持隱藏。</p></article>
+            <article class="version-entry"><strong>v6.1.14｜作業繳交頁隱藏底部操作列</strong><p>更新日期：2026-10-28 20:34</p><p>切換至作業繳交時，隱藏底部固定的修改名單、設定與識別碼參照表按鈕，並取消底部預留高度，讓全班學生名單有更多可視空間；切換到其他功能時恢復顯示。</p></article>
+            <article class="version-entry"><strong>v6.1.13｜作業狀態圖例上移節省畫面高度</strong><p>更新日期：2026-10-28 20:20</p><p>作業繳交頁的五種狀態顏色圖例移到標題右側原本的跑馬燈位置，保留狀態名稱與顏色說明，減少作業頁垂直佔用高度；切換離開作業頁時恢復跑馬燈顯示。</p></article>
+            <article class="version-entry"><strong>v6.1.12｜修正修改學生名單會跳回個人計分板</strong><p>更新日期：2026-10-28 20:10</p><p>切換至學生名單編輯時，不再呼叫會收合名單面板的計分板切換函式；學生名單與分組名單都會留在主要工作區顯示。</p></article> hidden aria-label="版本歷史紀錄">
+            <article class="version-entry"><strong>v6.1.11｜三個底部功能改在主要工作區切換</strong><p>更新日期：2026-10-28 19:45</p><p>修改名單、設定、識別碼參照表改在主要工作區顯示；開啟時暫時收起計分內容，切回上方計分板即可恢復，不再把編輯內容放到頁面底部。</p></article>
+            <article class="version-entry"><strong>v6.1.10｜修正跑馬燈與版本歷史面板無法顯示</strong><p>更新日期：2026-10-28 19:40</p><p>修正作業繳交頁未收合時，跑馬燈與版本歷史面板被作業內容推到下方的問題；同時允許課堂操作鎖定時開啟跑馬燈設定面板。</p></article>
+            <article class="version-entry"><strong>v6.1.9｜修正作業頁上方功能列被遮擋</strong><p>更新日期：2026-10-28 19:35</p><p>提高上方計分板切換列的層級，避免作業繳交內容或其他區塊覆蓋按鈕；確保上方功能按鈕可接收點擊。</p></article>
+            <article class="version-entry"><strong>v6.1.8｜統一版本號與面板切換保護</strong><p>更新日期：2026-10-28 19:25</p><p>新增統一版本來源，讓瀏覽器分頁標題與頁面內版本標籤同步顯示 v6.1.8；保留面板切換提醒與混合儲存保護規則。</p></article>
+            <article class="version-entry"><strong>v6.1.7｜面板切換提醒與混合儲存保護</strong><p>更新日期：2026-10-28 19:15</p><p>切換操作面板時收合原面板；有未儲存變更時提供儲存並切換、放棄修改並切換、取消三種選擇，並保留原面板內容以避免資料遺失。</p></article>
+            <article class="version-entry"><strong>v6.1.6｜尚未登記文字加深</strong><p>更新日期：2026-10-28 18:50</p><p>只加深學生名單中「尚未登記」的姓名與狀態文字，原本淡橘背景與邊框不變；其他狀態及功能維持原樣。</p></article>
+            <article class="version-entry"><strong>v6.1.5｜已繳交改藍色、退回重寫改綠色</strong><p>更新日期：2026-10-28 18:30</p><p>已繳交改為藍色系，退回重寫改為綠色系，與尚未登記的橘色拉開差異；學生姓名保留清楚字體但不加粗，按鈕邊框調細。舊版若使用系統預設色會自動更新，老師自行設定的顏色保留。</p></article>
+            <article class="version-entry"><strong>v6.1.3｜姓名加粗加深、老師可修改作業名稱</strong><p>更新日期：2026-10-28 16:00</p><p>學生姓名使用狀態同色系較深的粗體文字，保留原有背景色；新增作業名稱修改按鈕，僅老師模式顯示，修改後同步更新作業標題與上方作業選單。</p></article>
+            <article class="version-entry"><strong>v6.1.2｜作業名單改為橫向排列</strong><p>更新日期：2026-10-28 15:51</p><p>桌面寬螢幕每排顯示 10 位學生；平板與手機依畫面寬度自動減少欄數，避免姓名與狀態被擠壓。</p></article>
             <article class="version-entry"><strong>v6.0.7｜學生模式也顯示尚未登記名單</strong><p>更新日期：2026-10-28 09:58</p><p>學生模式與老師模式都能查看尚未登記作業的學生名單；學生模式仍不能自行修改或取消已登記紀錄。</p></article>
             <article class="version-entry"><strong>v6.0.6｜繳交確認視窗置中並防止重複開啟</strong><p>更新日期：2026-10-28 09:53</p><p>學生點擊繳交卡片時，確認視窗固定顯示在畫面中央，方便直接點選；同一時間只允許一個確認視窗，重複點擊不會疊出多個視窗。確認或取消後視窗即關閉。</p></article>
             <article class="version-entry"><strong>v6.0.5｜修正作業紀錄完整匯出與匯入</strong><p>更新日期：2026-10-28 07:18</p><p>完整備份會明確納入所有作業及各份作業的繳交狀態；匯入時驗證作業紀錄格式與筆數，並在匯入報告顯示作業筆數，避免只還原一筆或不易察覺資料遺漏。</p></article>
@@ -807,9 +1031,19 @@
                 <label for="board-title" style="display:block;font-weight:bold;margin-bottom:6px;">修改計分板名稱</label>
                 <input id="board-title" type="text" value="🏫 課堂個人計分板 (29人版)" aria-label="計分板標題，可自行輸入" placeholder="請輸入計分板標題">
                 <button class="settings-save" type="button" onclick="saveBoardTitle()">儲存名稱</button>
-                <label for="toggle-button-label" style="display:block;font-weight:bold;margin:12px 0 6px;">修改右側直式按鈕名稱</label>
-                <input id="toggle-button-label" type="text" value="個人紀錄" aria-label="右側直式按鈕名稱" placeholder="例如：個人紀錄">
-                <button class="settings-save" type="button" onclick="saveToggleButtonLabel()">儲存按鈕名稱</button>
+                <div class="avatar-settings-row">
+                    <div class="avatar-settings-card">
+                        <label for="toggle-button-label">修改右側直式按鈕名稱</label>
+                        <input id="toggle-button-label" type="text" value="個人紀錄" aria-label="右側直式按鈕名稱" placeholder="例如：個人紀錄">
+                        <button class="settings-save" type="button" onclick="saveToggleButtonLabel()">儲存按鈕名稱</button>
+                    </div>
+                    <div class="avatar-settings-card">
+                        <label>上傳個人頭像</label>
+                        <div class="avatar-preview-row"><div id="avatar-settings-preview"><span>👨🏻‍🏫</span></div><span class="settings-hint">圖片會顯示在右側「個人紀錄」按鈕上方。</span></div>
+                        <input id="avatar-file-input" type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden>
+                        <div class="avatar-action-row"><button class="settings-save" type="button" onclick="document.getElementById('avatar-file-input').click()">選擇圖片</button><button class="settings-save" type="button" style="background:#b42318" onclick="resetProfileAvatar()">恢復預設</button></div>
+                    </div>
+                </div>
                 <div class="settings-section-title">修改上方計分板切換標籤</div>
                 <label class="settings-field" for="label-personal-board">個人計分板</label>
                 <input id="label-personal-board" type="text" placeholder="👤 個人計分板">
@@ -1551,11 +1785,51 @@
             document.getElementById('settings-btn').textContent = getSavedLabel('settings');
         }
 
+        const PROFILE_AVATAR_KEY = 'tab_class_profile_avatar_data';
+        function applyProfileAvatar(dataUrl) {
+            const wrap = document.getElementById('profile-avatar-wrap');
+            const preview = document.getElementById('avatar-settings-preview');
+            if (!wrap || !preview) return;
+            if (dataUrl) {
+                wrap.innerHTML = '<img alt="個人頭像" src="' + dataUrl + '">';
+                preview.innerHTML = '<img alt="頭像預覽" src="' + dataUrl + '">';
+            } else {
+                wrap.innerHTML = '<span id="profile-avatar-default">👨🏻‍🏫</span>';
+                preview.innerHTML = '<span>👨🏻‍🏫</span>';
+            }
+        }
+        function resetProfileAvatar() {
+            if (!confirm('確定要恢復預設頭像嗎？')) return;
+            localStorage.removeItem(PROFILE_AVATAR_KEY);
+            applyProfileAvatar('');
+            const input = document.getElementById('avatar-file-input'); if (input) input.value = '';
+        }
+        function setupProfileAvatarUpload() {
+            const input = document.getElementById('avatar-file-input');
+            if (!input) return;
+            const saved = localStorage.getItem(PROFILE_AVATAR_KEY) || '';
+            if (saved) applyProfileAvatar(saved);
+            input.addEventListener('change', () => {
+                const file = input.files && input.files[0];
+                if (!file) return;
+                if (!/^image\/(png|jpeg|webp|gif)$/.test(file.type)) { alert('請選擇 PNG、JPG、WebP 或 GIF 圖片。'); input.value=''; return; }
+                if (file.size > 3 * 1024 * 1024) { alert('圖片請小於 3 MB，避免占用過多儲存空間。'); input.value=''; return; }
+                const reader = new FileReader();
+                reader.onload = () => {
+                    try { localStorage.setItem(PROFILE_AVATAR_KEY, String(reader.result)); applyProfileAvatar(String(reader.result)); }
+                    catch (e) { alert('頭像儲存失敗，可能是圖片太大。請改用較小的圖片。'); }
+                };
+                reader.onerror = () => alert('讀取圖片失敗，請重新選擇。');
+                reader.readAsDataURL(file);
+            });
+        }
+        document.addEventListener('DOMContentLoaded', setupProfileAvatarUpload);
+
         function saveToggleButtonLabel() {
             const input = document.getElementById('toggle-button-label');
             const label = input.value.trim() || '個人紀錄';
             input.value = label;
-            document.getElementById('toggle-btn').textContent = '👤 ' + label;
+            document.getElementById('toggle-btn').textContent = label;
             localStorage.setItem('tab_class_toggle_label', label);
         }
 
@@ -1627,7 +1901,15 @@
                 document.getElementById('stats-board-container').hidden = true;
                 document.getElementById('seat-board-container').hidden = true;
             } else {
-                switchBoardView(currentBoardView);
+                // v6.1.12 修正：切換到「修改學生名單」時，不呼叫 switchBoardView。
+                // switchBoardView 的切換守門會收合 roster-menu，造成編輯畫面剛開啟就跳回個人計分板。
+                // 學生名單與分組名單都留在主要工作區顯示，暫時隱藏後方計分板。
+                document.getElementById('list-container').hidden = true;
+                document.getElementById('group-score-container').hidden = true;
+                document.getElementById('stats-board-container').hidden = true;
+                document.getElementById('seat-board-container').hidden = true;
+                document.getElementById('wheel-records-board-container').hidden = true;
+                document.getElementById('homework-board-container').hidden = true;
             }
             document.getElementById('edit-students-btn').style.background = which === 'students' ? '#00bcd4' : '#e0f7fa';
             document.getElementById('edit-students-btn').style.color = which === 'students' ? '#fff' : '#006064';
@@ -3100,8 +3382,28 @@
             localStorage.setItem('tab_class_group_contributions', JSON.stringify(groupContributions));
         }
 
+        function placeHomeworkLegendInHeader(active) {
+            const marquee = document.getElementById('class-marquee');
+            const root = document.getElementById('homework-board-container');
+            if (marquee) {
+                marquee.classList.remove('homework-legend-mode');
+                const track = document.getElementById('class-marquee-track');
+                if (track) track.style.display = '';
+            }
+            if (!root) return;
+            const slot = root.querySelector('.hw-legend-slot');
+            const legend = root.querySelector('.hw-status-legend');
+            if (active && slot && legend && legend.parentElement !== slot) slot.appendChild(legend);
+            if (!active && slot) {
+                const existing = slot.querySelector('.hw-status-legend');
+                if (existing) existing.remove();
+            }
+        }
+
         function switchBoardView(view) {
+            if (view !== 'homework') placeHomeworkLegendInHeader(false);
             currentBoardView = ['groups', 'stats', 'seats', 'wheelRecords', 'homework'].includes(view) ? view : 'personal';
+            document.getElementById('side-panel').classList.toggle('homework-view-active', currentBoardView === 'homework');
             const personal = currentBoardView === 'personal';
             const groups = currentBoardView === 'groups';
             const editingGroups = document.getElementById('side-panel').classList.contains('group-edit-mode');
@@ -3717,7 +4019,7 @@
 
         // 載入已儲存的右側入口按鈕名稱；計分板標題已在上方初始化
         const savedToggleLabel = localStorage.getItem('tab_class_toggle_label') || '個人紀錄';
-        document.getElementById('toggle-btn').textContent = '👤 ' + savedToggleLabel;
+        document.getElementById('toggle-btn').textContent = savedToggleLabel;
         document.getElementById('toggle-button-label').value = savedToggleLabel;
 
         document.getElementById('group-count').value = studentGroups.count || 5;
@@ -4028,7 +4330,7 @@
             const panel = document.getElementById('marquee-panel');
             const show = panel.hidden;
             panel.hidden = !show;
-            ['list-container','group-score-container','stats-board-container','seat-board-container','wheel-records-board-container','version-history-panel'].forEach(id => {
+            ['list-container','group-score-container','stats-board-container','seat-board-container','wheel-records-board-container','homework-board-container','version-history-panel'].forEach(id => {
                 const el = document.getElementById(id); if (el) el.hidden = show;
             });
             if (!show) switchBoardView(currentBoardView);
@@ -4042,7 +4344,7 @@
             history.hidden = !showHistory;
             const marqueePanel = document.getElementById('marquee-panel'); if (marqueePanel) marqueePanel.hidden = true;
             const marqueeBtn = document.getElementById('marquee-toggle-btn'); if (marqueeBtn) marqueeBtn.textContent = '📣';
-            ['list-container','group-score-container','stats-board-container','seat-board-container','wheel-records-board-container'].forEach(id => {
+            ['list-container','group-score-container','stats-board-container','seat-board-container','wheel-records-board-container','homework-board-container'].forEach(id => {
                 const el = document.getElementById(id); if (el) el.hidden = showHistory ? true : false;
             });
             if (!showHistory) switchBoardView(currentBoardView);
@@ -4052,7 +4354,7 @@
         document.addEventListener('click', function(event) {
             if (classroomUnlocked || isWheelTarget(event.target)) return;
             // 匯入是老師主動選擇的操作；即使課堂操作鎖定，也必須允許打開匯入、選檔及操作確認視窗。
-            const allowed = event.target.closest('#toggle-btn, .close-panel, #screenshot-btn, #top-wheel-btn, #spin-btn, #version-history-btn, #show-personal-board, #show-group-board, #show-stats-board, #show-seat-board, #show-wheel-records-board, #settings-btn, #edit-roster-btn, #identity-table-btn, #operation-unlock-btn, #operation-rescue-btn, #operation-lock-btn, .top-data-btn.import, #json-import-file, #import-confirm-modal');
+            const allowed = event.target.closest('#toggle-btn, .close-panel, #screenshot-btn, #top-wheel-btn, #spin-btn, #marquee-toggle-btn, #version-history-btn, #show-personal-board, #show-group-board, #show-stats-board, #show-seat-board, #show-wheel-records-board, #settings-btn, #edit-roster-btn, #identity-table-btn, #operation-unlock-btn, #operation-rescue-btn, #operation-lock-btn, .top-data-btn.import, #json-import-file, #import-confirm-modal');
             if (allowed) return;
             event.preventDefault(); event.stopPropagation(); event.stopImmediatePropagation();
         }, true);
@@ -4179,35 +4481,108 @@ function showImportConfirmDialog(message) {
             homeworkRecords.unshift(record); activeHomeworkId = record.id; saveHomeworkRecords(); renderHomeworkBoard();
         }
         function selectHomeworkRecord(id) { activeHomeworkId = id; renderHomeworkBoard(); }
+        function renameActiveHomework() {
+            if (homeworkMode !== 'teacher') { alert('只有老師模式可以修改作業名稱。'); return; }
+            const rec = getActiveHomework();
+            if (!rec) { alert('目前沒有可修改的作業。'); return; }
+            const nextName = prompt('請輸入新的作業名稱：', rec.name || '');
+            if (nextName === null) return;
+            const trimmed = nextName.trim();
+            if (!trimmed) { alert('作業名稱不能空白。'); return; }
+            if (trimmed === rec.name) return;
+            rec.name = trimmed;
+            saveHomeworkRecords();
+            renderHomeworkBoard();
+        }
         function deleteHomeworkRecord() {
             if (homeworkMode !== 'teacher') { alert('只有老師模式可以管理作業。'); return; }
             const rec = getActiveHomework(); if (!rec) return;
             if (!confirm('確定刪除「' + rec.name + '」及這份作業的所有繳交紀錄嗎？此動作無法復原。')) return;
             homeworkRecords = homeworkRecords.filter(r => r.id !== rec.id); activeHomeworkId = homeworkRecords[0]?.id || ''; saveHomeworkRecords(); renderHomeworkBoard();
         }
+        const HW_COLOR_KEY = 'tab_class_homework_status_colors_v1';
+        const HW_STATUSES = [
+            {id:'pending', label:'尚未登記', description:'尚未選擇作業狀態。', color:'#F59E0B'},
+            {id:'submitted', label:'已繳交', description:'作業已經繳交。', color:'#2585F5'},
+            {id:'incomplete', label:'未完成', description:'作業尚未完成。', color:'#F43F5E'},
+            {id:'forgot', label:'忘記帶', description:'睡前沒有檢查聯絡簿和功課。', color:'#A855F7'},
+            {id:'rewrite', label:'退回重寫', description:'字跡潦草、錯誤太多、空白太多。', color:'#16A765'}
+        ];
+        let homeworkStatusColors = {};
+        try {
+            homeworkStatusColors = JSON.parse(localStorage.getItem(HW_COLOR_KEY) || '{}') || {};
+            // 若舊版儲存的是系統預設色，更新成新版藍色／綠色；使用者自行設定的顏色則保留。
+            if (homeworkStatusColors.submitted && ['#22C55E','#22c55e'].includes(homeworkStatusColors.submitted)) homeworkStatusColors.submitted = '#2585F5';
+            if (homeworkStatusColors.rewrite && ['#F97316','#f97316'].includes(homeworkStatusColors.rewrite)) homeworkStatusColors.rewrite = '#16A765';
+            localStorage.setItem(HW_COLOR_KEY, JSON.stringify(homeworkStatusColors));
+        } catch(e) { homeworkStatusColors = {}; }
+        let homeworkColorDraft = null;
+        function hwStatusColor(statusId) { const st = HW_STATUSES.find(x => x.id === statusId) || HW_STATUSES[0]; return homeworkStatusColors[statusId] || st.color; }
+        function hwStatusInfo(record, studentId) {
+            const saved = record?.statuses?.[String(studentId)];
+            if (!saved) return HW_STATUSES[0];
+            // 舊版紀錄只有 submittedAt/by，向下相容並視為已繳交。
+            const id = typeof saved === 'string' ? saved : (saved.status || 'submitted');
+            return HW_STATUSES.find(x => x.id === id) || HW_STATUSES[1];
+        }
+        function hwStatusStyle(statusId) {
+            const c = hwStatusColor(statusId);
+            return '--hw-status-color:'+c+';--hw-status-bg:'+c+'18;--hw-status-border:'+c+';';
+        }
+        function renderHomeworkLegend() {
+            return '<div class="hw-status-legend" aria-label="作業狀態顏色意義表">' + HW_STATUSES.map(st => '<div class="hw-legend-item" style="'+hwStatusStyle(st.id)+'"><strong><span class="hw-legend-dot"></span>'+escapeHwText(st.label)+'</strong><small>'+escapeHwText(st.description)+'</small></div>').join('') + '</div>';
+        }
+        function openHomeworkColorDrawer() {
+            if (homeworkMode !== 'teacher') { alert('只有老師模式可以修改狀態顏色。'); return; }
+            homeworkColorDraft = Object.fromEntries(HW_STATUSES.map(st => [st.id, hwStatusColor(st.id)]));
+            let drawer = document.getElementById('hw-color-drawer');
+            if (!drawer) { drawer = document.createElement('aside'); drawer.id='hw-color-drawer'; drawer.className='hw-color-drawer'; drawer.setAttribute('aria-label','作業狀態顏色設定'); document.body.appendChild(drawer); }
+            renderHomeworkColorDrawer(); drawer.hidden = false;
+        }
+        function renderHomeworkColorDrawer() {
+            const drawer = document.getElementById('hw-color-drawer'); if (!drawer) return;
+            const draft = homeworkColorDraft || Object.fromEntries(HW_STATUSES.map(st => [st.id, hwStatusColor(st.id)]));
+            drawer.innerHTML = '<div class="hw-color-drawer-head"><h3>🎨 作業狀態顏色設定</h3><button class="hw-color-close" type="button" onclick="closeHomeworkColorDrawer()" aria-label="關閉">✕</button></div><p style="color:#64748b;font-size:13px;line-height:1.5">修改色塊後，按「儲存顏色設定」套用至上方圖例與學生按鈕。</p>' + HW_STATUSES.map(st => '<div class="hw-color-row"><div><label for="hw-color-'+st.id+'">'+escapeHwText(st.label)+'</label><small>'+escapeHwText(st.description)+'</small></div><input id="hw-color-'+st.id+'" type="color" value="'+escapeHwText(draft[st.id] || st.color)+'" onchange="previewHomeworkColor(\''+st.id+'\',this.value)" aria-label="修改'+escapeHwText(st.label)+'顏色"></div>').join('') + '<div class="hw-color-actions"><button class="hw-color-reset" type="button" onclick="resetHomeworkColors()">恢復預設顏色</button><button class="hw-color-save" type="button" onclick="saveHomeworkColors()">儲存顏色設定</button></div><div class="hw-color-note">💡 這份顏色意義表會一直顯示在作業頁最上方。只有老師模式可以修改，學生只能查看。</div>';
+        }
+        function previewHomeworkColor(statusId, color) {
+            if (!homeworkColorDraft) homeworkColorDraft = Object.fromEntries(HW_STATUSES.map(st => [st.id, hwStatusColor(st.id)]));
+            if (/^#[0-9a-fA-F]{6}$/.test(color)) homeworkColorDraft[statusId] = color;
+            // 即時預覽只套用於畫面，不寫入儲存，取消或關閉前可再決定是否保存。
+            const old = homeworkStatusColors; homeworkStatusColors = {...old, ...homeworkColorDraft}; renderHomeworkBoard();
+            const drawer = document.getElementById('hw-color-drawer'); if (drawer) { drawer.hidden = false; renderHomeworkColorDrawer(); const input = document.getElementById('hw-color-'+statusId); if (input) input.value = color; }
+        }
+        function saveHomeworkColors() {
+            if (homeworkMode !== 'teacher' || !homeworkColorDraft) return;
+            homeworkStatusColors = {...homeworkColorDraft};
+            try { localStorage.setItem(HW_COLOR_KEY, JSON.stringify(homeworkStatusColors)); } catch(e) { alert('顏色設定無法儲存，請檢查瀏覽器儲存空間。'); return; }
+            closeHomeworkColorDrawer(); renderHomeworkBoard(); alert('五種作業狀態顏色已儲存！');
+        }
+        function resetHomeworkColors() {
+            if (!confirm('要恢復五種作業狀態的預設顏色嗎？')) return;
+            homeworkColorDraft = Object.fromEntries(HW_STATUSES.map(st => [st.id, st.color]));
+            homeworkStatusColors = {...homeworkColorDraft};
+            renderHomeworkColorDrawer(); renderHomeworkBoard();
+        }
+        function closeHomeworkColorDrawer() { const drawer = document.getElementById('hw-color-drawer'); if (drawer) drawer.hidden = true; homeworkColorDraft = null; try { homeworkStatusColors = JSON.parse(localStorage.getItem(HW_COLOR_KEY) || '{}') || {}; } catch(e) { homeworkStatusColors = {}; } renderHomeworkBoard(); }
         function openHomeworkConfirm(studentId, studentName) {
-            // 防止連續點擊或事件重複觸發，造成確認視窗疊加。
             if (document.querySelector('.hw-modal-backdrop')) return;
             const rec = getActiveHomework(); if (!rec) return;
-            const currentlySubmitted = !!rec.statuses[String(studentId)];
-            if (homeworkMode === 'teacher') {
-                const action = currentlySubmitted ? '改為「尚未登記」' : '登記為「已繳交」';
-                if (!confirm('老師確認要將「' + studentName + '」' + action + '嗎？')) return;
-                if (currentlySubmitted) delete rec.statuses[String(studentId)]; else rec.statuses[String(studentId)] = { submittedAt: new Date().toISOString(), by: 'teacher' };
-                saveHomeworkRecords(); renderHomeworkBoard(); return;
-            }
-            if (currentlySubmitted) { alert('「' + studentName + '」已繳交，如需更正，請告訴老師。'); return; }
+            const current = hwStatusInfo(rec, studentId);
+            if (homeworkMode !== 'teacher' && current.id !== 'pending') { alert('「' + studentName + '」已登記為「'+current.label+'」，如需更正，請告訴老師。'); return; }
             const modal = document.createElement('div'); modal.className = 'hw-modal-backdrop'; modal.setAttribute('role','dialog'); modal.setAttribute('aria-modal','true');
-            modal.innerHTML = '<div class="hw-modal" role="document"><h3>確認作業繳交</h3><p>你要登記「<strong>' + escapeHwText(rec.name) + '</strong>」已經繳交了嗎？</p><p style="color:#64748b;font-size:14px;">學生模式下，登記後不能自行取消；如有錯誤，請老師協助更正。</p><div class="hw-modal-actions"><button type="button" class="hw-btn hw-btn-muted" data-hw-cancel>取消</button><button type="button" class="hw-btn hw-btn-primary" data-hw-confirm>確認繳交</button></div></div>';
+            let selectedStatus = current.id;
+            const availableStatuses = homeworkMode === 'teacher' ? HW_STATUSES : HW_STATUSES.filter(st => st.id !== 'pending');
+            modal.innerHTML = '<div class="hw-modal" role="document"><h3>'+(homeworkMode==='teacher'?'🧑‍🏫 修改作業狀態':'📚 作業繳交狀態')+'</h3><p>學生：<strong>'+escapeHwText(studentName)+'</strong></p><p style="color:#64748b;font-size:14px">請選擇目前的作業狀態</p><div class="hw-status-options">'+availableStatuses.map(st => '<button type="button" class="hw-status-choice" role="radio" aria-checked="'+(st.id===selectedStatus)+'" data-status="'+st.id+'" style="'+hwStatusStyle(st.id)+'"><input type="radio" name="hw-status-choice" '+(st.id===selectedStatus?'checked':'')+'><span><strong>'+escapeHwText(st.label)+'</strong><small>'+escapeHwText(st.description)+'</small></span></button>').join('')+'</div><p style="color:#64748b;font-size:13px">'+(homeworkMode==='teacher'?'老師可以隨時修正；選擇「尚未登記」會清除該生本次作業的狀態。':'確認後不能自行更改，如有錯誤請告訴老師。')+'</p><div class="hw-modal-actions"><button type="button" class="hw-btn hw-btn-muted" data-hw-cancel>取消</button><button type="button" class="hw-btn hw-btn-primary" data-hw-confirm>確認記錄</button></div></div>';
             document.body.appendChild(modal);
             const close = () => { if (modal.isConnected) modal.remove(); };
             modal.querySelector('[data-hw-cancel]').addEventListener('click', close);
             modal.addEventListener('click', e => { if (e.target === modal) close(); });
-            const confirmButton = modal.querySelector('[data-hw-confirm]');
-            confirmButton.addEventListener('click', () => {
-                if (rec.statuses[String(studentId)]) { close(); renderHomeworkBoard(); return; }
-                confirmButton.disabled = true;
-                rec.statuses[String(studentId)] = { submittedAt: new Date().toISOString(), by: 'student' };
+            modal.querySelectorAll('[data-status]').forEach(btn => btn.addEventListener('click', () => { selectedStatus = btn.dataset.status; modal.querySelectorAll('[data-status]').forEach(b => { const on=b.dataset.status===selectedStatus; b.setAttribute('aria-checked',String(on)); const r=b.querySelector('input'); if(r)r.checked=on; }); }));
+            modal.querySelector('[data-hw-confirm]').addEventListener('click', () => {
+                if (homeworkMode !== 'teacher' && rec.statuses[String(studentId)]) { close(); renderHomeworkBoard(); return; }
+                if (homeworkMode !== 'teacher' && selectedStatus === 'pending') { alert('請選擇「已繳交」、「未完成」、「忘記帶」或「退回重寫」後，再按確認記錄。'); return; }
+                if (selectedStatus === 'pending') delete rec.statuses[String(studentId)];
+                else rec.statuses[String(studentId)] = {status:selectedStatus, submittedAt:new Date().toISOString(), by:homeworkMode==='teacher'?'teacher':'student'};
                 saveHomeworkRecords(); close(); renderHomeworkBoard();
             });
             modal.querySelector('[data-hw-cancel]').focus();
@@ -4217,35 +4592,42 @@ function showImportConfirmDialog(message) {
             const rec = getActiveHomework(); if (rec && !activeHomeworkId) activeHomeworkId = rec.id;
             const isTeacher = homeworkMode === 'teacher';
             const options = homeworkRecords.map(r => '<option value="' + escapeHwText(r.id) + '" ' + (rec && r.id === rec.id ? 'selected' : '') + '>' + escapeHwText(r.name) + '（' + escapeHwText(r.date || '') + '）</option>').join('');
-            let html = '<div class="hw-shell"><div class="hw-top"><div><h2 class="hw-title">📚 作業繳交記錄</h2><div class="hw-subtitle">每份作業獨立記錄；本功能不影響原本的個人或分組分數。</div></div><div class="hw-controls">';
+            let html = '<div class="hw-shell"><div class="hw-top"><div class="hw-heading-row"><h2 class="hw-title">📚 作業繳交記錄</h2><div class="hw-legend-slot"></div></div><div class="hw-controls">';
             if (homeworkRecords.length) html += '<select aria-label="選擇作業" onchange="selectHomeworkRecord(this.value)">' + options + '</select>';
-            html += '<span class="hw-mode-status ' + (isTeacher ? 'teacher' : 'student') + '" role="status">目前模式：' + (isTeacher ? '🧑‍🏫 老師' : '👩‍🎓 學生') + '</span></div></div>';
+            html += '<span class="hw-mode-status ' + (isTeacher ? 'teacher' : 'student') + '" role="status">目前模式：' + (isTeacher ? '🧑‍🏫 老師' : '👩‍🎓 學生') + '</span>';
+            if (isTeacher) html += '<button type="button" class="hw-color-open" onclick="openHomeworkColorDrawer()">🎨 修改顏色</button>';
+            html += '</div></div>';
+            html += renderHomeworkLegend();
             if (isTeacher) html += '<div class="hw-admin"><h3>🧑‍🏫 老師：新增作業</h3><div class="hw-admin-row"><input id="hw-new-name" type="text" maxlength="100" placeholder="作業名稱，例如：國語習作第 8 課" aria-label="新作業名稱"><input id="hw-new-date" type="date" value="' + getLocalDateString() + '" aria-label="作業日期"><button class="hw-btn hw-btn-primary" type="button" onclick="createHomeworkRecord()">＋ 建立作業</button>' + (rec ? '<button class="hw-btn hw-btn-warn" type="button" onclick="deleteHomeworkRecord()">刪除這份作業</button>' : '') + '</div><p class="hw-mode-note">老師模式可以新增作業、修改學生狀態及刪除作業。</p></div>';
-            if (!rec) {
-                html += '<div class="hw-empty"><h3>目前還沒有作業</h3><p>請到「設定」切換老師模式，再建立第一份作業。</p></div></div>'; root.innerHTML = html; return;
-            }
+            if (!rec) { html += '<div class="hw-empty"><h3>目前還沒有作業</h3><p>請到「設定」切換老師模式，再建立第一份作業。</p></div></div>'; root.innerHTML = html; return; }
             const roster = Array.isArray(teams) ? teams : [];
-            const submittedCount = roster.filter(st => !!rec.statuses[String(st.id || st.name)]).length;
-            const pendingCount = Math.max(0, roster.length - submittedCount);
+            const statusFor = st => hwStatusInfo(rec, String(st.id || st.name));
+            const submittedCount = roster.filter(st => statusFor(st).id === 'submitted').length;
+            const pendingCount = roster.filter(st => statusFor(st).id !== 'submitted').length;
+            const rewriteCount = roster.filter(st => statusFor(st).id === 'rewrite').length;
             const male = roster.filter(st => String(st.gender || '').includes('男'));
             const female = roster.filter(st => String(st.gender || '').includes('女'));
-            html += '<div class="hw-topline"><div class="hw-homework-title"><h2>' + escapeHwText(rec.name) + '</h2><span>作業日期：' + escapeHwText(rec.date || '未設定') + '</span></div>';
-            html += '<div class="hw-summary"><div class="hw-stat hw-stat-total"><strong>' + roster.length + '</strong><span>全班人數</span></div><div class="hw-stat hw-stat-done"><strong>' + submittedCount + '</strong><span>已繳交</span></div><div class="hw-stat hw-stat-pending"><strong>' + pendingCount + '</strong><span>尚未登記</span></div><div class="hw-stat hw-stat-rate"><strong>' + (roster.length ? Math.round(submittedCount / roster.length * 100) : 0) + '%</strong><span>繳交率</span></div></div></div>';
+            html += '<div class="hw-topline"><div class="hw-homework-title"><h2>' + escapeHwText(rec.name) + '</h2>' + (isTeacher ? '<button type="button" class="hw-btn hw-rename-homework" onclick="renameActiveHomework()">✏️ 修改作業名稱</button>' : '') + '<span>作業日期：' + escapeHwText(rec.date || '未設定') + '</span></div>';
+            html += '<div class="hw-summary"><div class="hw-stat hw-stat-total"><strong>' + roster.length + '</strong><span>全班人數</span></div><div class="hw-stat hw-stat-done"><strong>' + submittedCount + '</strong><span>已繳交</span></div><div class="hw-stat hw-stat-pending"><strong>' + pendingCount + '</strong><span>未繳交（含未登記）</span></div>' + (rewriteCount > 0 ? '<div class="hw-stat hw-stat-rewrite"><strong>' + rewriteCount + '</strong><span>待重寫</span></div>' : '') + '<div class="hw-stat hw-stat-rate"><strong>' + (roster.length ? Math.round(submittedCount / roster.length * 100) : 0) + '%</strong><span>繳交率</span></div></div></div>';
             const drawSection = (title, list) => {
                 if (!list.length) return '';
-                const count = list.filter(st => !!rec.statuses[String(st.id || st.name)]).length;
+                const count = list.filter(st => statusFor(st).id === 'submitted').length;
                 let out = '<section class="hw-section"><div class="hw-section-head"><h3>' + title + '</h3><span>已交 ' + count + '／' + list.length + ' 人</span></div><div class="hw-student-grid">';
-                list.forEach((st, idx) => { const key = String(st.id || st.name); const done = !!rec.statuses[key]; out += '<button type="button" class="hw-student ' + (done ? 'submitted' : 'pending') + '" onclick="openHomeworkConfirm(\'' + escapeHwText(key).replace(/\\/g,'\\\\').replace(/'/g,"\\'") + '\',\'' + escapeHwText(st.name).replace(/\\/g,'\\\\').replace(/'/g,"\\'") + '\')" aria-label="' + escapeHwText(st.name) + '，' + (done ? '已繳交' : '尚未登記') + '"><span class="hw-student-name">' + escapeHwText(st.name) + '</span><span class="hw-status-icon">' + (done ? '✓' : '●') + '</span><span class="hw-status-text">' + (done ? '已繳交' : '尚未登記') + '</span></button>'; });
+                list.forEach(st => { const key = String(st.id || st.name); const status = statusFor(st); out += '<button type="button" class="hw-student '+status.id+'" style="'+hwStatusStyle(status.id)+'" onclick="openHomeworkConfirm(\'' + escapeHwText(key).replace(/\\/g,'\\\\').replace(/'/g,"\\'") + '\',\'' + escapeHwText(st.name).replace(/\\/g,'\\\\').replace(/'/g,"\\'") + '\')" aria-label="' + escapeHwText(st.name) + '，' + escapeHwText(status.label) + '"><span class="hw-student-name">' + escapeHwText(st.name) + '</span><span class="hw-status-text">' + escapeHwText(status.label) + '</span></button>'; });
                 return out + '</div></section>';
             };
-            html += drawSection('男生區', male) + drawSection('女生區', female);
-            {
-                // v6.0.7：老師與學生都可查看尚未登記名單；學生仍無權修改其他人的狀態。
-                const missing = roster.filter(st => !rec.statuses[String(st.id || st.name)]);
-                html += '<div class="hw-admin hw-missing-list"><h3>📋 尚未登記名單（' + missing.length + ' 人）</h3>' + (missing.length ? '<div style="display:flex;flex-wrap:wrap;gap:8px">' + missing.map(st => '<span style="border:1px solid #f59e0b;border-radius:8px;padding:6px 10px">' + escapeHwText(st.name) + '</span>').join('') + '</div>' : '<p>全班都已登記繳交。</p>') + '</div>';
-            }
-            html += '<p class="hw-mode-note">目前模式：' + (isTeacher ? '老師模式（可修正紀錄）' : '學生模式（登記後不可自行取消）') + '。此為本機初稿，請先用測試資料操作。</p></div>';
+            html += '<div class="hw-gender-columns">' + drawSection('男生', male) + drawSection('女生', female) + '</div>';
+            const pendingStudents = roster.filter(st => statusFor(st).id === 'pending');
+            const unsubmittedStudents = roster.filter(st => ['incomplete','forgot'].includes(statusFor(st).id));
+            const rewriteStudents = roster.filter(st => statusFor(st).id === 'rewrite');
+            const summaryColumn = (title, note, list, color, bg) => '<section class="hw-status-summary" style="--summary-border:'+color+';--summary-bg:'+bg+'"><div class="hw-status-summary-head"><h3>'+title+'（'+list.length+'人）</h3><p>'+note+'</p></div>'+(list.length?'<div class="hw-summary-name-grid">'+list.map(st=>'<span class="hw-summary-name">'+escapeHwText(st.name)+'</span>').join('')+'</div>':'<div class="hw-summary-empty">目前沒有學生</div>')+'</section>';
+            html += '<div class="hw-status-summaries" aria-label="作業狀態提醒名單">' +
+                summaryColumn('尚未登記','繳交完請記得點選。',pendingStudents,'#F59E0B','#FFFBEB') +
+                summaryColumn('未繳交','未完成／忘記帶／請寫在今日聯絡簿提醒',unsubmittedStudents,'#F43F5E','#FFF1F2') +
+                summaryColumn('待重寫名單','請重新完成，隔日繳交',rewriteStudents,'#16A765','#ECFDF5') + '</div>';
+            html += '<p class="hw-mode-note">目前模式：' + (isTeacher ? '老師模式（可修正紀錄與顏色）' : '學生模式（登記後不可自行更改）') + '。顏色圖例會顯示在作業標題旁。</p></div>';
             root.innerHTML = html;
+            placeHomeworkLegendInHeader(currentBoardView === 'homework');
         }
         // Settings navigation helper; opens existing panel and reveals its settings section.
         function showSettingsPanel() {
@@ -4254,6 +4636,172 @@ function showImportConfirmDialog(message) {
             if (settingsBtn) settingsBtn.click();
             const settings = document.getElementById('settings-panel'); if (settings) settings.hidden = false;
         }
+
+
+/* v6.1.7 面板切換與混合儲存保護 */
+(function installPanelNavigationGuard(){
+  const dirty = { rosterStudents:false, rosterGroups:false, identity:false, settings:false };
+  let pendingTransition = null;
+  let guardModal = null;
+  const el = id => document.getElementById(id);
+  function activeArea(){
+    if (el('identity-reference-panel') && !el('identity-reference-panel').hidden) return 'identity';
+    if (el('settings-panel') && !el('settings-panel').hidden) return 'settings';
+    if (el('roster-menu') && !el('roster-menu').hidden) {
+      if (el('group-editor') && !el('group-editor').hidden) return 'rosterGroups';
+      if (el('roster-editor') && !el('roster-editor').hidden) return 'rosterStudents';
+    }
+    return null;
+  }
+  function hasDirty(){ const a=activeArea(); return !!(a && dirty[a] && ((a==='settings' && el('settings-panel') && !el('settings-panel').hidden) || (a==='identity' && el('identity-reference-panel') && !el('identity-reference-panel').hidden) || ((a==='rosterStudents'||a==='rosterGroups') && el('roster-menu') && !el('roster-menu').hidden))); }
+  function markDirty(area){ dirty[area]=true; updateDirtyHint(area); }
+  function clearDirty(area){ dirty[area]=false; updateDirtyHint(area); }
+  function updateDirtyHint(area){
+    const map={rosterStudents:'names-input',rosterGroups:'group-count',identity:'identity-reference-table-wrap',settings:'settings-panel'};
+    const node=el(map[area]); if(!node) return;
+    let hint=node.parentElement && node.parentElement.querySelector('.panel-save-state');
+    if(!hint){ hint=document.createElement('div'); hint.className='panel-save-state'; hint.style.cssText='margin:8px 0;padding:7px 10px;border-radius:7px;font-size:14px;font-weight:600;'; node.insertAdjacentElement('beforebegin',hint); }
+    hint.textContent=dirty[area]?'⚠️ 尚有未儲存的修改':'✓ 目前沒有未儲存的修改';
+    hint.style.background=dirty[area]?'#fff3cd':'#e8f5e9'; hint.style.color=dirty[area]?'#8a5a00':'#23733a';
+  }
+  function showGuard(next){
+    pendingTransition=next;
+    if(guardModal) guardModal.remove();
+    guardModal=document.createElement('div');
+    guardModal.style.cssText='position:fixed;inset:0;background:rgba(15,23,42,.48);z-index:100000;display:flex;align-items:center;justify-content:center;padding:16px;';
+    guardModal.innerHTML='<div role="dialog" aria-modal="true" style="width:min(460px,100%);background:#fff;border-radius:16px;padding:24px;box-shadow:0 20px 60px #0003;font-family:Microsoft JhengHei,sans-serif"><h2 style="margin:0 0 12px;font-size:22px">⚠️ 尚有未儲存的修改</h2><p style="line-height:1.7;margin:0 0 18px">目前面板的內容尚未儲存。切換功能前，請選擇要如何處理。</p><div style="display:grid;gap:9px"><button type="button" data-choice="save" style="padding:11px;border:0;border-radius:9px;background:#0d9488;color:white;font-weight:bold;font-size:16px">💾 儲存並切換</button><button type="button" data-choice="discard" style="padding:11px;border:1px solid #dc2626;border-radius:9px;background:#fff;color:#b91c1c;font-weight:bold;font-size:16px">放棄修改並切換</button><button type="button" data-choice="cancel" style="padding:11px;border:1px solid #cbd5e1;border-radius:9px;background:#f8fafc;color:#334155;font-size:16px">取消，繼續編輯</button></div></div>';
+    document.body.appendChild(guardModal);
+    guardModal.querySelector('[data-choice="cancel"]').focus();
+    guardModal.querySelectorAll('[data-choice]').forEach(btn=>btn.addEventListener('click',()=>{
+      const choice=btn.dataset.choice, nextAction=pendingTransition, area=activeArea();
+      if(choice==='cancel'){closeModal();return;}
+      if(choice==='discard'){
+        discardArea(area); closeModal(); if(nextAction) nextAction(); return;
+      }
+      const ok=saveArea(area);
+      if(ok){closeModal(); if(nextAction) nextAction();}
+    }));
+    guardModal.addEventListener('click',e=>{if(e.target===guardModal){/* 不允許點背景意外關閉 */}});
+  }
+  function closeModal(){ if(guardModal) guardModal.remove(); guardModal=null; pendingTransition=null; }
+  function discardArea(area){
+    if(area==='rosterStudents' && el('names-input')) el('names-input').value=(window.teams||[]).map(t=>t.name).join('\n');
+    if(area==='rosterGroups' && typeof renderGroupEditor==='function') renderGroupEditor();
+    if(area==='identity' && typeof renderIdentityReference==='function') renderIdentityReference();
+    if(area==='settings') loadSettingsInputs();
+    if(area) clearDirty(area);
+  }
+  function loadSettingsInputs(){
+    try{
+      if(el('board-title')) el('board-title').value=localStorage.getItem('tab_class_board_title')||'🏫 課堂個人計分板 (29人版)';
+      if(el('toggle-button-label')) el('toggle-button-label').value=localStorage.getItem('tab_class_toggle_label')||'個人紀錄';
+      if(typeof applyHeaderLabels==='function') applyHeaderLabels();
+    }catch(e){}
+  }
+  function saveArea(area){
+    try{
+      if(area==='rosterStudents'){
+        const before=JSON.stringify(window.teams||[]); updateTeams();
+        if(JSON.stringify(window.teams||[])===before && !(el('names-input').value.trim())) return false;
+        clearDirty(area); return true;
+      }
+      if(area==='rosterGroups'){ saveGroups(); clearDirty(area); return true; }
+      if(area==='identity'){ saveIdentityReference(); clearDirty(area); return true; }
+      if(area==='settings'){
+        // 設定欄位各自採用既有儲存流程；切換時一併保存一般標題與標籤設定。
+        const title=(el('board-title')?.value||'').trim()||'四１課堂計分板'; localStorage.setItem('tab_class_board_title',title); if(el('board-title-display'))el('board-title-display').textContent=title; const toggleLabel=(el('toggle-button-label')?.value||'').trim()||'個人紀錄'; localStorage.setItem('tab_class_toggle_label',toggleLabel); if(el('toggle-btn'))el('toggle-btn').textContent=toggleLabel; saveAllHeaderLabels(); clearDirty(area); return true;
+      }
+    }catch(e){ alert('儲存失敗，內容仍保留在目前面板。請檢查後再試。'); return false; }
+    return true;
+  }
+  function guard(next){ if(hasDirty()){showGuard(next);return false;} next(); return true; }
+  // 以輸入事件追蹤真正有變更的面板。
+  document.addEventListener('input',e=>{
+    const t=e.target;
+    if(t.closest('#roster-editor')) markDirty('rosterStudents');
+    else if(t.closest('#group-editor')) markDirty('rosterGroups');
+    else if(t.closest('#identity-reference-panel')) markDirty('identity');
+    else if(t.closest('#settings-panel')) markDirty('settings');
+  },true);
+  document.addEventListener('change',e=>{
+    const t=e.target;
+    if(t.closest('#roster-editor')) markDirty('rosterStudents');
+    else if(t.closest('#group-editor')) markDirty('rosterGroups');
+    else if(t.closest('#identity-reference-panel')) markDirty('identity');
+    else if(t.closest('#settings-panel')) markDirty('settings');
+  },true);
+  // 儲存成功後清除對應的未儲存狀態；保留原功能。
+  const wrapSave=(name,area)=>{const original=window[name];if(typeof original!=='function')return;window[name]=function(...args){const result=original.apply(this,args);clearDirty(area);return result;};};
+  wrapSave('updateTeams','rosterStudents'); wrapSave('saveGroups','rosterGroups'); wrapSave('saveIdentityReference','identity');
+  // 面板按鈕統一通過切換守門；原有面板函式負責實際顯示／收合。
+  const oldToggleRoster=window.toggleRosterEditor;
+  window.toggleRosterEditor=function(){
+    const menu=el('roster-menu'); const isOpen=menu && !menu.hidden;
+    if(isOpen && !hasDirty()){oldToggleRoster();return;}
+    if(isOpen && hasDirty()){guard(()=>oldToggleRoster());return;}
+    guard(()=>{if(el('settings-panel')&&!el('settings-panel').hidden) el('settings-panel').hidden=true;if(el('identity-reference-panel')&&!el('identity-reference-panel').hidden)el('identity-reference-panel').hidden=true;oldToggleRoster();});
+  };
+  const oldToggleSettings=window.toggleSettings;
+  window.toggleSettings=function(){
+    const panel=el('settings-panel'); const isOpen=panel&&!panel.hidden;
+    if(isOpen && !hasDirty()){oldToggleSettings();return;}
+    if(isOpen && hasDirty()){guard(()=>oldToggleSettings());return;}
+    guard(()=>{if(el('roster-menu'))el('roster-menu').hidden=true;if(el('identity-reference-panel'))el('identity-reference-panel').hidden=true;oldToggleSettings();});
+  };
+  const oldToggleIdentity=window.toggleIdentityReference;
+  window.toggleIdentityReference=function(){
+    const panel=el('identity-reference-panel'); const isOpen=panel&&!panel.hidden;
+    if(isOpen && !hasDirty()){oldToggleIdentity();return;}
+    if(isOpen && hasDirty()){guard(()=>oldToggleIdentity());return;}
+    guard(()=>{if(el('settings-panel'))el('settings-panel').hidden=true;if(el('roster-menu'))el('roster-menu').hidden=true;oldToggleIdentity();});
+  };
+  const oldSwitchBoard=window.switchBoardView;
+  window.switchBoardView=function(view){
+    if(view===window.currentBoardView && !hasDirty()){oldSwitchBoard(view);return;}
+    guard(()=>{
+      if(el('roster-menu'))el('roster-menu').hidden=true;
+      if(el('settings-panel'))el('settings-panel').hidden=true;
+      if(el('identity-reference-panel'))el('identity-reference-panel').hidden=true;
+      if(el('roster-editor'))el('roster-editor').hidden=true;
+      if(el('group-editor'))el('group-editor').hidden=true;
+      if(el('side-panel'))el('side-panel').classList.remove('group-edit-mode');
+      if(el('edit-roster-btn'))el('edit-roster-btn').textContent=getSavedLabel('editRoster');
+      if(el('settings-btn'))el('settings-btn').textContent=getSavedLabel('settings');
+      if(el('identity-table-btn'))el('identity-table-btn').textContent='👁️ 識別碼參照表';
+      ['rosterStudents','rosterGroups','identity','settings'].forEach(clearDirty);
+      oldSwitchBoard(view);
+    });
+  };
+})();
+
+
+/* v6.1.11：把修改名單、設定、識別碼參照表統一放入主要工作區 */
+(function installConfigWorkspaceMode(){
+  const panel = document.getElementById('side-panel');
+  const config = document.getElementById('config-area');
+  const list = document.getElementById('list-container');
+  if (!panel || !config || !list) return;
+  // 將功能面板放到計分內容之前；固定底部按鈕仍留在原位置。
+  list.parentNode.insertBefore(config, list);
+  const roster = document.getElementById('roster-menu');
+  const settings = document.getElementById('settings-panel');
+  const identity = document.getElementById('identity-reference-panel');
+  function sync(){
+    const active = !!((roster && !roster.hidden) || (settings && !settings.hidden) || (identity && !identity.hidden));
+    panel.classList.toggle('config-view-active', active);
+    config.classList.toggle('config-workspace-active', active);
+  }
+  const observer = new MutationObserver(sync);
+  [roster, settings, identity].filter(Boolean).forEach(node => observer.observe(node, {attributes:true, attributeFilter:['hidden']}));
+  // 按鈕切換和面板初始化後同步一次；用事件代理兼容現有功能函式。
+  document.addEventListener('click', e => {
+    if (e.target.closest('#edit-roster-btn, #settings-btn, #identity-table-btn, #show-personal-board, #show-seat-board, #show-group-board, #show-stats-board, #show-wheel-records-board, #show-homework-board')) {
+      requestAnimationFrame(sync);
+      setTimeout(sync, 0);
+    }
+  }, true);
+  sync();
+})();
 
 </script>
 
