@@ -6,7 +6,7 @@
     <title>401計分板</title>
     <script>
         // 唯一版本來源：新版本只需更新此處，瀏覽器標題與頁面標籤會同步。
-        window.APP_VERSION = 'v6.1.51';
+        window.APP_VERSION = 'v6.1.52';
         document.title = window.APP_VERSION + '｜401計分板';
         document.addEventListener('DOMContentLoaded', function () {
             var versionLabel = document.getElementById('current-version-label');
@@ -1000,6 +1000,7 @@
             <div id="custom-marquee-phrases" class="marquee-phrases" aria-live="polite"></div>
         </section>
         <section id="version-history-panel" hidden aria-label="版本歷史紀錄">
+            <article class="version-entry"><strong>v6.1.52｜修正尚晟姓名語音讀音</strong><p>更新日期：2026-10-29 13:33</p><p>新增共用語音文字轉換，抽籤得獎播報與個人加減分語音皆將「尚晟」轉為語音用的「尚成」，引導晟讀作ㄔㄥˊ；畫面顯示姓名維持「尚晟」不變。</p></article>
             <article class="version-entry"><strong>v6.1.51｜統一版本號來源並補齊近期版本歷史</strong><p>更新日期：2026-10-29 02:48</p><p>將目前版本號統一由 window.APP_VERSION 管理，瀏覽器分頁標題、頁面標籤與右側浮動版本標籤皆由同一來源同步更新；補上 v6.1.44 至 v6.1.50 近期作業頁調整摘要，避免程式內仍顯示舊版本。</p></article>
             <article class="version-entry"><strong>v6.1.44–v6.1.50｜作業繳交頁面與科目篩選調整</strong><p>更新日期：2026-10-29</p><p>近期版本持續調整老師版與學生版作業繳交頁的欄位、版面與既有紀錄檢視方式；包含作業科目、名稱、日期的呈現與切換，以及學生端依所選日期只顯示當日有作業的科目。此處合併記錄近期連續調整，不推定每一項修改所屬的精確小版本。</p></article>
             <article class="version-entry"><strong>v6.1.38｜老師版新增作業欄位整合</strong><p>更新日期：2026-10-29</p><p>老師版將科目、作業名稱與繳交日期放在「作業繳交記錄」標題同一列，保留左側科目管理、中間全班狀態表與右側快速操作；新增作業會保存科目、名稱及日期。</p></article>
@@ -2791,6 +2792,10 @@
             } catch (e) {}
         }
         let wheelAnnouncementToken = 0;
+        // v6.1.52：僅調整語音合成文字，不更動畫面姓名；「尚晟」的「晟」依本人指定讀作ㄔㄥˊ。
+        function normalizeSpeechPronunciation(value) {
+            return String(value == null ? '' : value).replace(/尚晟/g, '尚成');
+        }
         function announceWheelWinner(name) {
             if (!name || classroomSoundMode === 'off') return;
             const token = ++wheelAnnouncementToken;
@@ -2800,7 +2805,7 @@
                 return;
             }
             try { synth.cancel(); synth.resume(); } catch (e) {}
-            const spokenName = String(name).replace(/尚晟/g, '尚成');
+            const spokenName = normalizeSpeechPronunciation(name);
             const utterance = new SpeechSynthesisUtterance(`恭喜你，${spokenName}！`);
             utterance.lang = 'zh-TW';
             utterance.rate = 0.92;
@@ -3293,7 +3298,7 @@
             const token = ++scoreSpeechToken;
             const amount = scoreNumberWords(Math.abs(delta));
             const action = delta > 0 ? '加' : '減';
-            const text = `${label}，${action}${amount}！`;
+            const text = normalizeSpeechPronunciation(`${label}，${action}${amount}！`);
             try { synth.cancel(); synth.resume(); } catch (e) {}
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = 'zh-TW'; utterance.rate = 0.95; utterance.pitch = 1.0; utterance.volume = 1;
