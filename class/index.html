@@ -6,7 +6,7 @@
     <title>401計分板</title>
     <script>
         // 唯一版本來源：新版本只需更新此處，瀏覽器標題與頁面標籤會同步。
-        window.APP_VERSION = 'v6.1.52';
+        window.APP_VERSION = 'v6.1.61';
         document.title = window.APP_VERSION + '｜401計分板';
         document.addEventListener('DOMContentLoaded', function () {
             var versionLabel = document.getElementById('current-version-label');
@@ -644,7 +644,6 @@
         .hw-stat-done strong,.hw-stat-done span{color:#1671D9}
         .hw-stat-pending strong,.hw-stat-pending span{color:#c2410c}
         .hw-stat-rate strong{color:#0f766e}
-        .hw-stat-rewrite strong,.hw-stat-rewrite span{color:#16a765}
         .hw-student.submitted{background:#E6F4FF!important;border:1px solid #4DA3FF!important;color:#1671D9!important;box-shadow:none}
         .hw-student.submitted .hw-student-name,.hw-student.submitted .hw-status-icon,.hw-student.submitted .hw-status-text{color:#1671D9!important}
         .hw-student.pending{background:#fffaf0!important;border:1.5px solid #f59e0b!important}
@@ -692,7 +691,7 @@
         .hw-history-date>summary{cursor:pointer;font-weight:700;line-height:1.6}
         .hw-history-counts{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
         .hw-history-count{display:inline-block;padding:4px 8px;border-radius:999px;background:#f1f5f9;font-size:12px;font-weight:700}
-        .hw-history-count.bad{background:#fff1f2;color:#be123c}.hw-history-count.rewrite{background:#ecfdf5;color:#047857}.hw-history-count.pending{background:#fffbeb;color:#92400e}
+        .hw-history-count.bad{background:#fff1f2;color:#be123c}.hw-history-count.pending{background:#fffbeb;color:#92400e}
         .hw-history-names{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
         .hw-history-name{border:1px solid #dbe4e8;border-radius:7px;padding:5px 8px;background:#fff;font-size:13px}
         .hw-history-empty{padding:18px;text-align:center;color:#64748b;border:1px dashed #cbd5e1;border-radius:9px}
@@ -1000,6 +999,15 @@
             <div id="custom-marquee-phrases" class="marquee-phrases" aria-live="polite"></div>
         </section>
         <section id="version-history-panel" hidden aria-label="版本歷史紀錄">
+            <article class="version-entry"><strong>v6.1.56｜聯絡簿科目下拉選單置頂</strong><p>更新日期：2026-10-29 18:45</p><p>將「聯絡簿」設為所有作業科目下拉選單的最高優先選項，包含新增作業、修改既有作業及依科目查找等位置；國語、數學、社會、綜合仍依序排列，其餘科目順序保留，「未分類」維持置底。</p></article>
+            <article class="version-entry"><strong>v6.1.61｜移除忘記帶狀態並併入未完成</strong><p>更新日期：2026-10-29 19:40</p><p>學生與老師作業狀態選項移除「忘記帶」；舊紀錄若為忘記帶，載入時轉為「未完成」，並同步儲存，確保個人欠交、全班紀錄與未繳交統計一致。</p></article>
+            <article class="version-entry"><strong>v6.1.60｜移除待重寫名單功能</strong><p>更新日期：2026-10-29 19:30</p><p>移除作業登記頁的「待重寫名單」統計卡與相關狀態選項、顏色設定及歷史紀錄分類；既有舊資料若仍為退回重寫狀態，顯示時併入「未完成」，避免舊紀錄消失。其他作業登記、學生鎖定及老師管理功能維持不變。</p></article>
+            <article class="version-entry"><strong>v6.1.59｜已登記作業鎖定與未登記項目續登</strong><p>更新日期：2026-10-29 19:20</p><p>學生每日作業總表按「全部儲存」後，已登記項目鎖定且不可自行修改；尚未登記項目可再次進入補登。儲存時重新讀取最新資料並只補寫仍未登記的項目，避免覆蓋既有狀態；寫入失敗時保留對話框與學生選擇，並提示重新處理。老師端管理功能維持不變。</p></article>
+            <article class="version-entry"><strong>v6.1.58｜精簡每日作業登記對話框</strong><p>更新日期：2026-10-29 19:15</p><p>縮小學生每日作業總表對話框及作業項目高度，桌面版採雙欄排列以減少垂直捲動；移除每項作業下方的紅色提示文字，改於標題下方統一顯示操作說明。保留已交／未交選擇、未登記狀態及原有儲存邏輯。</p></article>
+            <article class="version-entry"><strong>v6.1.57｜學生每日作業總表彈出登記</strong><p>更新日期：2026-10-29 19:00</p><p>學生作業登記改以日期為主要檢視條件，標題列只保留繳交日期；學生點選自己的姓名後，彈出當日所有作業清單，每項作業可選「已交／未交」，未登記項目預設不選。按一次儲存即可更新可登記項目，既有繳交紀錄及備註保留。</p></article>
+            <article class="version-entry"><strong>v6.1.55｜改善既有作業科目修改與儲存</strong><p>更新日期：2026-10-29 18:39</p><p>修改既有作業改用表單視窗，科目可從現有科目下拉選取，也可新增科目；儲存時驗證本機資料是否確實寫入。保留原作業 ID、學生繳交狀態及備註，不另建重複作業。</p></article>
+            <article class="version-entry"><strong>v6.1.54｜修正既有作業無法修改與刪除</strong><p>更新日期：2026-10-29 18:39</p><p>在「檢視已有作業」區新增明確的「修改作業」與「刪除作業」操作。老師模式可修改作業名稱、科目及日期，或刪除選取作業；刪除前會再次確認，完成後儲存並更新畫面。學生模式不顯示管理按鈕。</p></article>
+            <article class="version-entry"><strong>v6.1.53｜集體加分、集體減分新增語音播報</strong><p>更新日期：2026-10-29 15:36</p><p>男生區與女生區的集體加分、集體減分按鈕，在音效模式切換至「姓名與分數播報」時，會語音播報性別、集體加減分方向及每人分數；歡呼聲模式與全部關閉模式維持原設定。</p></article>
             <article class="version-entry"><strong>v6.1.52｜修正尚晟姓名語音讀音</strong><p>更新日期：2026-10-29 13:33</p><p>新增共用語音文字轉換，抽籤得獎播報與個人加減分語音皆將「尚晟」轉為語音用的「尚成」，引導晟讀作ㄔㄥˊ；畫面顯示姓名維持「尚晟」不變。</p></article>
             <article class="version-entry"><strong>v6.1.51｜統一版本號來源並補齊近期版本歷史</strong><p>更新日期：2026-10-29 02:48</p><p>將目前版本號統一由 window.APP_VERSION 管理，瀏覽器分頁標題、頁面標籤與右側浮動版本標籤皆由同一來源同步更新；補上 v6.1.44 至 v6.1.50 近期作業頁調整摘要，避免程式內仍顯示舊版本。</p></article>
             <article class="version-entry"><strong>v6.1.44–v6.1.50｜作業繳交頁面與科目篩選調整</strong><p>更新日期：2026-10-29</p><p>近期版本持續調整老師版與學生版作業繳交頁的欄位、版面與既有紀錄檢視方式；包含作業科目、名稱、日期的呈現與切換，以及學生端依所選日期只顯示當日有作業的科目。此處合併記錄近期連續調整，不推定每一項修改所屬的精確小版本。</p></article>
@@ -3393,6 +3401,30 @@
             });
         }
 
+        // v6.1.53：集體加減分在「姓名與分數播報」模式下，播報性別、動作與每人分數。
+        function speakBulkGenderScore(gender, points, count) {
+            if (classroomSoundMode !== 'speech') return;
+            const synth = window.speechSynthesis;
+            if (!synth || typeof SpeechSynthesisUtterance === 'undefined') return;
+            const token = ++scoreSpeechToken;
+            const action = points > 0 ? '加' : '減';
+            const amount = scoreNumberWords(Math.abs(points));
+            const studentCount = scoreNumberWords(count);
+            const text = normalizeSpeechPronunciation(`${gender}，全體${studentCount}人，每人${action}${amount}分！`);
+            try { synth.cancel(); synth.resume(); } catch (e) {}
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'zh-TW'; utterance.rate = 0.95; utterance.pitch = 1.0; utterance.volume = 1;
+            const chooseVoice = () => {
+                const voices = synth.getVoices ? synth.getVoices() : [];
+                const chinese = voices.filter(v => /^zh([-_](TW|Hant|HK|CN))?/i.test(v.lang || '') || /繁體|台灣|臺灣|中文|Chinese|Taiwan/i.test(v.name || ''));
+                const preferred = chinese.find(v => /zh[-_]TW/i.test(v.lang || '')) || chinese.find(v => /繁體|台灣|臺灣|Taiwan/i.test(v.name || '')) || chinese[0];
+                if (preferred) utterance.voice = preferred;
+            };
+            chooseVoice();
+            utterance.onerror = () => {};
+            try { synth.speak(utterance); } catch (e) {}
+        }
+
         function bulkGenderScore(gender, points) {
             const targets = teams.map((team, index) => ({team, index})).filter(item => String(item.team.gender || '') === gender);
             const action = points >= 0 ? '加' : '減';
@@ -3413,7 +3445,8 @@
             if (currentBoardView === 'stats') renderStatsBoard();
             if (currentBoardView === 'seats') renderSeatBoard();
             if (currentBoardView === 'wheelRecords') renderWheelRecordsBoard();
-            playScoreSound(points);
+            if (classroomSoundMode === 'cheer') playScoreSound(points);
+            else if (classroomSoundMode === 'speech') speakBulkGenderScore(gender, points, targets.length);
             const cb = document.getElementById('celebrate');
             if (cb) { cb.style.display = 'block'; setTimeout(() => { cb.style.display = 'none'; }, 600); }
             updateUndoButtonState();
@@ -4585,7 +4618,24 @@ function showImportConfirmDialog(message) {
         const HW_STORAGE_KEY = 'tab_class_homework_records_v1';
         let homeworkMode = 'student';
         let homeworkRecords = [];
-        try { const parsedHw = JSON.parse(localStorage.getItem(HW_STORAGE_KEY) || '[]'); if (Array.isArray(parsedHw)) homeworkRecords = parsedHw; } catch (e) { homeworkRecords = []; }
+        try {
+            const parsedHw = JSON.parse(localStorage.getItem(HW_STORAGE_KEY) || '[]');
+            if (Array.isArray(parsedHw)) homeworkRecords = parsedHw;
+            // v6.1.61：舊版「忘記帶」紀錄一律併入「未完成」，並保留原紀錄時間等其他欄位。
+            let migratedForgotStatus = false;
+            homeworkRecords.forEach(rec => {
+                if (!rec || !rec.statuses || typeof rec.statuses !== 'object') return;
+                Object.keys(rec.statuses).forEach(studentId => {
+                    const saved = rec.statuses[studentId];
+                    const statusId = typeof saved === 'string' ? saved : saved?.status;
+                    if (statusId === 'forgot') {
+                        rec.statuses[studentId] = typeof saved === 'string' ? 'incomplete' : {...saved, status:'incomplete'};
+                        migratedForgotStatus = true;
+                    }
+                });
+            });
+            if (migratedForgotStatus) localStorage.setItem(HW_STORAGE_KEY, JSON.stringify(homeworkRecords));
+        } catch (e) { /* 若瀏覽器暫時無法寫入，下面的顯示轉換仍會把忘記帶歸入未完成。 */ }
         let activeHomeworkId = '';
         let homeworkHistoryView = 'register';
         let homeworkHistoryStudentId = '';
@@ -4646,15 +4696,14 @@ function showImportConfirmDialog(message) {
             {id:'pending', label:'尚未登記', description:'尚未選擇作業狀態。', color:'#F59E0B'},
             {id:'submitted', label:'已繳交', description:'作業已經繳交。', color:'#2585F5'},
             {id:'incomplete', label:'未完成', description:'作業尚未完成。', color:'#F43F5E'},
-            {id:'forgot', label:'忘記帶', description:'睡前沒有檢查聯絡簿和功課。', color:'#A855F7'},
-            {id:'rewrite', label:'退回重寫', description:'字跡潦草、錯誤太多、空白太多。', color:'#16A765'}
         ];
         let homeworkStatusColors = {};
         try {
             homeworkStatusColors = JSON.parse(localStorage.getItem(HW_COLOR_KEY) || '{}') || {};
             // 若舊版儲存的是系統預設色，更新成新版藍色／綠色；使用者自行設定的顏色則保留。
             if (homeworkStatusColors.submitted && ['#22C55E','#22c55e'].includes(homeworkStatusColors.submitted)) homeworkStatusColors.submitted = '#2585F5';
-            if (homeworkStatusColors.rewrite && ['#F97316','#f97316'].includes(homeworkStatusColors.rewrite)) homeworkStatusColors.rewrite = '#16A765';
+            delete homeworkStatusColors.rewrite;
+            delete homeworkStatusColors.forgot;
             localStorage.setItem(HW_COLOR_KEY, JSON.stringify(homeworkStatusColors));
         } catch(e) { homeworkStatusColors = {}; }
         let homeworkColorDraft = null;
@@ -4664,6 +4713,7 @@ function showImportConfirmDialog(message) {
             if (!saved) return HW_STATUSES[0];
             // 舊版紀錄只有 submittedAt/by，向下相容並視為已繳交。
             const id = typeof saved === 'string' ? saved : (saved.status || 'submitted');
+            if (id === 'rewrite' || id === 'forgot' || id === 'forgotten') return HW_STATUSES.find(x => x.id === 'incomplete') || HW_STATUSES[2];
             return HW_STATUSES.find(x => x.id === id) || HW_STATUSES[1];
         }
         function hwStatusStyle(statusId) {
@@ -4696,10 +4746,10 @@ function showImportConfirmDialog(message) {
             if (homeworkMode !== 'teacher' || !homeworkColorDraft) return;
             homeworkStatusColors = {...homeworkColorDraft};
             try { localStorage.setItem(HW_COLOR_KEY, JSON.stringify(homeworkStatusColors)); } catch(e) { alert('顏色設定無法儲存，請檢查瀏覽器儲存空間。'); return; }
-            closeHomeworkColorDrawer(); renderHomeworkBoard(); alert('五種作業狀態顏色已儲存！');
+            closeHomeworkColorDrawer(); renderHomeworkBoard(); alert('作業狀態顏色已儲存！');
         }
         function resetHomeworkColors() {
-            if (!confirm('要恢復五種作業狀態的預設顏色嗎？')) return;
+            if (!confirm('要恢復作業狀態的預設顏色嗎？')) return;
             homeworkColorDraft = Object.fromEntries(HW_STATUSES.map(st => [st.id, st.color]));
             homeworkStatusColors = {...homeworkColorDraft};
             renderHomeworkColorDrawer(); renderHomeworkBoard();
@@ -4721,7 +4771,7 @@ function showImportConfirmDialog(message) {
             modal.querySelectorAll('[data-status]').forEach(btn => btn.addEventListener('click', () => { selectedStatus = btn.dataset.status; modal.querySelectorAll('[data-status]').forEach(b => { const on=b.dataset.status===selectedStatus; b.setAttribute('aria-checked',String(on)); const r=b.querySelector('input'); if(r)r.checked=on; }); }));
             modal.querySelector('[data-hw-confirm]').addEventListener('click', () => {
                 if (homeworkMode !== 'teacher' && rec.statuses[String(studentId)]) { close(); renderHomeworkBoard(); return; }
-                if (homeworkMode !== 'teacher' && selectedStatus === 'pending') { alert('請選擇「已繳交」、「未完成」、「忘記帶」或「退回重寫」後，再按確認記錄。'); return; }
+                if (homeworkMode !== 'teacher' && selectedStatus === 'pending') { alert('請選擇「已繳交」或「未完成」後，再按確認記錄。'); return; }
                 if (selectedStatus === 'pending') delete rec.statuses[String(studentId)];
                 else rec.statuses[String(studentId)] = {status:selectedStatus, submittedAt:new Date().toISOString(), by:homeworkMode==='teacher'?'teacher':'student'};
                 saveHomeworkRecords(); close(); renderHomeworkBoard();
@@ -4748,12 +4798,12 @@ function showImportConfirmDialog(message) {
                 const pending=[];
                 homeworkRecords.forEach(rec=>{const st=hwStatusInfo(rec,sid);if(st.id!=='submitted')pending.push({rec,status:st});});
                 pending.sort((a,b)=>String(a.rec.date||'').localeCompare(String(b.rec.date||'')));
-                out+='<p>學生：<strong>'+escapeHwText(student.name)+'</strong>　目前尚欠 <strong>'+pending.length+'</strong> 份（包含尚未登記、未完成、忘記帶及待重寫）。</p>';
+                out+='<p>學生：<strong>'+escapeHwText(student.name)+'</strong>　目前尚欠 <strong>'+pending.length+'</strong> 份（包含尚未登記及未完成）。</p>';
                 if(!pending.length) out+='<div class="hw-history-empty">目前沒有尚欠作業，太好了！</div>';
-                else {out+='<div class="hw-history-names">';pending.forEach(item=>{const cls=item.status.id==='rewrite'?'rewrite':item.status.id==='pending'?'pending':'bad';out+='<div class="hw-history-name"><strong>'+escapeHwText(item.rec.name)+'</strong><br><small>'+escapeHwText(item.rec.date||'未設定日期')+'</small><br><span class="hw-history-count '+cls+'">'+escapeHwText(item.status.label)+'</span></div>';});out+='</div>';}
+                else {out+='<div class="hw-history-names">';pending.forEach(item=>{const cls=item.status.id==='pending'?'pending':'bad';out+='<div class="hw-history-name"><strong>'+escapeHwText(item.rec.name)+'</strong><br><small>'+escapeHwText(item.rec.date||'未設定日期')+'</small><br><span class="hw-history-count '+cls+'">'+escapeHwText(item.status.label)+'</span></div>';});out+='</div>';}
                 out+='<h3 style="margin-top:18px">📜 作業歷史（含已繳交）</h3>';
                 if(!homeworkRecords.length) out+='<div class="hw-history-empty">尚無作業紀錄。</div>';
-                else {out+='<div class="hw-history-names">';homeworkRecords.slice().sort((a,b)=>String(b.date||'').localeCompare(String(a.date||''))).forEach(rec=>{const st=hwStatusInfo(rec,sid);out+='<div class="hw-history-name"><strong>'+escapeHwText(rec.name)+'</strong><br><small>'+escapeHwText(rec.date||'未設定日期')+'</small><br><span class="hw-history-count '+(st.id==='submitted'?'':st.id==='rewrite'?'rewrite':st.id==='pending'?'pending':'bad')+'">'+escapeHwText(st.label)+'</span></div>';});out+='</div>';}
+                else {out+='<div class="hw-history-names">';homeworkRecords.slice().sort((a,b)=>String(b.date||'').localeCompare(String(a.date||''))).forEach(rec=>{const st=hwStatusInfo(rec,sid);out+='<div class="hw-history-name"><strong>'+escapeHwText(rec.name)+'</strong><br><small>'+escapeHwText(rec.date||'未設定日期')+'</small><br><span class="hw-history-count '+(st.id==='submitted'?'':st.id==='pending'?'pending':'bad')+'">'+escapeHwText(st.label)+'</span></div>';});out+='</div>';}
                 return out+'</section>';
             }
             const grouped=new Map();
@@ -4765,11 +4815,11 @@ function showImportConfirmDialog(message) {
                 records.sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
                 out+='<details class="hw-history-assignment"><summary>'+escapeHwText(name)+' <span style="color:#64748b;font-weight:500">（'+records.length+' 次）</span></summary>';
                 records.forEach(rec=>{
-                    const statuses={submitted:[],pending:[],incomplete:[],forgot:[],rewrite:[]};
+                    const statuses={submitted:[],pending:[],incomplete:[]};
                     roster.forEach(st=>{const id=String(st.id||st.name),status=hwStatusInfo(rec,id);(statuses[status.id]||statuses.pending).push(st.name);});
-                    const counts='<div class="hw-history-counts"><span class="hw-history-count">已繳 '+statuses.submitted.length+' 人</span><span class="hw-history-count pending">尚未登記 '+statuses.pending.length+' 人</span><span class="hw-history-count bad">未完成 '+statuses.incomplete.length+' 人</span><span class="hw-history-count bad">忘記帶 '+statuses.forgot.length+' 人</span><span class="hw-history-count rewrite">待重寫 '+statuses.rewrite.length+' 人</span></div>';
+                    const counts='<div class="hw-history-counts"><span class="hw-history-count">已繳 '+statuses.submitted.length+' 人</span><span class="hw-history-count pending">尚未登記 '+statuses.pending.length+' 人</span><span class="hw-history-count bad">未完成 '+statuses.incomplete.length+' 人</span></div>';
                     out+='<details class="hw-history-date"><summary>'+escapeHwText(rec.date||'未設定日期')+'　｜　已繳 '+statuses.submitted.length+'／'+roster.length+' 人</summary>'+counts;
-                    [['尚未登記','pending'],['未完成','incomplete'],['忘記帶','forgot'],['待重寫','rewrite']].forEach(([label,key])=>{out+='<div style="margin:8px 0"><strong>'+label+'（'+statuses[key].length+'人）</strong><div class="hw-history-names">'+(statuses[key].length?statuses[key].map(n=>'<span class="hw-history-name">'+escapeHwText(n)+'</span>').join(''):'<span style="color:#64748b;font-size:13px">無</span>')+'</div></div>';});
+                    [['尚未登記','pending'],['未完成','incomplete']].forEach(([label,key])=>{out+='<div style="margin:8px 0"><strong>'+label+'（'+statuses[key].length+'人）</strong><div class="hw-history-names">'+(statuses[key].length?statuses[key].map(n=>'<span class="hw-history-name">'+escapeHwText(n)+'</span>').join(''):'<span style="color:#64748b;font-size:13px">無</span>')+'</div></div>';});
                     out+='</details>';
                 });
                 out+='</details>';
@@ -4796,7 +4846,6 @@ function showImportConfirmDialog(message) {
             const statusFor = st => hwStatusInfo(rec, String(st.id || st.name));
             const submittedCount = roster.filter(st => statusFor(st).id === 'submitted').length;
             const pendingCount = roster.filter(st => statusFor(st).id !== 'submitted').length;
-            const rewriteCount = roster.filter(st => statusFor(st).id === 'rewrite').length;
             const male = roster.filter(st => String(st.gender || '').includes('男'));
             const female = roster.filter(st => String(st.gender || '').includes('女'));
             html += '<div class="hw-topline"><div class="hw-homework-title"><h2>' + escapeHwText(rec.name) + '</h2>' + (isTeacher ? '<button type="button" class="hw-btn hw-rename-homework" onclick="renameActiveHomework()">✏️ 修改作業名稱</button>' : '') + '<span>作業日期：' + escapeHwText(rec.date || '未設定') + '</span></div></div>';
@@ -4809,13 +4858,11 @@ function showImportConfirmDialog(message) {
             };
             html += '<div class="hw-gender-columns">' + drawSection('男生', male) + drawSection('女生', female) + '</div>';
             const pendingStudents = roster.filter(st => statusFor(st).id === 'pending');
-            const unsubmittedStudents = roster.filter(st => ['incomplete','forgot'].includes(statusFor(st).id));
-            const rewriteStudents = roster.filter(st => statusFor(st).id === 'rewrite');
+            const unsubmittedStudents = roster.filter(st => statusFor(st).id === 'incomplete');
             const summaryColumn = (title, note, list, color, bg) => '<section class="hw-status-summary" style="--summary-border:'+color+';--summary-bg:'+bg+'"><div class="hw-status-summary-head"><h3>'+title+'（'+list.length+'人）</h3><p>'+note+'</p></div>'+(list.length?'<div class="hw-summary-name-grid">'+list.map(st=>'<span class="hw-summary-name">'+escapeHwText(st.name)+'</span>').join('')+'</div>':'<div class="hw-summary-empty">目前沒有學生</div>')+'</section>';
             html += '<div class="hw-status-summaries" aria-label="作業狀態提醒名單">' +
                 summaryColumn('尚未登記','繳交完請記得點選。',pendingStudents,'#F59E0B','#FFFBEB') +
-                summaryColumn('未繳交','未完成／忘記帶／請寫在今日聯絡簿提醒',unsubmittedStudents,'#F43F5E','#FFF1F2') +
-                summaryColumn('待重寫名單','請重新完成，隔日繳交',rewriteStudents,'#16A765','#ECFDF5') + '</div>';
+                summaryColumn('未繳交','未完成／請寫在今日聯絡簿提醒',unsubmittedStudents,'#F43F5E','#FFF1F2') + '</div>';
             html += '<p class="hw-mode-note">目前模式：' + (isTeacher ? '老師模式（可修正紀錄與顏色）' : '學生模式（登記後不可自行更改）') + '。' + '</p></div>';
             root.innerHTML = html;
             placeHomeworkLegendInHeader(currentBoardView === 'homework');
@@ -4996,7 +5043,7 @@ function showImportConfirmDialog(message) {
 
 
 /* v6.1.35: student view inline subject/name/date fields matching approved reference layout */
-const HW_DEFAULT_SUBJECTS = ['國語','數學','社會','自然','英文','健康','綜合','藝文','體育','未分類'];
+const HW_DEFAULT_SUBJECTS = ['聯絡簿','國語','數學','社會','自然','英文','健康','綜合','藝文','體育','未分類'];
 let hwSubjectList = (()=>{try{const a=JSON.parse(localStorage.getItem('tab_class_homework_subjects_v1')||'null');return Array.isArray(a)&&a.length?a:HW_DEFAULT_SUBJECTS.slice();}catch(e){return HW_DEFAULT_SUBJECTS.slice();}})();
 let hwTeacherSubjectFilter = '全部';
 function saveHwSubjects(){try{localStorage.setItem('tab_class_homework_subjects_v1',JSON.stringify(hwSubjectList));}catch(e){alert('科目清單儲存失敗，請先匯出備份。');}}
@@ -5103,8 +5150,10 @@ renderHomeworkBoard = function(){
   const root=document.getElementById('homework-board-container');
   if(!root) return;
   const rec=getActiveHomework();
-  const subjects=[...new Set([...hwSubjectList,...homeworkRecords.map(hwSubjectOf)])];
-  if(!subjects.includes('未分類')) subjects.push('未分類');
+  const rawSubjects=[...new Set([...hwSubjectList,...homeworkRecords.map(hwSubjectOf)])];
+  if(!rawSubjects.includes('未分類')) rawSubjects.push('未分類');
+  const pinnedSubjects=['聯絡簿','國語','數學','社會','綜合'];
+  const subjects=[...pinnedSubjects.filter(x=>rawSubjects.includes(x)),...rawSubjects.filter(x=>!pinnedSubjects.includes(x)&&x!=='未分類'),...(rawSubjects.includes('未分類')?['未分類']:[])];
   const currentSubject=rec?hwSubjectOf(rec):(subjects.find(x=>x!=='未分類')||'國語');
   const subjectOptions=subjects.map(x=>'<option value="'+escapeHwText(x)+'" '+(x===currentSubject?'selected':'')+'>'+escapeHwText(x)+'</option>').join('');
   const heading=root.querySelector('.hw-heading-row');
@@ -5230,8 +5279,8 @@ createHomeworkRecord=function(){
   function allSubjects(){
     const vals=[...(Array.isArray(hwSubjectList)?hwSubjectList:[]),...records().map(subjectOf)];
     const unique=[...new Set(vals)];
-    // 常用科目固定置頂：國語、數學、社會、綜合；其餘科目依原清單順序排列，未分類永遠置底。
-    const pinned=['國語','數學','社會','綜合'];
+    // 聯絡簿最高優先置頂，其次為常用學科；其餘科目依原清單順序排列，未分類永遠置底。
+    const pinned=['聯絡簿','國語','數學','社會','綜合'];
     const rest=unique.filter(s=>!pinned.includes(s)&&s!=='未分類');
     return [...pinned.filter(s=>unique.includes(s)),...rest,...(unique.includes('未分類')?['未分類']:[])];
   }
@@ -5311,6 +5360,188 @@ createHomeworkRecord=function(){
     const heading=root.querySelector('.hw-heading-row');
     if(heading)heading.insertAdjacentHTML('afterend',markup);
     else {const tabs=root.querySelector('.hw-history-tabs');if(tabs)tabs.insertAdjacentHTML('afterend',markup);}
+  };
+})();
+</script>
+
+
+<script>
+/* v6.1.55：用表單修改既有作業，科目可下拉選取或新增；保留學生狀態與備註。 */
+(function installHomeworkRecordActionsV6155(){
+  function activeRecord(){ return typeof getActiveHomework==='function' ? getActiveHomework() : null; }
+  function escapeHtml(v){ return typeof escapeHwText==='function' ? escapeHwText(v) : String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function persistAndVerify(before){
+    try {
+      const raw=JSON.stringify(homeworkRecords);
+      localStorage.setItem('tab_class_homework_records_v1',raw);
+      if(localStorage.getItem('tab_class_homework_records_v1')!==raw) throw new Error('寫入驗證失敗');
+      return true;
+    } catch(e) {
+      try { homeworkRecords=JSON.parse(before); } catch(_) {}
+      alert('儲存失敗，已還原本次修改。請檢查瀏覽器儲存空間，並重新操作。');
+      return false;
+    }
+  }
+  function closeDialog(){ const d=document.getElementById('hw-edit-dialog-v6155'); if(d)d.remove(); }
+  window.hwEditSelectedHomeworkV6155=function(){
+    if(typeof homeworkMode!=='undefined'&&homeworkMode!=='teacher'){alert('請先切換為老師模式。');return;}
+    const rec=activeRecord(); if(!rec){alert('請先選擇一筆已有作業。');return;}
+    closeDialog();
+    const rawSubjects=[...new Set([...(Array.isArray(hwSubjectList)?hwSubjectList:[]),...(Array.isArray(homeworkRecords)?homeworkRecords.map(r=>String(r.subject||'未分類')):[]),'未分類'])];
+    const pinnedSubjects=['聯絡簿','國語','數學','社會','綜合'];
+    const subjects=[...pinnedSubjects.filter(sub=>rawSubjects.includes(sub)),...rawSubjects.filter(sub=>!pinnedSubjects.includes(sub)&&sub!=='未分類'),...(rawSubjects.includes('未分類')?['未分類']:[])];
+    const subjectOptions=subjects.map(sub=>'<option value="'+escapeHtml(sub)+'" '+(String(rec.subject||'未分類')===sub?'selected':'')+'>'+escapeHtml(sub)+'</option>').join('');
+    const dialog=document.createElement('div'); dialog.id='hw-edit-dialog-v6155'; dialog.className='hw-edit-overlay-v6155';
+    dialog.innerHTML='<form class="hw-edit-dialog-v6155" role="dialog" aria-modal="true" aria-labelledby="hw-edit-title-v6155">'+
+      '<h3 id="hw-edit-title-v6155">✏️ 修改既有作業</h3><p>只修改作業資料，不會清除原有學生繳交狀態與備註。</p>'+
+      '<label>作業名稱<input id="hw-edit-name-v6155" type="text" maxlength="100" required value="'+escapeHtml(rec.name||'')+'"></label>'+
+      '<label>科目<select id="hw-edit-subject-v6155">'+subjectOptions+'<option value="__new__">＋ 新增科目…</option></select></label>'+
+      '<label>繳交日期<input id="hw-edit-date-v6155" type="date" value="'+escapeHtml(rec.date||'')+'"></label>'+
+      '<div class="hw-edit-actions-v6155"><button type="button" class="cancel">取消</button><button type="submit" class="save">儲存修改</button></div></form>';
+    document.body.appendChild(dialog);
+    const form=dialog.querySelector('form'), subjectEl=dialog.querySelector('#hw-edit-subject-v6155');
+    subjectEl.addEventListener('change',()=>{ if(subjectEl.value==='__new__'){ const n=prompt('請輸入新科目名稱：'); const val=(n||'').trim(); if(!val){subjectEl.value=String(rec.subject||'未分類');return;} let opt=[...subjectEl.options].find(o=>o.value===val); if(!opt){opt=document.createElement('option');opt.value=val;opt.textContent=val;subjectEl.insertBefore(opt,subjectEl.querySelector('option[value="__new__"]'));} subjectEl.value=val; }});
+    dialog.querySelector('.cancel').addEventListener('click',closeDialog);
+    dialog.addEventListener('click',e=>{if(e.target===dialog)closeDialog();});
+    form.addEventListener('submit',e=>{
+      e.preventDefault();
+      const name=dialog.querySelector('#hw-edit-name-v6155').value.trim();
+      const subject=subjectEl.value.trim();
+      const date=dialog.querySelector('#hw-edit-date-v6155').value;
+      if(!name){alert('作業名稱不能空白。');return;}
+      if(!subject||subject==='__new__'){alert('請選擇有效科目。');return;}
+      if(date&&!/^\d{4}-\d{2}-\d{2}$/.test(date)){alert('請確認日期格式。');return;}
+      const before=JSON.stringify(homeworkRecords);
+      const target=homeworkRecords.find(r=>String(r.id)===String(rec.id));
+      if(!target){alert('找不到這筆作業，請重新選取後再修改。');closeDialog();return;}
+      target.name=name; target.subject=subject; target.date=date;
+      if(!persistAndVerify(before))return;
+      if(Array.isArray(hwSubjectList)&&!hwSubjectList.includes(subject)){hwSubjectList.push(subject);if(typeof saveHwSubjects==='function')saveHwSubjects();}
+      activeHomeworkId=target.id;
+      closeDialog();
+      if(typeof renderHomeworkBoard==='function')renderHomeworkBoard();
+      alert('作業名稱、科目與日期已更新；原有繳交狀態及備註已保留。');
+    });
+    dialog.querySelector('#hw-edit-name-v6155').focus();
+  };
+  window.hwDeleteSelectedHomeworkV6155=function(){
+    if(typeof homeworkMode!=='undefined'&&homeworkMode!=='teacher'){alert('請先切換為老師模式。');return;}
+    const rec=activeRecord();if(!rec){alert('請先選擇一筆已有作業。');return;}
+    if(!confirm('確定刪除「'+String(rec.name||'未命名作業')+'」及這份作業的所有繳交紀錄嗎？此動作無法復原。'))return;
+    const before=JSON.stringify(homeworkRecords);homeworkRecords=homeworkRecords.filter(r=>String(r.id)!==String(rec.id));
+    if(!persistAndVerify(before))return;
+    activeHomeworkId=homeworkRecords[0]?homeworkRecords[0].id:'';
+    if(typeof renderHomeworkBoard==='function')renderHomeworkBoard();
+    alert('已刪除這筆作業。');
+  };
+  function addActionButtons(){
+    if(typeof homeworkMode==='undefined'||homeworkMode!=='teacher')return;
+    if(typeof homeworkHistoryView!=='undefined'&&homeworkHistoryView!=='register')return;
+    const root=document.getElementById('homework-board-container');if(!root)return;
+    const picker=root.querySelector('.hw-existing-picker-v6146')||root.querySelector('.hw-existing-picker');if(!picker)return;
+    let actions=picker.querySelector('.hw-record-actions-v6155');
+    if(!actions){actions=document.createElement('div');actions.className='hw-record-actions-v6155';actions.innerHTML='<button type="button" onclick="hwEditSelectedHomeworkV6155()">✏️ 修改作業</button><button type="button" class="delete" onclick="hwDeleteSelectedHomeworkV6155()">🗑️ 刪除作業</button>';picker.appendChild(actions);}
+    const hasRecord=!!activeRecord();actions.querySelectorAll('button').forEach(btn=>btn.disabled=!hasRecord);
+  }
+  const style=document.createElement('style');style.textContent='.hw-record-actions-v6155{display:flex;align-items:end;gap:8px;flex-wrap:wrap;min-width:190px}.hw-record-actions-v6155 button{border:0;border-radius:8px;padding:11px 14px;background:#2563a6;color:#fff;font:700 15px "Microsoft JhengHei",sans-serif;cursor:pointer;white-space:nowrap}.hw-record-actions-v6155 button.delete{background:#c62828}.hw-record-actions-v6155 button:disabled{opacity:.45;cursor:not-allowed}.hw-edit-overlay-v6155{position:fixed;inset:0;z-index:2147483647;background:rgba(12,35,48,.48);display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box}.hw-edit-dialog-v6155{width:min(520px,100%);max-height:90vh;overflow:auto;box-sizing:border-box;background:#fff;border-radius:16px;padding:22px;box-shadow:0 14px 40px rgba(0,0,0,.25);font-family:"Microsoft JhengHei",sans-serif}.hw-edit-dialog-v6155 h3{margin:0 0 8px;color:#075c6b}.hw-edit-dialog-v6155 p{font-size:13px;color:#607d8b;margin:0 0 14px}.hw-edit-dialog-v6155 label{display:block;margin:12px 0;font-weight:700;color:#284b5b}.hw-edit-dialog-v6155 input,.hw-edit-dialog-v6155 select{display:block;width:100%;box-sizing:border-box;margin-top:5px;padding:11px;border:1px solid #b8d4df;border-radius:8px;background:#fff;font:16px "Microsoft JhengHei",sans-serif}.hw-edit-actions-v6155{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}.hw-edit-actions-v6155 button{border:0;border-radius:8px;padding:11px 18px;font:700 15px "Microsoft JhengHei",sans-serif;cursor:pointer}.hw-edit-actions-v6155 .cancel{background:#eceff1;color:#37474f}.hw-edit-actions-v6155 .save{background:#087f8c;color:#fff}@media(max-width:520px){.hw-edit-dialog-v6155{padding:16px}.hw-edit-actions-v6155 button{flex:1}}';document.head.appendChild(style);
+  const priorRender=window.renderHomeworkBoard;
+  if(typeof priorRender==='function')window.renderHomeworkBoard=function(){priorRender.apply(this,arguments);addActionButtons();};
+  document.addEventListener('DOMContentLoaded',addActionButtons);
+})();
+
+
+/* v6.1.57：學生以日期檢視作業，點姓名後一次登記當日所有作業。 */
+(function(){
+  const style=document.createElement('style');
+  style.textContent=`.hw-daily-overlay-v6157{position:fixed;inset:0;z-index:2147483647;background:rgba(8,30,42,.55);display:flex;align-items:center;justify-content:center;padding:10px;box-sizing:border-box}.hw-daily-dialog-v6157{width:min(980px,100%);max-height:94vh;overflow:auto;background:#fff;border-radius:16px;padding:16px;box-sizing:border-box;box-shadow:0 18px 60px rgba(0,0,0,.3);font-family:"Microsoft JhengHei",sans-serif;color:#173b4a}.hw-daily-dialog-v6157 h3{margin:0 0 4px;font-size:21px}.hw-daily-dialog-v6157 .sub{color:#64748b;margin:0 0 6px;font-size:14px}.hw-daily-instruction-v6158{margin:0 0 10px;color:#64748b;font-size:13px}.hw-daily-list-v6158{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.hw-daily-item-v6157{border:1px solid #d8e6ec;border-radius:10px;padding:9px 10px;margin:0;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;min-width:0}.hw-daily-item-v6157 .title{font-weight:700;font-size:15px;line-height:1.25;overflow-wrap:anywhere}.hw-daily-item-v6157 .subject{font-size:12px;color:#64748b;margin-bottom:2px}.hw-daily-choices-v6157{display:flex;gap:5px;flex-wrap:nowrap}.hw-daily-choices-v6157 button{min-width:70px;border:2px solid #cbd5e1;border-radius:8px;padding:7px 8px;background:#fff;color:#334155;font:700 13px "Microsoft JhengHei",sans-serif;cursor:pointer;white-space:nowrap}.hw-daily-choices-v6157 button[data-choice="submitted"].selected{border-color:#1684bd;background:#e0f2fe;color:#075985}.hw-daily-choices-v6157 button[data-choice="incomplete"].selected{border-color:#dc6262;background:#fff1f2;color:#b42318}.hw-daily-choices-v6157 button:disabled{opacity:.72;cursor:not-allowed}.hw-daily-actions-v6157{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-top:12px}.hw-daily-actions-v6157 .count{font-size:13px;color:#64748b}.hw-daily-actions-v6157 .buttons{display:flex;gap:8px}.hw-daily-actions-v6157 button{border:0;border-radius:8px;padding:9px 15px;font:700 14px "Microsoft JhengHei",sans-serif;cursor:pointer}.hw-daily-actions-v6157 .cancel{background:#e8eef2;color:#334155}.hw-daily-actions-v6157 .save{background:#087f8c;color:#fff}.hw-daily-actions-v6157 .save:disabled{opacity:.5;cursor:not-allowed}.hw-daily-empty-v6157{padding:18px;text-align:center;color:#64748b;background:#f8fafc;border-radius:10px}@media(max-width:720px){.hw-daily-dialog-v6157{padding:12px;max-height:96vh}.hw-daily-list-v6158{grid-template-columns:1fr}.hw-daily-item-v6157{grid-template-columns:minmax(0,1fr) auto}.hw-daily-choices-v6157 button{min-width:62px;padding:7px 6px;font-size:12px}}@media(max-width:430px){.hw-daily-item-v6157{grid-template-columns:1fr}.hw-daily-choices-v6157 button{flex:1}}`;
+  document.head.appendChild(style);
+  function studentKey(id){return String(id);}
+  function selectedDate(){const rec=typeof getActiveHomework==='function'?getActiveHomework():null;return String(rec&&rec.date||'');}
+  function assignmentsForDate(date){return (Array.isArray(homeworkRecords)?homeworkRecords:[]).filter(r=>String(r.date||'')===String(date||'')).slice().sort((a,b)=>String(a.subject||'').localeCompare(String(b.subject||''),'zh-Hant')||String(a.name||'').localeCompare(String(b.name||''),'zh-Hant'));}
+  function openDaily(studentId,studentName){
+    const date=selectedDate();const list=assignmentsForDate(date);
+    if(!list.length){alert('這一天沒有已建立的作業。');return;}
+    if(document.querySelector('.hw-daily-overlay-v6157'))return;
+    const key=studentKey(studentId);const choices={};
+    list.forEach(r=>{const st=r.statuses&&r.statuses[key];choices[String(r.id)]=st&&st.status?st.status:null;});
+    const overlay=document.createElement('div');overlay.className='hw-daily-overlay-v6157';overlay.setAttribute('role','dialog');overlay.setAttribute('aria-modal','true');
+    const rows=list.map(r=>{
+      const id=String(r.id),status=choices[id],locked=!!status;
+      return `<div class="hw-daily-item-v6157" data-record="${escapeHwText(id)}"><div><div class="subject">${escapeHwText(hwSubjectOf(r))}</div><div class="title">${escapeHwText(r.name||'未命名作業')}</div></div><div class="hw-daily-choices-v6157"><button type="button" data-choice="submitted" class="${status==='submitted'?'selected':''}" ${locked?'disabled':''}>✓ 已交</button><button type="button" data-choice="incomplete" class="${status==='incomplete'?'selected':''}" ${locked?'disabled':''}>✕ 未交</button></div></div>`;
+    }).join('');
+    overlay.innerHTML=`<div class="hw-daily-dialog-v6157" role="document"><h3>📚 每日作業繳交總表</h3><p class="sub">學生：<strong>${escapeHwText(studentName)}</strong>　日期：<strong>${escapeHwText(date||'未設定')}</strong></p><p class="hw-daily-instruction-v6158">請逐項選擇「已交」或「未交」；未選擇的作業會保持未登記。</p><div class="hw-daily-list-v6158">${rows||'<div class="hw-daily-empty-v6157">當天沒有作業。</div>'}</div><div class="hw-daily-actions-v6157"><span class="count">尚未登記 ${list.filter(r=>!choices[String(r.id)]).length}／${list.length} 項</span><div class="buttons"><button type="button" class="cancel" data-close>取消</button><button type="button" class="save" data-save>全部儲存</button></div></div></div>`;
+    document.body.appendChild(overlay);
+    const refresh=()=>{
+      overlay.querySelectorAll('.hw-daily-item-v6157').forEach(item=>{const id=item.dataset.record;const val=choices[id];item.querySelectorAll('[data-choice]').forEach(btn=>btn.classList.toggle('selected',btn.dataset.choice===val));});
+      const left=list.filter(r=>!choices[String(r.id)]).length;overlay.querySelector('.count').textContent=`尚未登記 ${left}／${list.length} 項`;
+    };
+    overlay.querySelectorAll('.hw-daily-item-v6157 [data-choice]').forEach(btn=>btn.addEventListener('click',()=>{const item=btn.closest('.hw-daily-item-v6157');const id=item.dataset.record;if(choices[id])return;choices[id]=btn.dataset.choice;refresh();}));
+    const close=()=>overlay.remove();overlay.querySelector('[data-close]').addEventListener('click',close);overlay.addEventListener('click',e=>{if(e.target===overlay)close();});
+    overlay.querySelector('[data-save]').addEventListener('click',()=>{
+      // v6.1.59：儲存時以 localStorage 最新資料為準，避免覆寫已登記狀態。
+      let latestRecords;
+      try {
+        const rawLatest = localStorage.getItem(HW_STORAGE_KEY) || '[]';
+        latestRecords = JSON.parse(rawLatest);
+        if (!Array.isArray(latestRecords)) throw new Error('作業資料格式不正確');
+      } catch (e) {
+        alert('無法讀取最新作業紀錄，尚未儲存。請勿關閉此視窗，稍後再試。');
+        return;
+      }
+      const nextRecords = JSON.parse(JSON.stringify(latestRecords));
+      let changed=0, alreadyRegistered=0, missing=0;
+      const stamp = new Date().toISOString();
+      list.forEach(r=>{
+        const id=String(r.id), val=choices[id];
+        if(!val) return;
+        const target=nextRecords.find(x=>String(x.id)===id);
+        if(!target || String(target.date||'')!==String(date||'')){missing++;return;}
+        if(target.statuses && target.statuses[key]) {alreadyRegistered++;return;}
+        if(!target.statuses || typeof target.statuses!=='object') target.statuses={};
+        target.statuses[key]={status:val,submittedAt:stamp,by:'student'};
+        changed++;
+      });
+      if(!changed){
+        if(alreadyRegistered||missing){
+          alert('沒有新增登記。部分作業可能已被登記或資料已變更；已存在的紀錄不會被覆寫。請關閉後重新開啟確認。');
+        } else {
+          alert('請至少選擇一項尚未登記的作業，再按「全部儲存」。');
+        }
+        return;
+      }
+      const rawNext=JSON.stringify(nextRecords);
+      try {
+        localStorage.setItem(HW_STORAGE_KEY,rawNext);
+        if(localStorage.getItem(HW_STORAGE_KEY)!==rawNext) throw new Error('寫入驗證失敗');
+      } catch(e) {
+        alert('儲存失敗，尚未確認成功。你的選擇仍保留在此視窗，請檢查瀏覽器儲存空間後再試。');
+        return;
+      }
+      homeworkRecords=nextRecords;
+      close();
+      if(typeof renderHomeworkBoard==='function') renderHomeworkBoard();
+      let message='已成功儲存 '+changed+' 項作業。這些項目已鎖定，學生不能自行更改。';
+      if(alreadyRegistered) message+='\n另有 '+alreadyRegistered+' 項已由最新紀錄鎖定，未被覆寫。';
+      if(missing) message+='\n另有 '+missing+' 項作業資料已變更，未予登記。';
+      alert(message);
+    });
+  }
+  const originalOpen=window.openHomeworkConfirm;
+  window.openHomeworkConfirm=function(studentId,studentName){if(typeof homeworkMode!=='undefined'&&homeworkMode==='student'){openDaily(studentId,studentName);return;}return originalOpen.apply(this,arguments);};
+  const originalDate=window.hwStudentSelectDate;
+  window.hwStudentSelectDate=function(date){
+    const matches=assignmentsForDate(date);if(matches.length){activeHomeworkId=matches[0].id;renderHomeworkBoard();return;}if(typeof originalDate==='function')return originalDate.apply(this,arguments);
+  };
+  const previousRender=window.renderHomeworkBoard;
+  window.renderHomeworkBoard=function(){
+    previousRender.apply(this,arguments);
+    if(typeof homeworkMode==='undefined'||homeworkMode!=='student'||homeworkHistoryView!=='register')return;
+    const root=document.getElementById('homework-board-container');if(!root)return;
+    const heading=root.querySelector('.hw-heading-row');if(!heading)return;
+    const rec=typeof getActiveHomework==='function'?getActiveHomework():null;if(!rec)return;
+    const dates=[...new Set((Array.isArray(homeworkRecords)?homeworkRecords:[]).map(r=>String(r.date||'')).filter(Boolean))].sort((a,b)=>b.localeCompare(a));
+    const dateOptions=dates.map(d=>`<option value="${escapeHwText(d)}" ${d===String(rec.date||'')?'selected':''}>${escapeHwText(d)}</option>`).join('');
+    heading.outerHTML='<div class="hw-heading-row hw-student-info-row"><h2 class="hw-title">📚 作業繳交記錄</h2><div class="hw-student-fields"><label class="hw-student-date-field"><span>檢視日期</span><select aria-label="依日期檢視作業" onchange="hwStudentSelectDate(this.value)">'+dateOptions+'</select></label></div><span class="hw-mode-status student" role="status">目前模式：👩‍🎓 學生</span></div>';
   };
 })();
 </script>
